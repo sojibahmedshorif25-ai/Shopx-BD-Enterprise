@@ -20,6 +20,10 @@ import {
   Star,
   ShieldAlert,
   LifeBuoy,
+  Boxes,
+  Terminal,
+  Radio,
+  Activity,
 } from 'lucide-react';
 import { useAdminAuthStore } from '../store/useAdminAuthStore';
 import { useSidebarStore } from '../store/useSidebarStore';
@@ -32,21 +36,45 @@ export const Sidebar: React.FC = () => {
   const isAdmin = user?.role === 'admin';
   const isBn = lang === 'bn';
 
-  const navItems = [
-    { to: '/', label: isBn ? 'ড্যাশবোর্ড ওভারভিউ' : 'Dashboard Hub', icon: LayoutDashboard },
-    ...(isAdmin ? [{ to: '/analytics', label: isBn ? 'বিজনেস অ্যানালিটিক্স' : 'Sales Analytics', icon: TrendingUp }] : []),
-    { to: '/products', label: isBn ? 'পণ্য ক্যাটালগ' : 'Products Catalog', icon: Package },
-    { to: '/orders', label: isBn ? 'লাইভ অর্ডারসমূহ' : 'Live Orders Fleet', icon: ShoppingCart },
-    ...(isAdmin ? [{ to: '/reviews', label: isBn ? 'রিভিউ ও রেটিংস' : 'Customer Reviews', icon: Star }] : []),
-    ...(isAdmin ? [{ to: '/users', label: isBn ? 'ইউজার ও রোলস' : 'Users & Roles (RBAC)', icon: Users }] : []),
-    ...(isAdmin ? [{ to: '/categories', label: isBn ? 'ক্যাটাগরি ম্যানেজমেন্ট' : 'Categories Hub', icon: Layers }] : []),
-    ...(isAdmin ? [{ to: '/coupons', label: isBn ? 'ভাউচার ও কুপন' : 'Promo Vouchers', icon: Ticket }] : []),
-    ...(isAdmin ? [{ to: '/vendors', label: isBn ? 'সেলার সেন্টার' : 'Vendors Hub', icon: Store }] : []),
-    ...(isAdmin ? [{ to: '/subscriptions', label: isBn ? 'SaaS সাবস্ক্রিপশন' : 'SaaS Plans', icon: Crown }] : []),
-    ...(isAdmin ? [{ to: '/riders', label: isBn ? 'DEX ডেলিভারি রাইডার' : 'DEX Riders Fleet', icon: Truck }] : []),
-    ...(isAdmin ? [{ to: '/fraud-shield', label: isBn ? 'এআই ফ্রড শিল্ড' : 'AI Fraud Shield', icon: ShieldAlert }] : []),
-    ...(isAdmin ? [{ to: '/support', label: isBn ? 'কাস্টমার সাপোর্ট' : 'Support Tickets', icon: LifeBuoy }] : []),
-    ...(isAdmin ? [{ to: '/settings', label: isBn ? 'সিস্টেম ও হেড অফিস' : 'System Settings', icon: Settings }] : []),
+  const sections = [
+    {
+      title: isBn ? 'মূল ড্যাশবোর্ড' : 'CORE OPERATIONS',
+      items: [
+        { to: '/', label: isBn ? 'ড্যাশবোর্ড ওভারভিউ' : 'Dashboard Overview', icon: LayoutDashboard },
+        ...(isAdmin ? [{ to: '/analytics', label: isBn ? 'সেলস ও ফাইন্যান্সিয়াল অ্যানালিটিক্স' : 'Sales & Revenue Analytics', icon: TrendingUp }] : []),
+      ],
+    },
+    {
+      title: isBn ? 'পণ্য ও ইনভেন্টরি' : 'CATALOG & INVENTORY',
+      items: [
+        { to: '/products', label: isBn ? 'পণ্য ক্যাটালগ' : 'Products Catalog', icon: Package },
+        ...(isAdmin ? [{ to: '/inventory', label: isBn ? 'স্টক ও ইনভেন্টরি হাব' : 'Inventory & Stock Hub', icon: Boxes }] : []),
+        { to: '/orders', label: isBn ? 'লাইভ অর্ডার ফ্লিট' : 'Live Orders Fleet', icon: ShoppingCart },
+        ...(isAdmin ? [{ to: '/reviews', label: isBn ? 'কাস্টমার রিভিউ ও রেটিংস' : 'Customer Reviews & Ratings', icon: Star }] : []),
+        ...(isAdmin ? [{ to: '/categories', label: isBn ? 'ক্যাটাগরি হাব' : 'Categories Hub', icon: Layers }] : []),
+      ],
+    },
+    {
+      title: isBn ? 'মার্কেটপ্লেস ও গ্রোথ' : 'SELLERS & MARKETING',
+      items: [
+        ...(isAdmin ? [{ to: '/coupons', label: isBn ? 'প্রমো ভাউচার ও ডিসকাউন্ট' : 'Promo Vouchers & Deals', icon: Ticket }] : []),
+        ...(isAdmin ? [{ to: '/broadcast', label: isBn ? 'ক্যাম্পেইন ব্রডকাস্টার' : 'Campaign Broadcast Center', icon: Radio }] : []),
+        ...(isAdmin ? [{ to: '/vendors', label: isBn ? 'সেলার ও ভেন্ডর হাব' : 'Vendors & Multi-Seller Hub', icon: Store }] : []),
+        ...(isAdmin ? [{ to: '/subscriptions', label: isBn ? 'SaaS মেম্বারশিপ প্ল্যানস' : 'SaaS Subscription Plans', icon: Crown }] : []),
+        ...(isAdmin ? [{ to: '/riders', label: isBn ? 'DEX ডেলিভারি রাইডার্স' : 'DEX Riders & Logistics', icon: Truck }] : []),
+      ],
+    },
+    {
+      title: isBn ? 'সিকিউরিটি ও গভর্ন্যান্স' : 'SECURITY & GOVERNANCE',
+      items: [
+        ...(isAdmin ? [{ to: '/fraud-shield', label: isBn ? 'এআই ফ্রড শিল্ড' : 'AI Fraud & Risk Shield', icon: ShieldAlert }] : []),
+        ...(isAdmin ? [{ to: '/audit-logs', label: isBn ? 'অডিট লগ ও সিকিউরিটি ট্রেইল' : 'Audit Logs & Security Trail', icon: Terminal }] : []),
+        ...(isAdmin ? [{ to: '/gateways', label: isBn ? 'গেটওয়ে ও এপিআই হেলথ' : 'Gateways & Courier Health', icon: Activity }] : []),
+        ...(isAdmin ? [{ to: '/users', label: isBn ? 'ইউজার ও রোলস (RBAC)' : 'Users & Access Control', icon: Users }] : []),
+        ...(isAdmin ? [{ to: '/support', label: isBn ? '২৪/৭ কাস্টমার সাপোর্ট' : '24/7 Support Inquiries', icon: LifeBuoy }] : []),
+        ...(isAdmin ? [{ to: '/settings', label: isBn ? 'সিস্টেম ও স্টোর কনফিগ' : 'System Settings & Config', icon: Settings }] : []),
+      ],
+    },
   ];
 
   return (
@@ -60,23 +88,24 @@ export const Sidebar: React.FC = () => {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between p-4 flex-shrink-0 transition-transform duration-300 md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800/90 flex flex-col justify-between p-3.5 flex-shrink-0 transition-transform duration-300 md:static md:translate-x-0 ${
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <div className="overflow-y-auto pr-1">
-          {/* Brand Header & Mobile Close */}
-          <div className="flex items-center justify-between px-2 py-3 mb-4 border-b border-slate-800/80">
+          {/* Brand Header */}
+          <div className="flex items-center justify-between px-2 py-3 mb-3 border-b border-slate-800/80">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-amber-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-emerald-700/20">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-600 to-amber-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-emerald-700/20">
                 SX
               </div>
               <div>
-                <h1 className="font-black text-base text-white leading-tight">
+                <h1 className="font-black text-sm text-white leading-tight flex items-center gap-1.5">
                   Shop<span className="text-emerald-400">X</span> BD
+                  <span className="text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded font-mono font-bold">ENTERPRISE</span>
                 </h1>
-                <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/40">
-                  {isAdmin ? (isBn ? 'সুপার এডমিন' : 'Super Admin') : (isBn ? 'সেলার পোর্টাল' : 'Vendor Portal')}
+                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
+                  {isAdmin ? (isBn ? 'সুপার এডমিন কনসোল' : 'Super Admin Console') : (isBn ? 'সেলার পোর্টাল' : 'Vendor Portal')}
                 </span>
               </div>
             </div>
@@ -89,30 +118,37 @@ export const Sidebar: React.FC = () => {
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === '/'}
-                  onClick={closeSidebar}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition ${
-                      isActive
-                        ? 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 text-white font-black shadow-lg shadow-emerald-700/30'
-                        : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'
-                    }`
-                  }
-                >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">{item.label}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
+          {/* Categorized Navigation Sections */}
+          <div className="space-y-4">
+            {sections.map((sec, secIdx) => (
+              <div key={secIdx} className="space-y-1">
+                <p className="px-3 text-[10px] font-mono uppercase tracking-widest font-black text-slate-500">
+                  {sec.title}
+                </p>
+                {sec.items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      end={item.to === '/'}
+                      onClick={closeSidebar}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition ${
+                          isActive
+                            ? 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 text-white font-black shadow-md shadow-emerald-700/20'
+                            : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-200'
+                        }`
+                      }
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </NavLink>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Footer Profile & Links */}

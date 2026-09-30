@@ -21,6 +21,11 @@ import {
   replyReviewAdmin,
   getFraudShieldAdmin,
   getSupportInquiriesAdmin,
+  getInventoryAdmin,
+  updateInventoryStockAdmin,
+  getAuditLogsAdmin,
+  sendBroadcastAdmin,
+  getGatewaysAdmin,
 } from '../controllers/admin.controller.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 
@@ -45,6 +50,19 @@ router.get('/fraud-shield', authenticate, authorize('admin'), getFraudShieldAdmi
 
 // Customer Support Inquiries
 router.get('/support-inquiries', authenticate, authorize('admin'), getSupportInquiriesAdmin);
+
+// Inventory & Stock
+router.get('/inventory', authenticate, authorize('admin'), getInventoryAdmin);
+router.put('/inventory/:id/stock', authenticate, authorize('admin'), updateInventoryStockAdmin);
+
+// Audit Logs & Security
+router.get('/audit-logs', authenticate, authorize('admin'), getAuditLogsAdmin);
+
+// Broadcast & Announcements
+router.post('/broadcast', authenticate, authorize('admin'), sendBroadcastAdmin);
+
+// Gateways & Logistics Health
+router.get('/gateways', authenticate, authorize('admin'), getGatewaysAdmin);
 
 // Categories
 router.get('/categories', authenticate, authorize('admin'), getAllCategoriesAdmin);

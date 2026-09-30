@@ -16,6 +16,10 @@ import { AnalyticsAdminPage } from './pages/AnalyticsAdminPage';
 import { ReviewsAdminPage } from './pages/ReviewsAdminPage';
 import { FraudShieldAdminPage } from './pages/FraudShieldAdminPage';
 import { SupportAdminPage } from './pages/SupportAdminPage';
+import { InventoryAdminPage } from './pages/InventoryAdminPage';
+import { AuditLogsAdminPage } from './pages/AuditLogsAdminPage';
+import { BroadcastAdminPage } from './pages/BroadcastAdminPage';
+import { GatewaysAdminPage } from './pages/GatewaysAdminPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { useAdminAuthStore } from './store/useAdminAuthStore';
 
@@ -149,6 +153,38 @@ export const App: React.FC = () => {
           element={
             <ProtectedLayout>
               <SupportAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <ProtectedLayout>
+              <InventoryAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/audit-logs"
+          element={
+            <ProtectedLayout>
+              <AuditLogsAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/broadcast"
+          element={
+            <ProtectedLayout>
+              <BroadcastAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/gateways"
+          element={
+            <ProtectedLayout>
+              <GatewaysAdminPage />
             </ProtectedLayout>
           }
         />
