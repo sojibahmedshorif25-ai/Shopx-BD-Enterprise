@@ -5,6 +5,7 @@ import { CategoryNav } from './components/CategoryNav';
 import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { AIAssistantModal } from './components/AIAssistantModal';
+import { FloatingAITrigger } from './components/FloatingAITrigger';
 import { RecentViewedDrawer } from './components/RecentViewedDrawer';
 import { AffiliateProgramModal } from './components/AffiliateProgramModal';
 import { VIPLoyaltyClubModal } from './components/VIPLoyaltyClubModal';
@@ -287,12 +288,16 @@ export const App: React.FC = () => {
         {/* Global Cart Slideout Drawer */}
         <CartDrawer />
 
-        {/* Google Gemini AI Shopping Assistant Bot */}
+        {/* Global Floating AI Shopping Copilot Trigger */}
+        <FloatingAITrigger onOpenAI={() => setIsAIOpen(true)} />
+
+        {/* Google Gemini & GPT-4o AI Shopping Assistant Bot */}
         <AIAssistantModal isOpen={isAIOpen} onClose={() => setIsAIOpen(false)} />
 
         {/* Footer */}
         <Footer />
       </div>
     </Router>
+
   );
 };

@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Send, X, Bot, User, Loader2 } from 'lucide-react';
+import { Sparkles, Send, X, Bot, User, Loader2, Mic, MicOff, ShoppingBag, ArrowRight, Zap, RefreshCw } from 'lucide-react';
 import { api } from '../services/api';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { useCartStore } from '../store/useCartStore';
+import { useCurrencyStore } from '../store/useCurrencyStore';
 
 interface AIAssistantModalProps {
   isOpen: boolean;
@@ -8,47 +11,137 @@ interface AIAssistantModalProps {
 }
 
 interface Message {
+  id: string;
   sender: 'user' | 'bot';
   text: string;
+  timestamp: string;
+  suggestedProducts?: any[];
 }
 
 export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onClose }) => {
+  const { lang } = useLanguageStore();
+  const { addItem } = useCartStore();
+  const { formatPrice } = useCurrencyStore();
+
+  const initialGreeting = lang === 'bn'
+    ? 'আসসালামু আলাইকুম! আমি ShopX AI শপিং অ্যাসিস্ট্যান্ট। কীভাবে আপনাকে সাহায্য করতে পারি? (যেমন: বাজেট গ্যাজেট, খাঁটি মধু, আজকের ডিল বা ডেলিভারি তথ্য)'
+    : 'Hello! I am your ShopX AI Shopping Copilot. How can I assist you today? (e.g. Best smartphones under ৳30,000, 100% Pure Honey, Daily Vouchers, or Delivery time)';
+
   const [messages, setMessages] = useState<Message[]>([
     {
+      id: 'msg-init',
       sender: 'bot',
-      text: 'আসসালামু আলাইকুম! আমি ShopX AI শপিং সহকারী। আপনাকে কীভাবে সাহায্য করতে পারি? (যেমন: খাঁটি মধুর উপকারিতা, বাজেট ফ্রেন্ডলি গ্যাজেট বা ডেলিভারি তথ্য)',
+      text: initialGreeting,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
+
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Update greeting when language switches if only initial message exists
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].id === 'msg-init') {
+      setMessages([
+        {
+          id: 'msg-init',
+          sender: 'bot',
+          text: lang === 'bn'
+            ? 'আসসালামু আলাইকুম! আমি ShopX AI শপিং অ্যাসিস্ট্যান্ট। কীভাবে আপনাকে সাহায্য করতে পারি?'
+            : 'Hello! I am your ShopX AI Shopping Copilot. How can I assist you today? Ask about flagship phones, pure foods, flash deals, or vouchers!',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+    }
+  }, [lang]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  if (!isOpen) return null;
+  const quickPrompts = lang === 'bn' ? [
+    '🔥 আজকের সেরা অফার ও ভাউচার',
+    '📱 ৳২৫,০০০ এর মধ্যে সেরা ফোন',
+    '🌿 সুন্দরবনের খাঁটি মধু ও ঘি',
+    '🚚 ডেলিভারি চার্জ ও ঠিকানা',
+  ] : [
+    '🔥 Best Flash Deals & Vouchers',
+    '📱 Best Flagship Phones 2026',
+    '🌿 100% Pure Organic Foods',
+    '🚚 Shipping Rates & Head Office',
+  ];
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputText.trim() || isLoading) return;
+  const handleSend = async (queryText?: string) => {
+    const textToSend = (queryText || inputText).trim();
+    if (!textToSend || isLoading) return;
 
-    const userMsg = inputText.trim();
     setInputText('');
-    setMessages((prev) => [...prev, { sender: 'user', text: userMsg }]);
+    const userMsgId = 'user-' + Date.now();
+    const newMsg: Message = {
+      id: userMsgId,
+      sender: 'user',
+      text: textToSend,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages((prev) => [...prev, newMsg]);
     setIsLoading(true);
 
     try {
-      const res = await api.post('/ai/chat', { message: userMsg });
-      if (res.data.success) {
-        setMessages((prev) => [...prev, { sender: 'bot', text: res.data.reply }]);
+      const res = await api.post('/ai/chat', { 
+        message: textToSend,
+        language: lang 
+      });
+
+      if (res.data?.success) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: 'bot-' + Date.now(),
+            sender: 'bot',
+            text: res.data.reply,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+      } else {
+        throw new Error('No reply');
       }
-    } catch (err: any) {
+    } catch {
+      // Fallback local smart response in matching language
+      let fallback = '';
+      const lower = textToSend.toLowerCase();
+
+      if (lower.includes('voucher') || lower.includes('coupon') || lower.includes('ভাউচার') || lower.includes('অফার')) {
+        fallback = lang === 'bn'
+          ? '🎁 আপনি SHOPX100 ভাউচার ব্যবহার করে প্রথম অর্ডারে ৳১০০ ফ্ল্যাট ছাড় এবং EID50 কোডে ১০% ক্যাশব্যাক পেতে পারেন! ভাউচার সেন্টারে গিয়ে ১-ক্লিকে সংগ্রহ করুন।'
+          : '🎁 You can use voucher code SHOPX100 for Flat ৳100 Off on orders over ৳1,000, and EID50 for 10% Cashback! Head over to the Voucher Collection Center to claim!';
+      } else if (lower.includes('honey') || lower.includes('মধু') || lower.includes('organic') || lower.includes('ঘি')) {
+        fallback = lang === 'bn'
+          ? '🌿 আমাদের সুন্দরবনের প্রাকৃতিক চাকের মধু (৳৬৯০ / ৫০০ গ্রাম) এবং পাবনার খাঁটি গাওয়া ঘি (৳৭৯০ / ৫০০ গ্রাম) BSTI ও BCSIR ল্যাব টেস্টে ১০০% নির্ভেজাল প্রমাণিত।'
+          : '🌿 Our Sundarbans Natural Raw Honey (৳690 / 500g) and Pabna Cow Ghee (৳790 / 500g) are 100% BSTI & BCSIR lab tested and certified pure!';
+      } else if (lower.includes('phone') || lower.includes('smartphone') || lower.includes('মোবাইল') || lower.includes('ফোন')) {
+        fallback = lang === 'bn'
+          ? '📱 আমাদের কাছে রয়েছে অফিশিয়াল Apple iPhone 16 Pro Max (৳১৬৯,৯০০), Samsung Galaxy S25 Ultra (৳১৫৮,০০০) সহ ১ বছরের ব্র্যান্ড ওয়্যারেন্টির সকল লেটেস্ট স্মার্টফোন।'
+          : '📱 We offer official Apple iPhone 16 Pro Max (৳169,900) and Samsung Galaxy S25 Ultra (৳158,000) with 1-Year Brand Warranty & 0% EMI options!';
+      } else if (lower.includes('delivery') || lower.includes('shipping') || lower.includes('ডেলিভারি') || lower.includes('ঠিকানা') || lower.includes('office')) {
+        fallback = lang === 'bn'
+          ? '🚚 ঢাকা সিটির মধ্যে ২৪ ঘণ্টায় ৳৬০ এবং সারাদেশে ৪৮-৭২ ঘণ্টায় ৳১২০ ডেলিভারি চার্জ। ক্যাশ অন ডেলিভারি সুবিধা রয়েছে। আমাদের প্রধান কার্যালয়: রৌমারী, কুড়িগ্রাম, রংপুর, বাংলাদেশ। হটলাইন: 01942791004।'
+          : '🚚 Express Delivery inside Dhaka in 24h (৳60) and Nationwide in 48-72h (৳120). Cash on Delivery available! Head Office: Rowmari, Kurigram, Rangpur, Bangladesh. Hotline: 01942791004.';
+      } else {
+        fallback = lang === 'bn'
+          ? `ShopX AI: আসসালামু আলাইকুম! আপনার প্রশ্নের জন্য ধন্যবাদ। আমাদের সব ক্যাটাগরির সেরা পণ্য, অফিসিয়াল ওয়্যারেন্টি ও ক্যাশ অন ডেলিভারি সুবিধা রয়েছে। আরও জানতে হটলাইনে কল করতে পারেন: 01942791004।`
+          : `ShopX AI: Thank you for asking! We offer 100% genuine brand products with official warranty, express shipping, and easy returns across all 64 districts of Bangladesh. Feel free to ask about any specific item or reach our hotline at 01942791004!`;
+      }
+
       setMessages((prev) => [
         ...prev,
         {
+          id: 'bot-' + Date.now(),
           sender: 'bot',
-          text: 'দুঃখিত, সংযোগে সাময়িক সমস্যা হয়েছে। আপনি আমাদের হটলাইনে কল করতে পারেন: 01700-000000',
+          text: fallback,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
     } finally {
@@ -56,82 +149,178 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onCl
     }
   };
 
+  // Voice Speech Recognition
+  const handleVoiceInput = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert(lang === 'bn' ? 'আপনার ব্রাউজারে ভয়েস রিকগনিশন সাপোর্ট নেই।' : 'Voice recognition is not supported in this browser.');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = lang === 'bn' ? 'bn-BD' : 'en-US';
+      recognition.interimResults = false;
+
+      recognition.onstart = () => setIsListening(true);
+      recognition.onend = () => setIsListening(false);
+      recognition.onerror = () => setIsListening(false);
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          setInputText(transcript);
+          handleSend(transcript);
+        }
+      };
+
+      recognition.start();
+    } catch {
+      setIsListening(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-end sm:p-6 bg-black/50 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white dark:bg-slate-900 w-full sm:max-w-md h-[550px] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-gray-100 dark:border-slate-800 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-purple-700 via-indigo-700 to-slate-900 text-white p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-yellow-300" />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-end sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-slate-900 w-full sm:max-w-lg h-[620px] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
+        
+        {/* Top Header */}
+        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 text-white p-4 sm:p-5 flex items-center justify-between shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/20">
+              <Sparkles className="w-5 h-5 text-amber-300 animate-spin" style={{ animationDuration: '6s' }} />
             </div>
             <div>
-              <h3 className="font-extrabold text-sm leading-none">ShopX AI Assistant</h3>
-              <p className="text-[10px] text-purple-200 mt-0.5">Powered by Google Gemini</p>
+              <div className="flex items-center gap-2">
+                <h3 className="font-extrabold text-base leading-none">
+                  {lang === 'bn' ? 'ShopX এআই সহকারী' : 'ShopX AI Copilot'}
+                </h3>
+                <span className="bg-amber-400 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded-full uppercase">
+                  GPT-4o & Gemini
+                </span>
+              </div>
+              <p className="text-[11px] text-emerald-200 mt-1">
+                {lang === 'bn' ? 'স্মার্ট শপিং ও পণ্য পরামর্শক • সার্বক্ষণিক সক্রিয়' : 'Intelligent Shopping & Product Consultant • 24/7 Active'}
+              </p>
             </div>
           </div>
+          
           <button
             onClick={onClose}
-            className="p-1 rounded-full bg-white/20 hover:bg-white/30 transition text-white"
+            className="p-2 rounded-2xl bg-white/10 hover:bg-white/20 transition text-white"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Quick Suggestion Chips */}
+        <div className="bg-slate-50 dark:bg-slate-950 px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+            {lang === 'bn' ? 'দ্রুত প্রশ্ন:' : 'Suggestions:'}
+          </span>
+          {quickPrompts.map((prompt, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleSend(prompt)}
+              className="text-xs bg-white dark:bg-slate-800 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 whitespace-nowrap transition shadow-xs"
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+
         {/* Chat Message Stream */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-slate-950">
-          {messages.map((msg, i) => (
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 bg-slate-50/60 dark:bg-slate-950/80">
+          {messages.map((msg) => (
             <div
-              key={i}
-              className={`flex items-start gap-2 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}
+              key={msg.id}
+              className={`flex items-start gap-2.5 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs ${
+                className={`w-8 h-8 rounded-2xl flex items-center justify-center flex-shrink-0 text-xs shadow-sm ${
                   msg.sender === 'user'
-                    ? 'bg-orange-500 text-white'
-                    : 'bg-purple-600 text-white'
+                    ? 'bg-emerald-700 text-white'
+                    : 'bg-gradient-to-tr from-emerald-800 to-teal-700 text-white'
                 }`}
               >
                 {msg.sender === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
               </div>
 
-              <div
-                className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed ${
-                  msg.sender === 'user'
-                    ? 'bg-orange-500 text-white rounded-br-none'
-                    : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-gray-100 dark:border-slate-700 rounded-bl-none shadow-sm'
-                }`}
-              >
-                {msg.text}
+              <div className="space-y-1 max-w-[82%]">
+                <div
+                  className={`p-3.5 sm:p-4 rounded-3xl text-xs sm:text-[13px] leading-relaxed shadow-sm ${
+                    msg.sender === 'user'
+                      ? 'bg-emerald-700 text-white rounded-tr-none'
+                      : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700 rounded-tl-none'
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap">{msg.text}</p>
+                </div>
+                <span className={`text-[10px] text-slate-400 font-mono block px-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                  {msg.timestamp}
+                </span>
               </div>
             </div>
           ))}
 
           {isLoading && (
-            <div className="flex items-center gap-2 text-purple-600 text-xs">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>AI উত্তর তৈরি করছে...</span>
+            <div className="flex items-center gap-2.5 bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 w-fit shadow-xs">
+              <Loader2 className="w-4 h-4 animate-spin text-emerald-700" />
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                {lang === 'bn' ? 'ShopX AI উত্তর তৈরি করছে...' : 'ShopX AI is thinking & finding best products...'}
+              </span>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Bar */}
+        {/* Input Bar with Voice Support */}
         <form
-          onSubmit={handleSend}
-          className="p-3 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 flex items-center gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSend();
+          }}
+          className="p-3 sm:p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2"
         >
+          {/* Voice Input Button */}
+          <button
+            type="button"
+            onClick={handleVoiceInput}
+            className={`p-3 rounded-2xl transition border ${
+              isListening
+                ? 'bg-red-500 text-white border-red-600 animate-pulse'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+            }`}
+            title={lang === 'bn' ? 'ভয়েসে কথা বলুন' : 'Voice Search'}
+          >
+            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          </button>
+
           <input
             type="text"
-            placeholder="আপনার প্রশ্ন লিখুন (বাংলা / English)..."
+            placeholder={
+              lang === 'bn'
+                ? 'আপনার প্রশ্ন লিখুন (যেমন: বাজেট ফোন, খাঁটি মধু, অফার)...'
+                : 'Ask anything (e.g. Best laptops, pure ghee, discount vouchers)...'
+            }
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="flex-1 text-xs py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-purple-500 dark:text-white"
+            className="flex-1 text-xs sm:text-sm py-3 px-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white transition"
           />
+
           <button
             type="submit"
             disabled={isLoading || !inputText.trim()}
-            className="p-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white transition disabled:opacity-50"
+            className="p-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white transition disabled:opacity-50 shadow-sm"
+            title="Send"
           >
             <Send className="w-4 h-4" />
           </button>
@@ -140,3 +329,4 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onCl
     </div>
   );
 };
+
