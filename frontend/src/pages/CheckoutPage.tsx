@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   ShieldCheck,
   Truck,
@@ -287,8 +287,24 @@ export const CheckoutPage: React.FC = () => {
   const coinsDiscount = useCoins && userCoins >= 10 ? Math.min(25, Math.floor(coinsToUse / 10)) : 0;
   const payableTotal = Math.max(0, baseTotal - coinsDiscount);
 
+  useEffect(() => {
+    if (user) {
+      if (!name) setName(user.name || '');
+      if (!phone) setPhone(user.phone || '');
+      if (!email) setEmail(user.email || '');
+      const defaultAddr = user.addresses?.find((a: any) => a.isDefault)?.street;
+      if (defaultAddr && !address) setAddress(defaultAddr);
+    }
+  }, [user]);
+
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      alert(lang === 'bn' ? 'অর্ডার সম্পন্ন করতে প্রথমে আপনার অ্যাকাউন্টে লগইন বা সাইন আপ করুন।' : 'Please login or sign up to your account to place an order.');
+      navigate('/login?redirect=/checkout');
+      return;
+    }
 
     if (!name.trim() || !phone.trim() || !address.trim()) {
       alert(lang === 'bn' ? 'অনুগ্রহ করে নাম, ফোন নম্বর এবং সম্পূর্ণ ঠিকানা পূরণ করুন।' : 'Please fill in your full name, phone number, and delivery address.');
@@ -366,6 +382,39 @@ export const CheckoutPage: React.FC = () => {
           {lang === 'bn' ? '৬৪ জেলায় ক্যাশ অন ডেলিভারি ও ভেরিফাইড মোবাইল ব্যাংকিং সুবিধা' : 'Cash on Delivery across all 64 districts & verified Mobile Banking'}
         </p>
       </div>
+
+      {/* Mandatory Auth Alert Banner if guest */}
+      {!user && (
+        <div className="p-4 sm:p-5 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-emerald-500/10 border-2 border-amber-400 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md mb-6 animate-in fade-in">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-lg flex-shrink-0 shadow-sm">
+              🔒
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-black text-slate-900">
+                {lang === 'bn' ? 'অর্ডার সম্পন্ন করতে লগইন বা সাইন আপ আবশ্যক' : 'Account Login or Sign Up is Required to Order'}
+              </h3>
+              <p className="text-xs text-slate-600 mt-0.5">
+                {lang === 'bn' ? 'আপনার ডেলিভারি হিস্ট্রি, ২০ কয়েন ক্যাশব্যাক ও লাইভ জিপিএস ট্র্যাকিং সংরক্ষণ করতে লগইন করুন।' : 'Login to secure your order, earn 20 coins cashback, and access live GPS rider tracking.'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Link
+              to="/login?redirect=/checkout"
+              className="flex-1 sm:flex-none text-center px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs transition shadow-sm"
+            >
+              {lang === 'bn' ? '🔑 লগইন করুন' : '🔑 Login'}
+            </Link>
+            <Link
+              to="/register?redirect=/checkout"
+              className="flex-1 sm:flex-none text-center px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition shadow-sm"
+            >
+              {lang === 'bn' ? '✨ সাইন আপ' : '✨ Sign Up'}
+            </Link>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Shipping & Location Details (7 cols) */}
@@ -821,14 +870,23 @@ export const CheckoutPage: React.FC = () => {
             </div>
 
             {/* Submit Order CTA */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-emerald-700/20 transition flex items-center justify-center gap-2 text-sm disabled:opacity-50"
-            >
-              <ShieldCheck className="w-5 h-5 text-emerald-300" />
-              <span>{isSubmitting ? (lang === 'bn' ? 'অর্ডার প্রসেস হচ্ছে...' : 'Processing Order...') : (lang === 'bn' ? `অর্ডার নিশ্চিত করুন (${formatPrice(payableTotal)})` : `Place Order Now (${formatPrice(payableTotal)})`)}</span>
-            </button>
+            {user ? (
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-emerald-700/20 transition flex items-center justify-center gap-2 text-sm disabled:opacity-50 hover:scale-[1.01]"
+              >
+                <ShieldCheck className="w-5 h-5 text-emerald-300" />
+                <span>{isSubmitting ? (lang === 'bn' ? 'অর্ডার প্রসেস হচ্ছে...' : 'Processing Order...') : (lang === 'bn' ? `অর্ডার নিশ্চিত করুন (${formatPrice(payableTotal)})` : `Place Order Now (${formatPrice(payableTotal)})`)}</span>
+              </button>
+            ) : (
+              <Link
+                to="/login?redirect=/checkout"
+                className="w-full bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-800 hover:to-teal-800 text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-emerald-700/20 transition flex items-center justify-center gap-2 text-sm hover:scale-[1.01]"
+              >
+                <span>🔒 {lang === 'bn' ? 'অর্ডার করতে প্রথমে লগইন করুন' : 'Login to Complete Order'}</span>
+              </Link>
+            )}
 
             {/* Trust badge */}
             <div className="text-center pt-2">

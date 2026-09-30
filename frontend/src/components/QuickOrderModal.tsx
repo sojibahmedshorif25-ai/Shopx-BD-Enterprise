@@ -4,6 +4,8 @@ import confetti from 'canvas-confetti';
 import { Product } from '../types';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useCurrencyStore } from '../store/useCurrencyStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 
 interface QuickOrderModalProps {
@@ -16,6 +18,7 @@ export const QuickOrderModal: React.FC<QuickOrderModalProps> = ({ product, onClo
 
   const { lang } = useLanguageStore();
   const { formatPrice } = useCurrencyStore();
+  const { user } = useAuthStore();
 
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(
@@ -23,9 +26,9 @@ export const QuickOrderModal: React.FC<QuickOrderModalProps> = ({ product, onClo
   );
   const [deliveryZone, setDeliveryZone] = useState<'inside_dhaka' | 'outside_dhaka'>('inside_dhaka');
 
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
+  const [name, setName] = useState(user?.name || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [address, setAddress] = useState(user?.addresses?.find((a: any) => a.isDefault)?.street || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<any>(null);
 
@@ -36,6 +39,11 @@ export const QuickOrderModal: React.FC<QuickOrderModalProps> = ({ product, onClo
 
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      alert(lang === 'bn' ? 'অর্ডার করতে প্রথমে আপনার অ্যাকাউন্টে লগইন বা সাইন আপ করুন।' : 'Please login or sign up to your account to place an order.');
+      return;
+    }
 
     if (!name.trim() || !phone.trim() || !address.trim()) {
       alert(lang === 'bn' ? 'অনুগ্রহ করে আপনার নাম, মোবাইল নাম্বার এবং ঠিকানা সঠিকভাবে দিন।' : 'Please fill in your name, phone number, and address correctly.');
@@ -170,6 +178,36 @@ export const QuickOrderModal: React.FC<QuickOrderModalProps> = ({ product, onClo
                   </div>
                 </div>
               </div>
+
+              {/* Mandatory Auth Banner if not logged in */}
+              {!user && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-3 text-xs">
+                  <div>
+                    <p className="font-bold text-amber-900">
+                      🔒 {lang === 'bn' ? 'অর্ডার করতে প্রথমে লগইন বা সাইন আপ আবশ্যক' : 'Login / Sign Up is mandatory to order'}
+                    </p>
+                    <p className="text-[10px] text-amber-700 mt-0.5">
+                      {lang === 'bn' ? 'অ্যাকাউন্টে কয়েন ও অর্ডার ট্র্যাকিং হিস্ট্রি সেভ থাকবে' : 'Save loyalty coins & live tracking history'}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <Link
+                      to="/login"
+                      onClick={onClose}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm"
+                    >
+                      {lang === 'bn' ? 'লগইন' : 'Login'}
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={onClose}
+                      className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition shadow-sm"
+                    >
+                      {lang === 'bn' ? 'সাইন আপ' : 'Sign Up'}
+                    </Link>
+                  </div>
+                </div>
+              )}
 
               {/* Delivery Zone Selector */}
               <div>

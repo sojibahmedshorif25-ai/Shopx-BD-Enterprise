@@ -8,6 +8,14 @@ import { sendEmail, generateOrderEmailTemplate } from '../config/mail.js';
 
 export const createOrder = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    if (!req.userId) {
+      res.status(401).json({
+        success: false,
+        message: 'অর্ডার সম্পন্ন করতে প্রথমে আপনার অ্যাকাউন্টে লগইন বা সাইন আপ করুন (Please login or create an account to place an order).',
+      });
+      return;
+    }
+
     const {
       customerInfo,
       items,
@@ -172,11 +180,15 @@ export const trackOrder = async (req: Request, res: Response): Promise<void> => 
 
     const query: any = {};
     if (orderId) {
-      const cleanId = String(orderId).replace(/^#/, '').trim();
-      query.orderId = { $regex: new RegExp(`^#?${cleanId}$`, 'i') };
+      // Limit length and take first word/line
+      const rawId = String(orderId).split('\n')[0].substring(0, 50).trim();
+      const cleanId = rawId.replace(/^#/, '').trim();
+      const escaped = cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.orderId = { $regex: new RegExp(`^#?${escaped}$`, 'i') };
     } else if (phone) {
-      const cleanPhone = String(phone).replace(/[\s-+]/g, '').trim();
-      query['customerInfo.phone'] = { $regex: cleanPhone, $options: 'i' };
+      const cleanPhone = String(phone).replace(/[\s-+]/g, '').substring(0, 20).trim();
+      const escaped = cleanPhone.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query['customerInfo.phone'] = { $regex: escaped, $options: 'i' };
     } else {
       res.status(400).json({ success: false, message: 'Please provide Order ID or Phone number' });
       return;
@@ -186,9 +198,9 @@ export const trackOrder = async (req: Request, res: Response): Promise<void> => 
       .populate('items.product', 'title banglaTitle thumbnail images price')
       .populate('rider', 'name phone vehicleType currentLocation rating');
 
-    // If order not found in db (e.g. freshly tested orderId or test simulation), check recent or create a friendly simulated tracking response
+    // If order not found in db, check recent or return 404 cleanly
     if (!order) {
-      const cleanId = orderId ? String(orderId).replace(/^#/, '').trim() : 'SX-DEMO';
+      const cleanId = orderId ? String(orderId).split('\n')[0].substring(0, 30).replace(/^#/, '').trim() : 'SX-DEMO';
       order = await Order.findOne().sort({ createdAt: -1 })
         .populate('items.product', 'title banglaTitle thumbnail images price')
         .populate('rider', 'name phone vehicleType currentLocation rating');

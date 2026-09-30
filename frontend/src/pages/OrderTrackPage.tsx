@@ -42,7 +42,8 @@ export const OrderTrackPage: React.FC = () => {
   const [copiedLink, setCopiedLink] = useState(false);
 
   const fetchTracking = async (searchVal: string) => {
-    const cleanSearch = searchVal.replace(/^#/, '').trim();
+    if (!searchVal) return;
+    const cleanSearch = searchVal.split('\n')[0].substring(0, 50).replace(/^#/, '').trim();
     if (!cleanSearch) return;
     setIsLoading(true);
     setError('');
