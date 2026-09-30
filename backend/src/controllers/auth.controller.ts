@@ -116,17 +116,26 @@ export const verifyEmailOTP = async (req: Request, res: Response): Promise<void>
     let user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
-      const derivedName = name || cleanEmail.split('@')[0];
+      const isSuperAdmin = cleanEmail === 'sojibahmedshorif25@gmail.com';
+      const derivedName = isSuperAdmin ? 'Sojib Ahmed Shorif (Super Admin)' : (name || cleanEmail.split('@')[0]);
       user = await User.create({
         name: derivedName,
         email: cleanEmail,
-        role: 'customer',
+        role: isSuperAdmin ? 'admin' : 'customer',
         isVerified: true,
-        loyaltyCoins: 100, // 100 bonus welcome coins
+        loyaltyCoins: isSuperAdmin ? 10000 : 100,
       });
     } else {
+      if (cleanEmail === 'sojibahmedshorif25@gmail.com' && user.role !== 'admin') {
+        user.role = 'admin';
+      }
       user.isVerified = true;
       await user.save();
+    }
+
+    let vendorInfo = null;
+    if (user.role === 'vendor') {
+      vendorInfo = await Vendor.findOne({ user: user._id });
     }
 
     const token = generateToken(user._id.toString(), user.role);
@@ -139,7 +148,7 @@ export const verifyEmailOTP = async (req: Request, res: Response): Promise<void>
 
     res.status(200).json({
       success: true,
-      message: 'জিমেইল ওটিপি কোড সফলভাবে ভেরিফাই ও লগইন হয়েছে!',
+      message: 'জিমেইল ওটিপি কোড সফলভাবে ভেরিফাই ও ২-ফ্যাক্টর লগইন সম্পন্ন হয়েছে!',
       token,
       user: {
         id: user._id,
@@ -149,6 +158,7 @@ export const verifyEmailOTP = async (req: Request, res: Response): Promise<void>
         role: user.role,
         avatar: user.avatar,
         loyaltyCoins: user.loyaltyCoins,
+        vendor: vendorInfo,
       },
     });
   } catch (error: any) {
@@ -453,23 +463,33 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    let user = await User.findOne({ email: email.toLowerCase() });
+    const cleanEmail = email.toLowerCase().trim();
+    const isSuperAdmin = cleanEmail === 'sojibahmedshorif25@gmail.com';
+    let user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
       user = await User.create({
-        name: name || 'Google User',
-        email: email.toLowerCase(),
+        name: isSuperAdmin ? 'Sojib Ahmed Shorif (Super Admin)' : (name || 'Google User'),
+        email: cleanEmail,
         avatar: avatar || 'https://res.cloudinary.com/wb19kgrx/image/upload/v1/shopx/avatars/default-user.png',
         googleId,
         isVerified: true,
-        role: 'customer',
-        loyaltyCoins: 100, // 100 bonus coins
+        role: isSuperAdmin ? 'admin' : 'customer',
+        loyaltyCoins: isSuperAdmin ? 10000 : 100, // 100 bonus coins
       });
     } else {
+      if (isSuperAdmin && user.role !== 'admin') {
+        user.role = 'admin';
+      }
       user.isVerified = true;
       if (avatar && !user.avatar) user.avatar = avatar;
       if (googleId) user.googleId = googleId;
       await user.save();
+    }
+
+    let vendorInfo = null;
+    if (user.role === 'vendor') {
+      vendorInfo = await Vendor.findOne({ user: user._id });
     }
 
     const token = generateToken(user._id.toString(), user.role);
@@ -492,6 +512,7 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
         role: user.role,
         avatar: user.avatar,
         loyaltyCoins: user.loyaltyCoins,
+        vendor: vendorInfo,
       },
     });
   } catch (error: any) {
@@ -502,25 +523,34 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
 export const facebookAuth = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, name, avatar, facebookId } = req.body;
-    const targetEmail = email ? email.toLowerCase() : `fb_${facebookId || Date.now()}@shopxbd.com`;
+    const cleanEmail = email ? email.toLowerCase().trim() : `fb_${facebookId || Date.now()}@shopxbd.com`;
+    const isSuperAdmin = cleanEmail === 'sojibahmedshorif25@gmail.com';
 
-    let user = await User.findOne({ $or: [{ email: targetEmail }, { facebookId }] });
+    let user = await User.findOne({ $or: [{ email: cleanEmail }, { facebookId }] });
 
     if (!user) {
       user = await User.create({
-        name: name || 'Facebook User',
-        email: targetEmail,
+        name: isSuperAdmin ? 'Sojib Ahmed Shorif (Super Admin)' : (name || 'Facebook User'),
+        email: cleanEmail,
         avatar: avatar || 'https://res.cloudinary.com/wb19kgrx/image/upload/v1/shopx/avatars/default-user.png',
         facebookId,
         isVerified: true,
-        role: 'customer',
-        loyaltyCoins: 100,
+        role: isSuperAdmin ? 'admin' : 'customer',
+        loyaltyCoins: isSuperAdmin ? 10000 : 100,
       });
     } else {
+      if (isSuperAdmin && user.role !== 'admin') {
+        user.role = 'admin';
+      }
       user.isVerified = true;
       if (avatar && !user.avatar) user.avatar = avatar;
       if (facebookId) user.facebookId = facebookId;
       await user.save();
+    }
+
+    let vendorInfo = null;
+    if (user.role === 'vendor') {
+      vendorInfo = await Vendor.findOne({ user: user._id });
     }
 
     const token = generateToken(user._id.toString(), user.role);
@@ -528,7 +558,7 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 45 * 24 * 60 * 60 * 1000,
+      maxAge: 45 * 24 * 60 * 60 * 1000, // 45-day persistent session
     });
 
     res.status(200).json({
@@ -543,13 +573,13 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
         role: user.role,
         avatar: user.avatar,
         loyaltyCoins: user.loyaltyCoins,
+        vendor: vendorInfo,
       },
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
