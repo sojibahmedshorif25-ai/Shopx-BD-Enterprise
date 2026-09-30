@@ -9,6 +9,9 @@ import { VendorsAdminPage } from './pages/VendorsAdminPage';
 import { RidersAdminPage } from './pages/RidersAdminPage';
 import { SaaSSubscriptionsAdminPage } from './pages/SaaSSubscriptionsAdminPage';
 import { UsersAdminPage } from './pages/UsersAdminPage';
+import { CategoriesAdminPage } from './pages/CategoriesAdminPage';
+import { CouponsAdminPage } from './pages/CouponsAdminPage';
+import { SettingsAdminPage } from './pages/SettingsAdminPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { useAdminAuthStore } from './store/useAdminAuthStore';
 
@@ -58,6 +61,22 @@ export const App: React.FC = () => {
           }
         />
         <Route
+          path="/categories"
+          element={
+            <ProtectedLayout>
+              <CategoriesAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/coupons"
+          element={
+            <ProtectedLayout>
+              <CouponsAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
           path="/orders"
           element={
             <ProtectedLayout>
@@ -97,7 +116,16 @@ export const App: React.FC = () => {
             </ProtectedLayout>
           }
         />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedLayout>
+              <SettingsAdminPage />
+            </ProtectedLayout>
+          }
+        />
       </Routes>
     </Router>
   );
 };
+

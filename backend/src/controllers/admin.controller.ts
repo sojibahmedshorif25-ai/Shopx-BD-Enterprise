@@ -5,6 +5,7 @@ import { Product } from '../models/Product.js';
 import { Order } from '../models/Order.js';
 import { Rider } from '../models/Rider.js';
 import { Coupon } from '../models/Coupon.js';
+import { Category } from '../models/Category.js';
 
 export const getAdminStats = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -167,6 +168,130 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 
     await User.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: 'User removed successfully.' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// CATEGORY CONTROLLERS FOR ADMIN
+// ==========================================
+export const getAllCategoriesAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const categories = await Category.find().sort({ order: 1, createdAt: -1 });
+    res.status(200).json({ success: true, categories });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const createCategoryAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name, banglaName, slug, icon, image, isFeatured, order } = req.body;
+    const cleanSlug = slug || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+    const newCat = await Category.create({
+      name,
+      banglaName,
+      slug: cleanSlug,
+      icon: icon || 'ShoppingBag',
+      image,
+      isFeatured: isFeatured !== undefined ? Boolean(isFeatured) : true,
+      order: Number(order) || 0,
+    });
+
+    res.status(201).json({ success: true, message: 'Category created successfully!', category: newCat });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateCategoryAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findByIdAndUpdate(id, req.body, { new: true });
+    if (!category) {
+      res.status(404).json({ success: false, message: 'Category not found' });
+      return;
+    }
+    res.status(200).json({ success: true, message: 'Category updated successfully!', category });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteCategoryAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    await Category.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: 'Category removed successfully.' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// COUPON & VOUCHER CONTROLLERS FOR ADMIN
+// ==========================================
+export const getAllCouponsAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, coupons });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const createCouponAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { code, discountType, discountAmount, minOrderAmount, maxDiscount, validUntil } = req.body;
+    const newCoupon = await Coupon.create({
+      code: code.toUpperCase().trim(),
+      discountType: discountType || 'fixed',
+      discountAmount: Number(discountAmount),
+      minOrderAmount: Number(minOrderAmount) || 0,
+      maxDiscount: maxDiscount ? Number(maxDiscount) : undefined,
+      validUntil: validUntil ? new Date(validUntil) : new Date(Date.now() + 30 * 86400000),
+      isActive: true,
+    });
+    res.status(201).json({ success: true, message: 'Coupon created successfully!', coupon: newCoupon });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteCouponAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    await Coupon.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: 'Coupon deleted successfully.' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// SYSTEM & SETTINGS CONTROLLERS
+// ==========================================
+export const getSystemSettingsAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.status(200).json({
+      success: true,
+      settings: {
+        platformName: 'ShopX BD Enterprise',
+        headOffice: 'Rowmari, Kurigram, Rangpur, Bangladesh',
+        banglaHeadOffice: 'রৌমারী, কুড়িগ্রাম, রংপুর বিভাগ, বাংলাদেশ',
+        helplineEmail: 'sojibahmedshorif25@gmail.com',
+        helplinePhone: '+880 1942-791004',
+        superAdminEmail: 'sojibahmedshorif25@gmail.com',
+        defaultCommissionRate: 5,
+        dailyCheckInMaxReward: 100,
+        maxCoinDiscountBDT: 25,
+        smsGatewayStatus: 'Operational',
+        emailSMTPStatus: 'Connected (Gmail Secure)',
+        databaseStatus: 'MongoDB Atlas Connected',
+      },
+    });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

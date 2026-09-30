@@ -7,11 +7,15 @@ import {
   Store,
   Truck,
   Users,
+  Layers,
+  Ticket,
+  Settings,
   LogOut,
   ExternalLink,
   X,
   Crown,
   Globe,
+  Building2,
 } from 'lucide-react';
 import { useAdminAuthStore } from '../store/useAdminAuthStore';
 import { useSidebarStore } from '../store/useSidebarStore';
@@ -22,15 +26,19 @@ export const Sidebar: React.FC = () => {
   const { isOpen, closeSidebar } = useSidebarStore();
   const { lang, toggleLang, t } = useAdminLanguageStore();
   const isAdmin = user?.role === 'admin';
+  const isBn = lang === 'bn';
 
   const navItems = [
-    { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
-    { to: '/products', label: t('nav.products'), icon: Package },
-    { to: '/orders', label: t('nav.orders'), icon: ShoppingCart },
-    ...(isAdmin ? [{ to: '/users', label: lang === 'en' ? 'Users & Roles' : 'ইউজার ও রোলস', icon: Users }] : []),
-    ...(isAdmin ? [{ to: '/vendors', label: t('nav.vendors'), icon: Store }] : []),
-    ...(isAdmin ? [{ to: '/subscriptions', label: t('nav.subscriptions'), icon: Crown }] : []),
-    ...(isAdmin ? [{ to: '/riders', label: t('nav.riders'), icon: Truck }] : []),
+    { to: '/', label: isBn ? 'ড্যাশবোর্ড ওভারভিউ' : 'Dashboard Hub', icon: LayoutDashboard },
+    { to: '/products', label: isBn ? 'পণ্য ক্যাটালগ' : 'Products Catalog', icon: Package },
+    { to: '/orders', label: isBn ? 'লাইভ অর্ডারসমূহ' : 'Live Orders Fleet', icon: ShoppingCart },
+    ...(isAdmin ? [{ to: '/users', label: isBn ? 'ইউজার ও রোলস' : 'Users & Roles (RBAC)', icon: Users }] : []),
+    ...(isAdmin ? [{ to: '/categories', label: isBn ? 'ক্যাটাগরি ম্যানেজমেন্ট' : 'Categories Hub', icon: Layers }] : []),
+    ...(isAdmin ? [{ to: '/coupons', label: isBn ? 'ভাউচার ও কুপন' : 'Promo Vouchers', icon: Ticket }] : []),
+    ...(isAdmin ? [{ to: '/vendors', label: isBn ? 'সেলার সেন্টার' : 'Vendors Hub', icon: Store }] : []),
+    ...(isAdmin ? [{ to: '/subscriptions', label: isBn ? 'SaaS সাবস্ক্রিপশন' : 'SaaS Plans', icon: Crown }] : []),
+    ...(isAdmin ? [{ to: '/riders', label: isBn ? 'DEX ডেলিভারি রাইডার' : 'DEX Riders Fleet', icon: Truck }] : []),
+    ...(isAdmin ? [{ to: '/settings', label: isBn ? 'সিস্টেম ও হেড অফিস' : 'System Settings', icon: Settings }] : []),
   ];
 
   return (
@@ -48,19 +56,19 @@ export const Sidebar: React.FC = () => {
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        <div>
+        <div className="overflow-y-auto pr-1">
           {/* Brand Header & Mobile Close */}
-          <div className="flex items-center justify-between px-2 py-3 mb-5 border-b border-slate-800/80">
+          <div className="flex items-center justify-between px-2 py-3 mb-4 border-b border-slate-800/80">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-orange-500/20">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-amber-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-emerald-700/20">
                 SX
               </div>
               <div>
-                <h1 className="font-black text-lg text-white leading-tight">
-                  Shop<span className="text-orange-500">X</span> BD
+                <h1 className="font-black text-base text-white leading-tight">
+                  Shop<span className="text-emerald-400">X</span> BD
                 </h1>
-                <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-400 border border-indigo-800/40">
-                  {isAdmin ? t('super_admin') : t('vendor_portal')}
+                <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/40">
+                  {isAdmin ? (isBn ? 'সুপার এডমিন' : 'Super Admin') : (isBn ? 'সেলার পোর্টাল' : 'Vendor Portal')}
                 </span>
               </div>
             </div>
@@ -74,7 +82,7 @@ export const Sidebar: React.FC = () => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="space-y-1.5">
+          <nav className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -86,8 +94,8 @@ export const Sidebar: React.FC = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition ${
                       isActive
-                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 font-black shadow-lg shadow-orange-500/20'
-                        : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'
+                        ? 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 text-white font-black shadow-lg shadow-emerald-700/30'
+                        : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'
                     }`
                   }
                 >
@@ -100,17 +108,17 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Footer Profile & Links */}
-        <div className="pt-4 border-t border-slate-800/80 space-y-3">
+        <div className="pt-3 border-t border-slate-800 space-y-2.5">
           {/* Quick Language Toggle in Sidebar */}
           <button
             onClick={toggleLang}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-slate-300 text-xs font-semibold transition border border-slate-800"
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 text-xs font-semibold transition border border-slate-700/60"
           >
             <div className="flex items-center gap-2">
-              <Globe className="w-3.5 h-3.5 text-orange-400" />
+              <Globe className="w-3.5 h-3.5 text-emerald-400" />
               <span>Language / ভাষা</span>
             </div>
-            <span className="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded bg-orange-500/20 text-orange-400">
+            <span className="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               {lang === 'en' ? 'English' : 'বাংলা'}
             </span>
           </button>
@@ -120,15 +128,21 @@ export const Sidebar: React.FC = () => {
             href="http://localhost:5173"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-[11px] font-bold text-slate-300 transition"
+            className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-[11px] font-bold text-slate-300 transition"
           >
-            <span>{t('customer_store')}</span>
-            <ExternalLink className="w-3.5 h-3.5 text-orange-400" />
+            <span>🛍️ {isBn ? 'লাইভ কাস্টমার স্টোর' : 'Live Storefront ↗'}</span>
+            <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
           </a>
 
-          <div className="flex items-center justify-between px-1">
+          {/* Head Office Tiny Badge */}
+          <div className="px-2 py-1 text-[10px] text-slate-500 flex items-center gap-1.5 truncate">
+            <Building2 className="w-3 h-3 text-emerald-500 flex-shrink-0" />
+            <span className="truncate">Rowmari, Kurigram, Rangpur</span>
+          </div>
+
+          <div className="flex items-center justify-between px-1 pt-1">
             <div className="flex items-center gap-2 overflow-hidden">
-              <div className="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-xs border border-orange-500/30 flex-shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-800/60 flex items-center justify-center font-bold text-xs flex-shrink-0">
                 {user?.name?.charAt(0) || 'A'}
               </div>
               <div className="overflow-hidden">
@@ -140,7 +154,7 @@ export const Sidebar: React.FC = () => {
             <button
               onClick={logout}
               className="p-2 rounded-xl hover:bg-red-950/40 text-slate-400 hover:text-rose-400 transition flex-shrink-0"
-              title={t('logout')}
+              title="Logout"
             >
               <LogOut className="w-4 h-4" />
             </button>

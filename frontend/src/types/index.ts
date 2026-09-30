@@ -81,6 +81,9 @@ export interface User {
   upazila?: string;
   bio?: string;
   loyaltyCoins: number;
+  isCollectedToday?: boolean;
+  checkInStreak?: number;
+  lastCheckInDate?: string | Date;
   addresses?: Array<{
     _id?: string;
     title: string;
@@ -95,3 +98,4 @@ export interface User {
   }>;
   vendor?: any;
 }
+
