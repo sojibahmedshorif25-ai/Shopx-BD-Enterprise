@@ -722,14 +722,9 @@ export const AuthPage: React.FC = () => {
                   ) : (
                     <form onSubmit={handleVerifyGmailOTP} className="space-y-4 text-xs">
                       <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 text-xs space-y-1">
-                        <p>
-                          <strong>{gmail}</strong> {isBn ? 'ইনবক্সে ৬-সংখ্যার ওটিপি পাঠানো হয়েছে।' : 'received the 6-digit verification code.'}
+                        <p className="font-medium">
+                          <strong>{gmail}</strong> {isBn ? 'ইনবক্সে ৬-সংখ্যার রিয়েল সিকিউরিটি ওটিপি (OTP) কোড পাঠানো হয়েছে। আপনার ইমেইলের ইনবক্স বা স্প্যাম ফোল্ডার চেক করে কোডটি লিখুন।' : 'has received a real 6-digit verification code. Please check your inbox or spam folder.'}
                         </p>
-                        {demoOtpHint && (
-                          <p className="mt-1 font-mono font-bold text-emerald-700">
-                            {isBn ? 'ভেরিফিকেশন কোড' : 'Verification Code'}: {demoOtpHint}
-                          </p>
-                        )}
                       </div>
 
                       <div>
@@ -836,14 +831,9 @@ export const AuthPage: React.FC = () => {
                   ) : (
                     <form onSubmit={handleVerifyPhoneOTP} className="space-y-4 text-xs">
                       <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 text-xs space-y-1">
-                        <p>
-                          <strong>{mobilePhone}</strong> {isBn ? 'নম্বরে ৬-সংখ্যার SMS ওটিপি পাঠানো হয়েছে।' : 'received the 6-digit SMS verification code.'}
+                        <p className="font-medium">
+                          <strong>{mobilePhone}</strong> {isBn ? 'নম্বরে ৬-সংখ্যার রিয়েল SMS ওটিপি কোড পাঠানো হয়েছে। আপনার ইনবক্স চেক করে কোডটি লিখুন।' : 'has received a 6-digit SMS verification code. Please check your messages.'}
                         </p>
-                        {phoneDemoHint && (
-                          <p className="mt-1 font-mono font-bold text-emerald-700">
-                            {isBn ? 'SMS ওটিপি কোড' : 'SMS Code'}: {phoneDemoHint}
-                          </p>
-                        )}
                       </div>
 
                       <div>

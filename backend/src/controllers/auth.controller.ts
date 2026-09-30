@@ -134,12 +134,12 @@ export const verifyEmailOTP = async (req: Request, res: Response): Promise<void>
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 45 * 24 * 60 * 60 * 1000, // 45-day persistent session
     });
 
     res.status(200).json({
       success: true,
-      message: 'জিমেইল ওটিপি সফলভাবে ভেরিফাই হয়েছে!',
+      message: 'জিমেইল ওটিপি কোড সফলভাবে ভেরিফাই ও লগইন হয়েছে!',
       token,
       user: {
         id: user._id,
@@ -369,7 +369,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 45 * 24 * 60 * 60 * 1000, // 45-day persistent session
     });
 
     res.status(201).json({
@@ -422,7 +422,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 45 * 24 * 60 * 60 * 1000, // 45-day persistent session
     });
 
     res.status(200).json({
