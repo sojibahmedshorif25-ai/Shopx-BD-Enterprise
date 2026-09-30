@@ -4,11 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useCurrencyStore } from '../store/useCurrencyStore';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const CartDrawer: React.FC = () => {
   const navigate = useNavigate();
   const { lang, t } = useLanguageStore();
   const { formatPrice } = useCurrencyStore();
+  const { user } = useAuthStore();
   const {
     items,
     isDrawerOpen,
@@ -248,11 +250,19 @@ export const CartDrawer: React.FC = () => {
               <button
                 onClick={() => {
                   setDrawerOpen(false);
-                  navigate('/checkout');
+                  if (!user) {
+                    navigate('/login?redirect=/checkout');
+                  } else {
+                    navigate('/checkout');
+                  }
                 }}
                 className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-emerald-700/20 transition flex items-center justify-center gap-2 text-xs sm:text-sm"
               >
-                <span>{lang === 'bn' ? 'অর্ডার সম্পন্ন করুন →' : 'Proceed to Checkout →'}</span>
+                <span>
+                  {user
+                    ? (lang === 'bn' ? 'অর্ডার সম্পন্ন করুন →' : 'Proceed to Checkout →')
+                    : (lang === 'bn' ? '🔒 লগইন করে অর্ডার করুন →' : '🔒 Login to Order →')}
+                </span>
               </button>
             </div>
           )}

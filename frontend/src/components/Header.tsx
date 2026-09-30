@@ -804,25 +804,29 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Quick Popular Locations */}
             <div>
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">
-                {lang === 'bn' ? 'জনপ্রিয় দ্রুত ডেলিভারি জোন:' : 'Popular Fast Delivery Zones:'}
+                {lang === 'bn' ? 'জনপ্রিয় ডেলিভারি জোন ও রেট:' : 'Popular Delivery Zones & Rates:'}
               </span>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
-                  { name: 'Rowmari, Kurigram', tag: 'Head Hub • 24h', fee: '৳60' },
-                  { name: 'Dhaka, Dhanmondi', tag: 'Express • 24h', fee: '৳60' },
-                  { name: 'Dhaka, Gulshan', tag: 'Express • 24h', fee: '৳60' },
-                  { name: 'Dhaka, Uttara', tag: 'Express • 24h', fee: '৳60' },
-                  { name: 'Chattogram City', tag: 'Express • 48h', fee: '৳120' },
-                  { name: 'Sylhet, Zindabazar', tag: 'Express • 48h', fee: '৳120' },
-                  { name: 'Rajshahi Sadar', tag: 'Express • 48h', fee: '৳120' },
-                  { name: 'Khulna City', tag: 'Express • 48h', fee: '৳120' },
-                  { name: 'Rangpur City', tag: 'Express • 24h', fee: '৳60' },
+                  { name: 'Dhaka, Dhanmondi', tag: 'Inside Dhaka • 24h', fee: '৳60', isDhaka: true },
+                  { name: 'Dhaka, Gulshan', tag: 'Inside Dhaka • 24h', fee: '৳60', isDhaka: true },
+                  { name: 'Dhaka, Uttara', tag: 'Inside Dhaka • 24h', fee: '৳60', isDhaka: true },
+                  { name: 'Dhaka, Mirpur', tag: 'Inside Dhaka • 24h', fee: '৳60', isDhaka: true },
+                  { name: 'Chattogram City', tag: 'Outside Dhaka • 48h', fee: '৳120', isDhaka: false },
+                  { name: 'Sylhet, Zindabazar', tag: 'Outside Dhaka • 48h', fee: '৳120', isDhaka: false },
+                  { name: 'Rajshahi Sadar', tag: 'Outside Dhaka • 48h', fee: '৳120', isDhaka: false },
+                  { name: 'Khulna City', tag: 'Outside Dhaka • 48h', fee: '৳120', isDhaka: false },
+                  { name: 'Rowmari, Kurigram', tag: 'Outside Dhaka • 48h', fee: '৳120', isDhaka: false },
+                  { name: 'Rangpur City', tag: 'Outside Dhaka • 48h', fee: '৳120', isDhaka: false },
+                  { name: 'Barishal City', tag: 'Outside Dhaka • 48h', fee: '৳120', isDhaka: false },
+                  { name: 'Mymensingh City', tag: 'Outside Dhaka • 48h', fee: '৳120', isDhaka: false },
                 ].map((loc) => (
                   <button
                     key={loc.name}
                     onClick={() => {
                       setDeliveryLocation(loc.name);
                       localStorage.setItem('shopx_delivery_location', loc.name);
+                      useCartStore.getState().setDeliveryZone(loc.isDhaka ? 'inside_dhaka' : 'outside_dhaka');
                       setShowLocationModal(false);
                     }}
                     className={`p-2.5 rounded-2xl text-left border transition flex flex-col justify-between ${
@@ -849,7 +853,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <span>{lang === 'bn' ? 'ডেলিভারি চার্জ রেট:' : 'Delivery Charge Rate:'}</span>
                 </span>
                 <span className="text-emerald-700 font-mono font-black">
-                  {deliveryLocation.toLowerCase().includes('dhaka') || deliveryLocation.toLowerCase().includes('rowmari') || deliveryLocation.toLowerCase().includes('rangpur') || deliveryLocation.toLowerCase().includes('kurigram') ? '৳৬০ (24h Express)' : '৳১২০ (48-72h Express)'}
+                  {deliveryLocation.toLowerCase().includes('dhaka') ? (lang === 'bn' ? '৳৬০ (ঢাকার ভেতরে ২৪ ঘণ্টা)' : '৳60 (Inside Dhaka • 24h Express)') : (lang === 'bn' ? '৳১২০ (ঢাকার বাইরে ৪৮-৭২ ঘণ্টা)' : '৳120 (Outside Dhaka • 48-72h Express)')}
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 leading-relaxed">
