@@ -72,17 +72,24 @@ export const HeroSlider: React.FC = () => {
     return () => clearInterval(timer);
   }, [heroSlides.length]);
 
-  // Deals of the day countdown timer state
-  const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 36, seconds: 24 });
+  // Real Persistent Deals of the Day countdown timer (synced to real time clock)
+  const calculateRealTimeLeft = () => {
+    const now = new Date();
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+    const diff = Math.max(0, endOfDay.getTime() - now.getTime());
+    return {
+      hours: Math.floor(diff / (1000 * 60 * 60)),
+      minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+      seconds: Math.floor((diff % (1000 * 60)) / 1000),
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateRealTimeLeft());
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return { hours: 24, minutes: 0, seconds: 0 };
-      });
+      setTimeLeft(calculateRealTimeLeft());
     }, 1000);
     return () => clearInterval(timer);
   }, []);

@@ -105,19 +105,24 @@ export const CoinsRewardHub: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={handleClaimToday}
-              disabled={claimed}
+              disabled={claimed || isLoading}
               className={`px-5 py-2.5 rounded-2xl font-bold text-xs transition flex items-center gap-2 shadow-sm ${
                 claimed
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-300'
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 cursor-not-allowed font-extrabold'
                   : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow'
               }`}
             >
-              <Sparkles className="w-4 h-4" />
-              <span>
-                {claimed
-                  ? (lang === 'bn' ? 'আজকের কয়েন সংগৃহীত ✓' : 'Coins Collected Today ✓')
-                  : (lang === 'bn' ? 'আজকের কয়েন ক্লেইম করুন' : 'Claim Daily Coins')}
-              </span>
+              {claimed ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                  <span>{lang === 'bn' ? 'আজকের কয়েন সংগৃহীত ✓ (দিনে ১ বার)' : 'Coins Collected Today ✓'}</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  <span>{lang === 'bn' ? 'আজকের কয়েন ক্লেইম করুন' : 'Claim Daily Coins'}</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -132,7 +137,7 @@ export const CoinsRewardHub: React.FC = () => {
               </span>
             </p>
             <span className="text-[11px] text-amber-700 font-bold">
-              {lang === 'bn' ? 'স্ট্রিক: ৩ দিন সম্পন্ন 🔥' : 'Streak: 3 Days Active 🔥'}
+              {lang === 'bn' ? `স্ট্রিক: ${currentStreak} দিন সক্রিয় 🔥` : `Streak: ${currentStreak} Days Active 🔥`}
             </span>
           </div>
 
