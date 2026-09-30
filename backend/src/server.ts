@@ -1,0 +1,124 @@
+import express from 'express';
+import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Config
+dotenv.config();
+import { connectDB } from './config/db.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { setupSocketIO } from './socket/socketHandler.js';
+
+// Routes
+import authRoutes from './routes/auth.routes.js';
+import productRoutes from './routes/product.routes.js';
+import categoryRoutes from './routes/category.routes.js';
+import orderRoutes from './routes/order.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
+import vendorRoutes from './routes/vendor.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import aiRoutes from './routes/ai.routes.js';
+import reviewRoutes from './routes/review.routes.js';
+import courierRoutes from './routes/courier.routes.js';
+import qaRoutes from './routes/qa.routes.js';
+import { riderRouter, uploadRouter } from './routes/rider.routes.js';
+
+const app = express();
+const server = http.createServer(app);
+
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5174';
+
+const allowedOrigins = [
+  FRONTEND_URL,
+  ADMIN_URL,
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+];
+
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow during dev
+      }
+    },
+    credentials: true,
+  },
+});
+
+// Middleware
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    contentSecurityPolicy: false,
+  })
+);
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      callback(null, true);
+    },
+    credentials: true,
+  })
+);
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+app.use(cookieParser());
+app.use(morgan('dev'));
+
+// Setup Real-time Sockets
+setupSocketIO(io);
+
+// API Health Check & DevTools graceful response
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    platform: 'ShopX BD Multi-Vendor E-Commerce & SaaS',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get(['/.well-known/*', '/favicon.ico'], (req, res) => {
+  res.status(204).end();
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/vendor', vendorRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/courier', courierRoutes);
+app.use('/api/qa', qaRoutes);
+app.use('/api/riders', riderRouter);
+app.use('/api/upload', uploadRouter);
+
+// Global Error Handler
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000;
+
+// Start Server and Connect Database
+const startServer = async () => {
+  await connectDB();
+  server.listen(PORT, () => {
+    console.log(`🚀 [ShopX BD Backend] Running on http://localhost:${PORT}`);
+  });
+};
+
+startServer();

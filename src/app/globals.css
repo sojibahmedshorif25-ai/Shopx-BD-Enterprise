@@ -1,26 +1,104 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --primary: #FF4500;
+    --primary-hover: #E03D00;
+    --primary-light: #FFF0EB;
+    
+    --secondary: #1A1F36;
+    --secondary-hover: #121626;
+    --secondary-light: #2A314E;
+    
+    --accent: #00C853;
+    --accent-hover: #00B048;
+    --accent-light: #E6F9EE;
+    
+    --background: #F7F8FC;
+    --surface: #FFFFFF;
+    --surface-subtle: #F0F2F8;
+    
+    --text-primary: #0D0D1A;
+    --text-muted: #4A5568;
+    --text-subtle: #8A94A6;
+    
+    --warning: #FFB800;
+    --warning-light: #FFF8E6;
+    --danger: #FF3B3B;
+    --danger-light: #FFEBEB;
+    
+    --border-color: #E2E8F0;
+    --border-subtle: #EDF2F7;
+    
+    --radius-input: 4px;
+    --radius-card: 8px;
+    --radius-modal: 12px;
+    --radius-pill: 24px;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-body), 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F3F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+.font-display {
+  font-family: var(--font-display), 'Hind Siliguri', sans-serif;
+}
+
+.font-price {
+  font-family: var(--font-price), 'JetBrains Mono', monospace;
+}
+
+.font-body {
+  font-family: var(--font-body), 'Inter', sans-serif;
+}
+
+/* Shimmer animation for skeleton loaders */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f0f2f5 25%, #e6e9ef 50%, #f0f2f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Pulse badge animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 69, 0, 0);
+  }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

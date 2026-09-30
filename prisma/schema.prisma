@@ -1,0 +1,307 @@
+// schema.prisma — BazaarX Database Design
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── ROLES ──
+enum Role {
+  BUYER
+  SELLER
+  RIDER
+  ADMIN
+  SUPERADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURNED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  BKASH
+  NAGAD
+  ROCKET
+  CARD
+  COD
+  WALLET
+  EMI
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// ── USER ──
+model User {
+  id          String      @id @default(cuid())
+  name        String
+  email       String?     @unique
+  phone       String      @unique
+  avatar      String?
+  role        Role        @default(BUYER)
+  isVerified  Boolean     @default(false)
+  locale      String      @default("bn") // বাংলা default
+  createdAt   DateTime    @default(now())
+  seller      Seller?
+  rider       Rider?
+  orders      Order[]
+  reviews     Review[]
+  addresses   Address[]
+  wishlist    Wishlist[]
+  wallet      Wallet?
+  cart        Cart?
+
+  @@index([phone, email])
+}
+
+// ── SELLER ──
+model Seller {
+  id             String      @id @default(cuid())
+  userId         String      @unique
+  user           User        @relation(fields: [userId], references: [id])
+  storeName      String
+  storeSlug      String      @unique
+  logo           String?
+  banner         String?
+  description    String?
+  rating         Float       @default(0)
+  totalReviews   Int         @default(0)
+  isVerified     Boolean     @default(false)
+  verifiedAt     DateTime?
+  commissionRate Float       @default(0.1) // 10%
+  balance        Float       @default(0)
+  nidNumber      String?
+  tradeLicense   String?
+  products       Product[]
+  orders         OrderItem[]
+
+  @@index([storeSlug])
+}
+
+// ── CATEGORY ──
+model Category {
+  id        String    @id @default(cuid())
+  nameEn    String
+  nameBn    String
+  slug      String    @unique
+  icon      String?
+  image     String?
+  parentId  String?
+  parent    Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children  Category[] @relation("SubCategories")
+  products  Product[]
+}
+
+// ── PRODUCT ──
+model Product {
+  id           String           @id @default(cuid())
+  sellerId     String
+  seller       Seller           @relation(fields: [sellerId], references: [id])
+  title        String
+  titleBn      String           // Bengali title
+  slug         String           @unique
+  description  String
+  descBn       String?
+  brand        String?
+  sku          String?          @unique
+  price        Float
+  comparePrice Float?           // original price
+  cost         Float?
+  stock        Int              @default(0)
+  isActive     Boolean          @default(true)
+  isApproved   Boolean          @default(false)
+  isFeatured   Boolean          @default(false)
+  categoryId   String
+  category     Category         @relation(fields: [categoryId], references: [id])
+  images       ProductImage[]
+  variants     ProductVariant[]
+  reviews      Review[]
+  priceHistory PriceHistory[]
+  orderItems   OrderItem[]
+  attributes   Json?
+  tags         String[]
+  viewCount    Int              @default(0)
+  salesCount   Int              @default(0)
+  rating       Float            @default(0)
+  createdAt    DateTime         @default(now())
+
+  @@index([sellerId, categoryId, slug, isActive])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  isPrimary Boolean  @default(false)
+  order     Int      @default(0)
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color     String?
+  size      String?
+  sku       String?  @unique
+  price     Float
+  stock     Int      @default(0)
+}
+
+// ── PRICE HISTORY (Daraz Killer Feature!) ──
+model PriceHistory {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  price      Float
+  recordedAt DateTime @default(now())
+
+  @@index([productId, recordedAt])
+}
+
+// ── ORDER & ORDER ITEMS ──
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  status      OrderStatus @default(PENDING)
+  subtotal    Float
+  discount    Float       @default(0)
+  deliveryFee Float       @default(0)
+  vat         Float       @default(0)
+  total       Float
+  addressId   String
+  address     Address     @relation(fields: [addressId], references: [id])
+  items       OrderItem[]
+  payment     Payment?
+  riderId     String?
+  rider       Rider?      @relation(fields: [riderId], references: [id])
+  couponId    String?
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId, status])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  sellerId  String
+  seller    Seller   @relation(fields: [sellerId], references: [id])
+  price     Float
+  quantity  Int
+  variantId String?
+}
+
+// ── PAYMENT ──
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  amount        Float
+  transactionId String?       @unique
+  paidAt        DateTime?
+  metadata      Json?
+}
+
+// ── WALLET ──
+model Wallet {
+  id           String     @id @default(cuid())
+  userId       String     @unique
+  user         User       @relation(fields: [userId], references: [id])
+  balance      Float      @default(0)
+  transactions WalletTx[]
+}
+
+model WalletTx {
+  id        String   @id @default(cuid())
+  walletId  String
+  wallet    Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  amount    Float
+  type      String   // CREDIT | DEBIT
+  reference String?  // e.g. "REFUND-ORD-123"
+  createdAt DateTime @default(now())
+}
+
+// ── RIDER ──
+model Rider {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  zone        String
+  vehicleType String
+  isAvailable Boolean  @default(true)
+  rating      Float    @default(5.0)
+  orders      Order[]
+}
+
+// ── ADDRESS ──
+model Address {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName     String
+  phone        String
+  division     String
+  district     String
+  thana        String
+  street       String
+  isDefault    Boolean  @default(false)
+  orders       Order[]
+}
+
+// ── REVIEW ──
+model Review {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rating     Int
+  comment    String
+  images     String[]
+  isVerified Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+// ── CART & WISHLIST ──
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     Json     // array of { productId, variantId, quantity }
+  updatedAt DateTime @updatedAt
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}

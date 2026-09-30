@@ -1,0 +1,286 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { HeroSlider } from '../components/HeroSlider';
+import { ShopXChannelsBar } from '../components/ShopXChannelsBar';
+import { TrustGuaranteeBar } from '../components/TrustGuaranteeBar';
+import { CategoryExplorerGrid } from '../components/CategoryExplorerGrid';
+import { FlashSaleSection } from '../components/FlashSaleSection';
+import { ComboDealsSection } from '../components/ComboDealsSection';
+import { TeamBuySection } from '../components/TeamBuySection';
+import { VoucherCenter } from '../components/VoucherCenter';
+import { CoinsRewardHub } from '../components/CoinsRewardHub';
+import { DarazComparisonMatrix } from '../components/DarazComparisonMatrix';
+import { ProductCard } from '../components/ProductCard';
+import { JustForYouAISection } from '../components/JustForYouAISection';
+import { QuickOrderModal } from '../components/QuickOrderModal';
+import { ProductDetailModal } from '../components/ProductDetailModal';
+import { LiveStreamShopModal } from '../components/LiveStreamShopModal';
+import { ImageSearchModal } from '../components/ImageSearchModal';
+import { Product } from '../types';
+import { api } from '../services/api';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { ArrowRight } from 'lucide-react';
+
+export const HomePage: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
+  const { lang } = useLanguageStore();
+
+  const [quickOrderProduct, setQuickOrderProduct] = useState<Product | null>(null);
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [isLiveOpen, setIsLiveOpen] = useState(false);
+  const [isImageSearchOpen, setIsImageSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/products?limit=50');
+        if (res.data?.success) {
+          setProducts(res.data.data);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // Filter tabs across all major departments
+  const tabs = [
+    { id: 'all', label: lang === 'bn' ? 'সকল ডিপার্টমেন্ট' : 'All Departments' },
+    { id: 'smartphones-tablets', label: lang === 'bn' ? '📱 স্মার্টফোন' : '📱 Smartphones' },
+    { id: 'electronics-gadgets', label: lang === 'bn' ? '🎧 গ্যাজেটস ও অডিও' : '🎧 Tech & Gadgets' },
+    { id: 'organic-foods', label: lang === 'bn' ? '🌿 খাঁটি খাদ্য' : '🌿 Organic Foods' },
+    { id: 'fashion-lifestyle', label: lang === 'bn' ? '👕 ফ্যাশন' : '👕 Fashion & Lifestyle' },
+    { id: 'laptops-computers', label: lang === 'bn' ? '💻 ল্যাপটপ' : '💻 Laptops & PC' },
+    { id: 'beauty-care', label: lang === 'bn' ? '💄 বিউটি ও আতর' : '💄 Beauty & Fragrances' },
+    { id: 'home-kitchen', label: lang === 'bn' ? '🏠 হোম অ্যাপ্লায়েন্স' : '🏠 Home & Kitchen' },
+    { id: 'gaming-consoles', label: lang === 'bn' ? '🎮 গেমিং ও ড্রোন' : '🎮 Gaming & Drones' },
+    { id: 'watches-accessories', label: lang === 'bn' ? '⌚ ঘড়ি ও জুয়েলারি' : '⌚ Watches' },
+  ];
+
+  const filteredProducts = activeTab === 'all'
+    ? products
+    : products.filter((p) => {
+        const catSlug = typeof p.category === 'string' ? p.category : (p.category as any)?.slug;
+        return catSlug === activeTab || p.categorySlug === activeTab;
+      });
+
+  return (
+    <div className="space-y-6 pb-16 bg-[#f8fafc]">
+      {/* 1. Mega Hero Slider & Deals of the Day */}
+      <HeroSlider />
+
+      {/* 2. Daraz-Style Quick Channels Action Bar */}
+      <ShopXChannelsBar
+        onOpenLive={() => setIsLiveOpen(true)}
+        onOpenImageSearch={() => setIsImageSearchOpen(true)}
+      />
+
+      {/* 3. Official Mall Trust & Authenticity Guarantee Bar */}
+      <TrustGuaranteeBar />
+
+      {/* 4. Shop by Department (10 World-Standard Visual Tiles) + 3-Column Mega Promo Cards */}
+      <CategoryExplorerGrid />
+
+      {/* 5. Daraz Flash Sale Rush with Live Countdown & Stock Progress */}
+      <FlashSaleSection
+        products={products}
+        onQuickOrder={(p) => setQuickOrderProduct(p)}
+        onQuickView={(p) => setQuickViewProduct(p)}
+      />
+
+      {/* 6. Choice Zone: Multi-Product Super Saver Combo Bundles */}
+      <ComboDealsSection onQuickOrder={(p) => setQuickOrderProduct(p)} />
+
+      {/* 7. Social Group Buy & Slash It Team Deals */}
+      <TeamBuySection onQuickOrder={(p) => setQuickOrderProduct(p)} />
+
+      {/* 8. Daraz Voucher Collection Center with 1-Click Collect */}
+      <VoucherCenter />
+
+      {/* 9. Daraz Daily Coins & 7-Day Check-in Streak VIP Club */}
+      <CoinsRewardHub />
+
+      {/* 10. Popular Trending Products Catalog with Department Filter Tabs */}
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-2xl font-extrabold text-slate-900">
+              {lang === 'bn' ? 'জনপ্রিয় ও শীর্ষ রেটেড পণ্যসমূহ' : 'Popular & Trending Products'}
+            </h2>
+            <p className="text-xs text-slate-500">
+              {lang === 'bn'
+                ? 'জেনুইন ব্র্যান্ড ওয়্যারেন্টি সহ শীর্ষ ক্যাটাগরির সেরা পণ্য'
+                : 'Top authenticated products across all departments with warranty'}
+            </p>
+          </div>
+
+          {/* Department Filter Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'bg-emerald-700 text-white shadow-sm'
+                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Product Grid */}
+        {isLoading ? (
+          <div className="py-12 text-center text-slate-400 font-bold">
+            {lang === 'bn' ? 'ক্যাটালগ লোড হচ্ছে...' : 'Loading flagship catalog...'}
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8">
+            <p className="text-slate-500 font-bold text-sm">
+              {lang === 'bn' ? 'এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি।' : 'No products found in this category.'}
+            </p>
+            <button
+              onClick={() => setActiveTab('all')}
+              className="mt-3 px-5 py-2 bg-emerald-700 text-white font-bold text-xs rounded-full shadow"
+            >
+              {lang === 'bn' ? 'সকল পণ্য দেখুন' : 'Show All Products'}
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onQuickOrder={(p) => setQuickOrderProduct(p)}
+                onQuickView={(p) => setQuickViewProduct(p)}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 11. Daraz/Alibaba "Just For You" ML Personalized Recommendation Feed */}
+      <JustForYouAISection
+        onQuickOrder={(p) => setQuickOrderProduct(p)}
+        onQuickView={(p) => setQuickViewProduct(p)}
+      />
+
+      {/* 12. ShopX Superiority vs Daraz Comparison Matrix */}
+      <DarazComparisonMatrix />
+
+      {/* 12. "100% Authentic Brands & Official Warranty Guarantee" Banner */}
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="bg-[#eaf5ef] border border-emerald-200 rounded-3xl p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">
+          <div className="space-y-4 max-w-xl text-center md:text-left">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-200/80 px-3 py-1 rounded-full">
+              {lang === 'bn' ? 'জেনুইন মাল্টি-ভেন্ডর মল' : 'GENUINE MULTI-VENDOR MALL'}
+            </span>
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight">
+              {lang === 'bn' ? 'অফিসিয়াল ব্র্যান্ডস ও' : 'Official Brands &'}{' '}
+              <br />
+              <span className="text-emerald-700">{lang === 'bn' ? '১০০% কোয়ালিটি গ্যারান্টি' : '100% Quality Guaranteed'}</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {lang === 'bn'
+                ? 'অ্যাপল, সনি, স্যামসাং সহ অনুমোদিত ভেন্ডর এবং খাঁটি গ্রামীণ অর্গানিক ফার্ম থেকে সরাসরি সংগৃহীত পণ্য।'
+                : 'From flagship Apple iPhones and Sony electronics to pure BSTI-certified honey and designer apparel — ShopX guarantees 100% authentic quality and doorstep delivery.'}
+            </p>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2">
+              <Link
+                to="/products"
+                className="inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-full shadow-md transition"
+              >
+                <span>{lang === 'bn' ? 'সকল ডিপার্টমেন্ট দেখুন' : 'Shop All Departments'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to="/vendor-register"
+                className="inline-flex items-center gap-2 bg-white text-emerald-800 border border-emerald-300 font-bold text-xs sm:text-sm px-5 py-3 rounded-full shadow-sm hover:bg-emerald-50 transition"
+              >
+                <span>{lang === 'bn' ? 'সেলার স্টোর তৈরি করুন →' : 'Open a Vendor Store →'}</span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="relative">
+            <img
+              src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=500&auto=format&fit=crop&q=80"
+              alt="Mega Mall Experience"
+              className="w-72 sm:w-88 h-56 sm:h-64 object-cover rounded-3xl shadow-lg"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 13. "Super Mega Sale Rush" Up to 50% Off Banner */}
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md relative overflow-hidden">
+          <div className="z-10 text-center sm:text-left space-y-2">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-300 bg-amber-400/20 px-2.5 py-0.5 rounded-full border border-amber-400/30">
+              {lang === 'bn' ? 'সীমিত সময়ের মেগা অফার' : 'LIMITED TIME MEGA OFFER'}
+            </span>
+            <h3 className="text-xl sm:text-2xl font-extrabold">{lang === 'bn' ? 'ShopX সুপার মেগা ডিলস' : 'ShopX Super Mega Deals'}</h3>
+            <p className="text-xs text-emerald-200">
+              {lang === 'bn'
+                ? 'স্মার্টফোন, গ্যাজেট, অর্গানিক খাদ্য ও ফ্যাশনে বাংলাদেশের ৬৪ জেলায় সেরা ছাড়।'
+                : 'Save more on flagship smartphones, gadgets, organic food & fashion across all 64 districts.'}
+            </p>
+            <Link
+              to="/products?filter=deals"
+              className="inline-block mt-2 bg-amber-400 text-slate-950 hover:bg-amber-300 text-xs font-extrabold px-5 py-2.5 rounded-xl shadow transition"
+            >
+              {lang === 'bn' ? 'মেগা ডিল দেখুন →' : 'Explore Mega Deals →'}
+            </Link>
+          </div>
+
+          <div className="z-10 flex items-center gap-4">
+            <div className="w-20 h-20 rounded-2xl bg-amber-400 text-slate-950 flex flex-col items-center justify-center font-black shadow-lg">
+              <span className="text-[10px] uppercase">{lang === 'bn' ? 'সর্বোচ্চ' : 'Up to'}</span>
+              <span className="text-2xl leading-none">50%</span>
+              <span className="text-[10px] uppercase">{lang === 'bn' ? 'ছাড়' : 'OFF'}</span>
+            </div>
+            <img
+              src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&auto=format&fit=crop&q=80"
+              alt="Mega Gadgets"
+              className="w-24 h-24 object-cover rounded-2xl shadow hidden md:block"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Modals for Quick View, Quick Order, Live Commerce & Image Search */}
+      <QuickOrderModal
+        product={quickOrderProduct}
+        onClose={() => setQuickOrderProduct(null)}
+      />
+
+      <ProductDetailModal
+        product={quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onQuickOrder={(p) => setQuickOrderProduct(p)}
+      />
+
+      <LiveStreamShopModal
+        isOpen={isLiveOpen}
+        onClose={() => setIsLiveOpen(false)}
+        onQuickOrder={(p) => setQuickOrderProduct(p)}
+      />
+
+      <ImageSearchModal
+        isOpen={isImageSearchOpen}
+        onClose={() => setIsImageSearchOpen(false)}
+      />
+    </div>
+  );
+};
