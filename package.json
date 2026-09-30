@@ -1,17 +1,32 @@
-{
-  "name": "shopx-bd-platform",
-  "version": "2.0.0",
-  "private": true,
-  "description": "ShopX BD — Bangladesh's Premier SaaS Multi-Vendor & Organic E-Commerce Platform",
+﻿{
+  "name": "shopx-bd-enterprise",
+  "version": "1.0.0",
+  "description": "A full-stack web application by Sojib Ahmed",
+  "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:admin\"",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "dev:admin": "cd admin && npm run dev",
-    "seed": "cd backend && npm run seed",
-    "build:all": "cd backend && npm run build && cd ../frontend && npm run build && cd ../admin && npm run build"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "build": "react-scripts build",
+    "test": "jest --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write src/"
   },
-  "devDependencies": {
-    "concurrently": "^9.1.2"
-  }
+  "keywords": [
+    "nodejs",
+    "react",
+    "mongodb",
+    "express",
+    "fullstack"
+  ],
+  "author": "Sojib Ahmed <sojibahmedshorif25@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sojibahmedshorif25-ai/Shopx-BD-Enterprise.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sojibahmedshorif25-ai/Shopx-BD-Enterprise/issues"
+  },
+  "homepage": "https://github.com/sojibahmedshorif25-ai/Shopx-BD-Enterprise#readme"
 }
