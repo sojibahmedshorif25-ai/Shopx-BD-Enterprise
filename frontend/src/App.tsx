@@ -30,6 +30,11 @@ import { AILiveAuctionRoomModal } from './components/AILiveAuctionRoomModal';
 import { DoorstepReturnRefundModal } from './components/DoorstepReturnRefundModal';
 import { SaaSVendorAdCampaignModal } from './components/SaaSVendorAdCampaignModal';
 import { RecruiterTechLeadModal } from './components/RecruiterTechLeadModal';
+import { AIPriceTrackerModal } from './components/AIPriceTrackerModal';
+import { AIRecipeDietPlannerModal } from './components/AIRecipeDietPlannerModal';
+import { AIAudioReviewModal } from './components/AIAudioReviewModal';
+import { LiveCoShoppingRoomModal } from './components/LiveCoShoppingRoomModal';
+import { BiometricWebAuthnModal } from './components/BiometricWebAuthnModal';
 
 import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
@@ -85,6 +90,11 @@ export const App: React.FC = () => {
   const [isDoorstepReturnOpen, setIsDoorstepReturnOpen] = useState(false);
   const [isAdCampaignOpen, setIsAdCampaignOpen] = useState(false);
   const [isRecruiterOpen, setIsRecruiterOpen] = useState(false);
+  const [isPriceTrackerOpen, setIsPriceTrackerOpen] = useState(false);
+  const [isRecipePlannerOpen, setIsRecipePlannerOpen] = useState(false);
+  const [isAudioReviewOpen, setIsAudioReviewOpen] = useState(false);
+  const [isCoShoppingOpen, setIsCoShoppingOpen] = useState(false);
+  const [isBiometricOpen, setIsBiometricOpen] = useState(false);
 
   useEffect(() => {
     fetchCurrentUser();
@@ -296,6 +306,36 @@ export const App: React.FC = () => {
         <RecruiterTechLeadModal
           isOpen={isRecruiterOpen}
           onClose={() => setIsRecruiterOpen(false)}
+        />
+
+        {/* AI Smart Price Drop Radar Modal */}
+        <AIPriceTrackerModal
+          isOpen={isPriceTrackerOpen}
+          onClose={() => setIsPriceTrackerOpen(false)}
+        />
+
+        {/* AI Organic Food Nutrition & Diet Planner Modal */}
+        <AIRecipeDietPlannerModal
+          isOpen={isRecipePlannerOpen}
+          onClose={() => setIsRecipePlannerOpen(false)}
+        />
+
+        {/* AI 30s Voice Podcast Review Modal */}
+        <AIAudioReviewModal
+          isOpen={isAudioReviewOpen}
+          onClose={() => setIsAudioReviewOpen(false)}
+        />
+
+        {/* Real-time Co-Shopping Room Modal */}
+        <LiveCoShoppingRoomModal
+          isOpen={isCoShoppingOpen}
+          onClose={() => setIsCoShoppingOpen(false)}
+        />
+
+        {/* WebAuthn Biometric Authentication Modal */}
+        <BiometricWebAuthnModal
+          isOpen={isBiometricOpen}
+          onClose={() => setIsBiometricOpen(false)}
         />
 
         {/* Global Cart Slideout Drawer */}
