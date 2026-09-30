@@ -12,6 +12,10 @@ import { UsersAdminPage } from './pages/UsersAdminPage';
 import { CategoriesAdminPage } from './pages/CategoriesAdminPage';
 import { CouponsAdminPage } from './pages/CouponsAdminPage';
 import { SettingsAdminPage } from './pages/SettingsAdminPage';
+import { AnalyticsAdminPage } from './pages/AnalyticsAdminPage';
+import { ReviewsAdminPage } from './pages/ReviewsAdminPage';
+import { FraudShieldAdminPage } from './pages/FraudShieldAdminPage';
+import { SupportAdminPage } from './pages/SupportAdminPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { useAdminAuthStore } from './store/useAdminAuthStore';
 
@@ -53,6 +57,14 @@ export const App: React.FC = () => {
           }
         />
         <Route
+          path="/analytics"
+          element={
+            <ProtectedLayout>
+              <AnalyticsAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
           path="/products"
           element={
             <ProtectedLayout>
@@ -85,6 +97,14 @@ export const App: React.FC = () => {
           }
         />
         <Route
+          path="/reviews"
+          element={
+            <ProtectedLayout>
+              <ReviewsAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
           path="/users"
           element={
             <ProtectedLayout>
@@ -113,6 +133,22 @@ export const App: React.FC = () => {
           element={
             <ProtectedLayout>
               <RidersAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/fraud-shield"
+          element={
+            <ProtectedLayout>
+              <FraudShieldAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <ProtectedLayout>
+              <SupportAdminPage />
             </ProtectedLayout>
           }
         />

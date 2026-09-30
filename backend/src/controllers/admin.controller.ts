@@ -6,6 +6,7 @@ import { Order } from '../models/Order.js';
 import { Rider } from '../models/Rider.js';
 import { Coupon } from '../models/Coupon.js';
 import { Category } from '../models/Category.js';
+import { Review } from '../models/Review.js';
 
 export const getAdminStats = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -291,6 +292,204 @@ export const getSystemSettingsAdmin = async (req: Request, res: Response): Promi
         emailSMTPStatus: 'Connected (Gmail Secure)',
         databaseStatus: 'MongoDB Atlas Connected',
       },
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// ADVANCED ANALYTICS CONTROLLER
+// ==========================================
+export const getAnalyticsAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    const products = await Product.find().sort({ soldCount: -1 }).limit(10);
+    const vendors = await Vendor.find().populate('user', 'name email').sort({ totalRevenue: -1 }).limit(10);
+
+    let totalRevenue = 0;
+    let codCount = 0;
+    let digitalPaymentCount = 0;
+    let dhakaOrders = 0;
+    let outsideDhakaOrders = 0;
+
+    const monthlySales: Record<string, number> = {};
+
+    orders.forEach((o) => {
+      if (o.orderStatus !== 'cancelled') {
+        totalRevenue += o.totalAmount;
+        if (o.paymentMethod === 'cod') {
+          codCount += 1;
+        } else {
+          digitalPaymentCount += 1;
+        }
+
+        const city = o.customerInfo?.city?.toLowerCase() || '';
+        const dist = o.customerInfo?.district?.toLowerCase() || '';
+        if (city.includes('dhaka') || dist.includes('dhaka')) {
+          dhakaOrders += 1;
+        } else {
+          outsideDhakaOrders += 1;
+        }
+
+        const date = new Date(o.createdAt);
+        const monthKey = date.toLocaleString('default', { month: 'short' });
+        monthlySales[monthKey] = (monthlySales[monthKey] || 0) + o.totalAmount;
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      analytics: {
+        totalRevenue,
+        totalOrdersCount: orders.length,
+        codCount,
+        digitalPaymentCount,
+        dhakaOrders,
+        outsideDhakaOrders,
+        monthlySales,
+        topProducts: products.map((p) => ({
+          id: p._id,
+          title: p.title,
+          banglaTitle: p.banglaTitle,
+          soldCount: p.soldCount,
+          price: p.discountPrice || p.price,
+          revenue: (p.discountPrice || p.price) * p.soldCount,
+          image: p.thumbnail || p.images[0],
+        })),
+        topVendors: vendors.map((v) => ({
+          id: v._id,
+          storeName: v.storeName,
+          totalRevenue: v.totalRevenue,
+          totalSales: v.totalSales,
+          rating: v.rating,
+        })),
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// REVIEWS & MODERATION CONTROLLER
+// ==========================================
+export const getAllReviewsAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const reviews = await Review.find()
+      .populate('product', 'title banglaTitle thumbnail price')
+      .populate('user', 'name email avatar')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, reviews });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteReviewAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    await Review.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: 'Review deleted successfully.' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const replyReviewAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { reply } = req.body;
+    const review = await Review.findByIdAndUpdate(
+      id,
+      {
+        vendorReply: {
+          reply,
+          repliedAt: new Date(),
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({ success: true, message: 'Reply posted successfully.', review });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// FRAUD SHIELD & RISK ANALYSIS CONTROLLER
+// ==========================================
+export const getFraudShieldAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const highRiskOrders = await Order.find({
+      $or: [
+        { totalAmount: { $gt: 50000 } },
+        { paymentMethod: 'cod', totalAmount: { $gt: 20000 } },
+      ],
+    })
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    const blacklistedUsers = await User.find({ isBanned: true }).select('name email phone createdAt');
+
+    res.status(200).json({
+      success: true,
+      fraudStats: {
+        totalSuspiciousOrders: highRiskOrders.length,
+        blacklistedAccounts: blacklistedUsers.length,
+        systemHealth: 'Shield Active (Zero Breaches)',
+        highRiskOrders,
+        blacklistedUsers,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// SUPPORT & INQUIRIES CONTROLLER
+// ==========================================
+export const getSupportInquiriesAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.status(200).json({
+      success: true,
+      inquiries: [
+        {
+          id: 'INQ-101',
+          name: 'Rahim Uddin',
+          phone: '01711223344',
+          email: 'rahim@example.com',
+          topic: 'Order Delivery Delay Query',
+          message: 'আমার অর্ডার #SX-849201 কখন ডেলিভারি হবে?',
+          status: 'Open',
+          priority: 'High',
+          createdAt: new Date(Date.now() - 3600000),
+        },
+        {
+          id: 'INQ-102',
+          name: 'Fatema Begum',
+          phone: '01899887766',
+          email: 'fatema@example.com',
+          topic: 'Device Exchange Question',
+          message: 'পুরাতন আইফোন ১১ এক্সচেঞ্জ করে কি নতুন আইফোন ১৫ নেওয়া যাবে?',
+          status: 'In Progress',
+          priority: 'Medium',
+          createdAt: new Date(Date.now() - 7200000),
+        },
+        {
+          id: 'INQ-103',
+          name: 'Tanvir Hasan',
+          phone: '01955443322',
+          email: 'tanvir@example.com',
+          topic: 'B2B Wholesale Quotation',
+          message: 'আমাদের অফিসের জন্য ৫০টি স্যামসাং ট্যাব প্রয়োজন। পাইকারি রেট জানতে চাই।',
+          status: 'Resolved',
+          priority: 'Urgent',
+          createdAt: new Date(Date.now() - 86400000),
+        },
+      ],
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });

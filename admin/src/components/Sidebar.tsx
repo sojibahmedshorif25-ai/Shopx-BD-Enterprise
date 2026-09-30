@@ -16,6 +16,10 @@ import {
   Crown,
   Globe,
   Building2,
+  TrendingUp,
+  Star,
+  ShieldAlert,
+  LifeBuoy,
 } from 'lucide-react';
 import { useAdminAuthStore } from '../store/useAdminAuthStore';
 import { useSidebarStore } from '../store/useSidebarStore';
@@ -30,14 +34,18 @@ export const Sidebar: React.FC = () => {
 
   const navItems = [
     { to: '/', label: isBn ? 'ড্যাশবোর্ড ওভারভিউ' : 'Dashboard Hub', icon: LayoutDashboard },
+    ...(isAdmin ? [{ to: '/analytics', label: isBn ? 'বিজনেস অ্যানালিটিক্স' : 'Sales Analytics', icon: TrendingUp }] : []),
     { to: '/products', label: isBn ? 'পণ্য ক্যাটালগ' : 'Products Catalog', icon: Package },
     { to: '/orders', label: isBn ? 'লাইভ অর্ডারসমূহ' : 'Live Orders Fleet', icon: ShoppingCart },
+    ...(isAdmin ? [{ to: '/reviews', label: isBn ? 'রিভিউ ও রেটিংস' : 'Customer Reviews', icon: Star }] : []),
     ...(isAdmin ? [{ to: '/users', label: isBn ? 'ইউজার ও রোলস' : 'Users & Roles (RBAC)', icon: Users }] : []),
     ...(isAdmin ? [{ to: '/categories', label: isBn ? 'ক্যাটাগরি ম্যানেজমেন্ট' : 'Categories Hub', icon: Layers }] : []),
     ...(isAdmin ? [{ to: '/coupons', label: isBn ? 'ভাউচার ও কুপন' : 'Promo Vouchers', icon: Ticket }] : []),
     ...(isAdmin ? [{ to: '/vendors', label: isBn ? 'সেলার সেন্টার' : 'Vendors Hub', icon: Store }] : []),
     ...(isAdmin ? [{ to: '/subscriptions', label: isBn ? 'SaaS সাবস্ক্রিপশন' : 'SaaS Plans', icon: Crown }] : []),
     ...(isAdmin ? [{ to: '/riders', label: isBn ? 'DEX ডেলিভারি রাইডার' : 'DEX Riders Fleet', icon: Truck }] : []),
+    ...(isAdmin ? [{ to: '/fraud-shield', label: isBn ? 'এআই ফ্রড শিল্ড' : 'AI Fraud Shield', icon: ShieldAlert }] : []),
+    ...(isAdmin ? [{ to: '/support', label: isBn ? 'কাস্টমার সাপোর্ট' : 'Support Tickets', icon: LifeBuoy }] : []),
     ...(isAdmin ? [{ to: '/settings', label: isBn ? 'সিস্টেম ও হেড অফিস' : 'System Settings', icon: Settings }] : []),
   ];
 
