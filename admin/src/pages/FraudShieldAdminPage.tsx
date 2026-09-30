@@ -109,8 +109,46 @@ export const FraudShieldAdminPage: React.FC = () => {
           <span className="text-xs text-slate-400 font-mono">Live Risk Score</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
+        {/* Mobile Screen Cards */}
+        <div className="block sm:hidden space-y-3">
+          {(data?.highRiskOrders || []).map((ord: any) => (
+            <div
+              key={ord._id}
+              className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3 shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-black text-emerald-400">#{ord.orderId}</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800 text-[10px] font-bold">
+                  ⚠️ High Value Check
+                </span>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-white">{ord.customerInfo?.name}</p>
+                <p className="text-[11px] font-mono text-slate-400">{ord.customerInfo?.phone} • {ord.customerInfo?.city}</p>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-900">
+                <div>
+                  <span className="text-[10px] text-slate-500 block">Total Amount</span>
+                  <span className="text-sm font-black text-white font-mono">৳{Number(ord.totalAmount).toLocaleString()}</span>
+                  <span className="text-[10px] text-amber-400 font-bold uppercase ml-1.5">({ord.paymentMethod})</span>
+                </div>
+
+                <a
+                  href={`tel:${ord.customerInfo?.phone}`}
+                  className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-md shadow-emerald-700/20"
+                >
+                  <Phone className="w-3.5 h-3.5" /> Call Customer
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Screen Table */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-left text-xs text-slate-300 min-w-[700px]">
             <thead className="text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800 bg-slate-950/50">
               <tr>
                 <th className="p-3">Order ID</th>

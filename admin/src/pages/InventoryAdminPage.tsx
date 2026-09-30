@@ -199,9 +199,69 @@ export const InventoryAdminPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
+        {/* Mobile Inventory Cards */}
+        <div className="block sm:hidden space-y-3">
+          {filteredProducts.map((p) => (
+            <div
+              key={p._id}
+              className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3 shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                {p.thumbnail && (
+                  <img
+                    src={p.thumbnail}
+                    alt={p.title}
+                    className="w-12 h-12 rounded-xl object-cover bg-slate-800 border border-slate-700/60 flex-shrink-0"
+                  />
+                )}
+                <div className="overflow-hidden flex-1">
+                  <p className="font-bold text-xs text-white truncate">{p.title}</p>
+                  <p className="text-[10px] font-mono text-emerald-400">SKU: {p.sku || 'N/A'}</p>
+                  <p className="text-[10px] text-slate-400">{p.vendor?.storeName || 'ShopX Direct'}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-900 text-xs">
+                <div>
+                  <span className="text-[10px] text-slate-500 block">Price</span>
+                  <span className="font-black text-white font-mono">৳{Number(p.price).toLocaleString()}</span>
+                </div>
+
+                <div>
+                  <span className="text-[10px] text-slate-500 block">Stock Level</span>
+                  <span
+                    className={`font-black font-mono ${
+                      p.stock === 0 ? 'text-rose-400' : p.stock <= 5 ? 'text-amber-400' : 'text-emerald-400'
+                    }`}
+                  >
+                    {p.stock} units
+                  </span>
+                </div>
+
+                <div className="inline-flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                  <button
+                    onClick={() => handleUpdateStock(p._id, Math.max(0, p.stock - 5))}
+                    disabled={updatingId === p._id || p.stock === 0}
+                    className="p-1 rounded hover:bg-slate-800 text-slate-400 disabled:opacity-30"
+                  >
+                    <Minus className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStock(p._id, p.stock + 10)}
+                    disabled={updatingId === p._id}
+                    className="px-2 py-1 rounded bg-emerald-700 text-white font-bold text-[10px]"
+                  >
+                    +10
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-left text-xs text-slate-300 min-w-[760px]">
             <thead className="text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800 bg-slate-950/50">
               <tr>
                 <th className="p-3.5">Product & SKU</th>

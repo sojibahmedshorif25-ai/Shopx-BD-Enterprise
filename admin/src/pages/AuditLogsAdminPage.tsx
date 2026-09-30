@@ -123,8 +123,48 @@ export const AuditLogsAdminPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
+        {/* Mobile Cards View (sm:hidden) */}
+        <div className="block sm:hidden space-y-3">
+          {filteredLogs.map((log) => (
+            <div
+              key={log.id}
+              className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-2.5 shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-black text-cyan-400">{log.id}</span>
+                <span
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    log.status === 'SUCCESS'
+                      ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
+                      : 'bg-cyan-950/80 text-cyan-300 border border-cyan-800/60'
+                  }`}
+                >
+                  {log.status}
+                </span>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-white">{log.actor}</p>
+                <div className="mt-1">
+                  <span className="inline-block px-2 py-0.5 rounded bg-slate-900 border border-slate-800 font-mono text-[10px] font-bold text-slate-300">
+                    {log.action}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed">{log.details}</p>
+
+              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-2 border-t border-slate-900">
+                <span>🌐 {log.ip}</span>
+                <span>⏱️ {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View (hidden sm:block) */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-left text-xs text-slate-300 min-w-[760px]">
             <thead className="text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800 bg-slate-950/50">
               <tr>
                 <th className="p-3.5">Log ID</th>
