@@ -534,13 +534,22 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           ) : (
-            <Link
-              to="/auth"
-              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-700/20 transition hover:shadow-lg"
-            >
-              <User className="w-4 h-4" />
-              <span className="whitespace-nowrap">{lang === 'bn' ? 'লগইন / সাইন আপ' : 'Login / Sign Up'}</span>
-            </Link>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Link
+                to="/login"
+                className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 font-bold text-xs sm:text-sm border border-slate-200 transition shadow-xs"
+              >
+                <User className="w-4 h-4 text-emerald-600" />
+                <span className="whitespace-nowrap">{lang === 'bn' ? 'লগইন' : 'Login'}</span>
+              </Link>
+              <Link
+                to="/register"
+                className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-700/20 transition hover:shadow-lg"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span className="whitespace-nowrap">{lang === 'bn' ? 'সাইন আপ' : 'Sign Up'}</span>
+              </Link>
+            </div>
           )}
 
           {/* 4. Cart Button */}

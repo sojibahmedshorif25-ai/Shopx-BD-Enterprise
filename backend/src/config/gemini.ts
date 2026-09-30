@@ -77,17 +77,28 @@ const callGeminiAI = async (prompt: string, systemInstruction?: string): Promise
 
 export const generateAIResponse = async (
   prompt: string,
-  systemInstruction?: string
+  systemInstruction?: string,
+  language: string = 'en'
 ): Promise<string> => {
+  const isEnglish = language === 'en' || !/[\u0980-\u09FF]/.test(prompt);
+
+  const finalInstruction = systemInstruction || (isEnglish
+    ? 'You are ShopX AI Copilot, an ultra-smart, polite, and helpful e-commerce shopping consultant for ShopX BD (Bangladesh). You MUST respond in fluent, professional English with product recommendations in BDT (৳), shipping information (24h Dhaka ৳60, Nationwide ৳120), vouchers, and hotline (01942791004).'
+    : 'You are ShopX AI Assistant, an ultra-smart, polite shopping consultant for ShopX BD. You MUST respond in fluent Bengali (বাংলা) with product recommendations in BDT (৳), shipping information, vouchers, and hotline (01942791004).');
+
   // Try Groq First for instant speed
-  const groqRes = await callGroqAI(prompt, systemInstruction);
+  const groqRes = await callGroqAI(prompt, finalInstruction);
   if (groqRes) return groqRes;
 
   // Fallback to Google Gemini
-  const geminiRes = await callGeminiAI(prompt, systemInstruction);
+  const geminiRes = await callGeminiAI(prompt, finalInstruction);
   if (geminiRes) return geminiRes;
 
-  return `ShopX AI Assistant: আসসালামু আলাইকুম! আমাদের খাঁটি সুন্দরবনের মধু, গাওয়া ঘি, ঘানি ভাঙা সরিষার তেল ও লেটেস্ট গ্যাজেট সমূহে রয়েছে আকর্ষণীয় অফার ও ফ্রি ডেলিভারি। যেকোনো প্রয়োজনে আমাদের হটলাইনে 01942791004 যোগাযোগ করতে পারেন!`;
+  if (isEnglish) {
+    return `ShopX AI Copilot: Hello! Welcome to ShopX BD. We offer 100% authentic flagship smartphones, pure organic foods (Sundarbans raw honey, pure cow ghee), luxury fashion, and tech gadgets with 24h express delivery. How can I assist your shopping today? Feel free to ask about any product or call our 24/7 hotline at 01942791004!`;
+  }
+
+  return `ShopX AI Assistant: আসসালামু আলাইকুম! ShopX BD-তে আপনাকে স্বাগতম। আমাদের খাঁটি সুন্দরবনের মধু, গাওয়া ঘি, ঘানি ভাঙা সরিষার তেল ও লেটেস্ট গ্যাজেট সমূহে রয়েছে আকর্ষণীয় অফার ও ফ্রি ডেলিভারি। যেকোনো তথ্যের জন্য আমাদের হটলাইনে 01942791004 যোগাযোগ করতে পারেন!`;
 };
 
 export const generateProductDescription = async ({

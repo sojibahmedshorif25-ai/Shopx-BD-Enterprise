@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   Mail,
   Lock,
@@ -24,6 +24,7 @@ import { api } from '../services/api';
 
 export const AuthPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { lang } = useLanguageStore();
   const isBn = lang === 'bn';
   const { login, register, googleLogin, isLoading } = useAuthStore();
@@ -32,9 +33,27 @@ export const AuthPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<'customer' | 'seller' | 'admin' | 'rider'>('customer');
 
   // Customer State
-  // Customer State
   const [authMode, setAuthMode] = useState<'gmail_otp' | 'phone_otp' | 'email_pass'>('gmail_otp');
   const [isRegister, setIsRegister] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (
+      location.pathname === '/register' ||
+      location.pathname === '/signup' ||
+      params.get('mode') === 'signup' ||
+      params.get('mode') === 'register'
+    ) {
+      setIsRegister(true);
+    } else if (
+      location.pathname === '/login' ||
+      location.pathname === '/signin' ||
+      location.pathname === '/customer-login' ||
+      params.get('mode') === 'login'
+    ) {
+      setIsRegister(false);
+    }
+  }, [location]);
   
   // Gmail OTP State
   const [gmail, setGmail] = useState('');
@@ -645,15 +664,56 @@ export const AuthPage: React.FC = () => {
           {/* ======================================================== */}
           {selectedRole === 'customer' && (
             <div className="space-y-6">
+              {/* Dual Tab Switcher: Login vs Sign Up */}
+              <div className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl text-xs font-black">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRegister(false);
+                    setError('');
+                    setSuccessMsg('');
+                  }}
+                  className={`py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
+                    !isRegister
+                      ? 'bg-emerald-700 text-white shadow-md'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  <User className="w-4 h-4" />
+                  <span>{isBn ? 'লগইন (Sign In)' : 'Sign In'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRegister(true);
+                    setError('');
+                    setSuccessMsg('');
+                  }}
+                  className={`py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
+                    isRegister
+                      ? 'bg-emerald-700 text-white shadow-md'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  <span>{isBn ? 'নতুন একাউন্ট (Sign Up)' : 'Sign Up'}</span>
+                </button>
+              </div>
+
               <div className="text-center">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-black text-xl mx-auto mb-2 shadow-lg shadow-emerald-700/20">
                   SX
                 </div>
                 <h2 className="text-xl font-black text-slate-900 dark:text-white">
-                  {isBn ? 'কাস্টমার লগইন / সাইন আপ' : 'Customer Sign In / Sign Up'}
+                  {isRegister
+                    ? (isBn ? 'নতুন কাস্টমার সাইন আপ' : 'Create Customer Account')
+                    : (isBn ? 'কাস্টমার লগইন' : 'Customer Sign In')}
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  {isBn ? 'রিয়েল জিমেইল ওটিপি ও পাসওয়ার্ডের মাধ্যমে নিরাপদ একাউন্ট' : 'Instant access with real Gmail 6-digit OTP verification'}
+                  {isRegister
+                    ? (isBn ? 'রিয়েল জিমেইল বা মোবাইল ওটিপি কোড দিয়ে নতুন একাউন্ট খুলুন' : 'Sign up with verified Gmail or Phone for ৳100 welcome bonus')
+                    : (isBn ? 'রিয়েল জিমেইল ওটিপি, মোবাইল ওটিপি বা পাসওয়ার্ড দিয়ে প্রবেশ করুন' : 'Instant 2FA access with real Gmail 6-digit OTP code')}
                 </p>
               </div>
 
