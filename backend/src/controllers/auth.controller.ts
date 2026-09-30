@@ -702,7 +702,7 @@ export const adminLoginStep2 = async (req: Request, res: Response): Promise<void
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 45 * 24 * 60 * 60 * 1000, // 45-day persistent session
     });
 
     res.status(200).json({
@@ -759,6 +759,12 @@ export const sellerLogin = async (req: Request, res: Response): Promise<void> =>
     clearLockout(cleanEmail);
     const vendor = await Vendor.findOne({ user: user._id });
     const token = generateToken(user._id.toString(), user.role);
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 45 * 24 * 60 * 60 * 1000, // 45-day persistent session
+    });
 
     res.status(200).json({
       success: true,

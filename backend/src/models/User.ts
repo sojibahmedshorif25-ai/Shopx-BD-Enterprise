@@ -15,6 +15,7 @@ export interface IUser extends Document {
   upazila?: string;
   bio?: string;
   googleId?: string;
+  facebookId?: string;
   isVerified: boolean;
   isActive: boolean;
   loyaltyCoins: number;
@@ -62,6 +63,7 @@ const UserSchema = new Schema<IUser>(
     upazila: { type: String },
     bio: { type: String },
     googleId: { type: String },
+    facebookId: { type: String },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     loyaltyCoins: { type: Number, default: 50 }, // 50 welcome coins
