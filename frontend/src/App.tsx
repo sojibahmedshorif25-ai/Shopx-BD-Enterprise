@@ -35,6 +35,10 @@ import { AIRecipeDietPlannerModal } from './components/AIRecipeDietPlannerModal'
 import { AIAudioReviewModal } from './components/AIAudioReviewModal';
 import { LiveCoShoppingRoomModal } from './components/LiveCoShoppingRoomModal';
 import { BiometricWebAuthnModal } from './components/BiometricWebAuthnModal';
+import { DigitalWarrantyLookupModal } from './components/DigitalWarrantyLookupModal';
+import { CustomerNPSRewardModal } from './components/CustomerNPSRewardModal';
+import { AIInstantQAModal } from './components/AIInstantQAModal';
+import { EcoGreenPackagingModal } from './components/EcoGreenPackagingModal';
 
 import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
@@ -95,6 +99,10 @@ export const App: React.FC = () => {
   const [isAudioReviewOpen, setIsAudioReviewOpen] = useState(false);
   const [isCoShoppingOpen, setIsCoShoppingOpen] = useState(false);
   const [isBiometricOpen, setIsBiometricOpen] = useState(false);
+  const [isWarrantyOpen, setIsWarrantyOpen] = useState(false);
+  const [isNPSOpen, setIsNPSOpen] = useState(false);
+  const [isQAOpen, setIsQAOpen] = useState(false);
+  const [isEcoOpen, setIsEcoOpen] = useState(false);
 
   useEffect(() => {
     fetchCurrentUser();
@@ -336,6 +344,30 @@ export const App: React.FC = () => {
         <BiometricWebAuthnModal
           isOpen={isBiometricOpen}
           onClose={() => setIsBiometricOpen(false)}
+        />
+
+        {/* Digital Warranty & RMA Serial Lookup Modal */}
+        <DigitalWarrantyLookupModal
+          isOpen={isWarrantyOpen}
+          onClose={() => setIsWarrantyOpen(false)}
+        />
+
+        {/* Customer Satisfaction NPS ৳50 Reward Modal */}
+        <CustomerNPSRewardModal
+          isOpen={isNPSOpen}
+          onClose={() => setIsNPSOpen(false)}
+        />
+
+        {/* AI Instant Product Q&A Copilot Modal */}
+        <AIInstantQAModal
+          isOpen={isQAOpen}
+          onClose={() => setIsQAOpen(false)}
+        />
+
+        {/* Eco-Friendly Packaging & Carbon Offset Modal */}
+        <EcoGreenPackagingModal
+          isOpen={isEcoOpen}
+          onClose={() => setIsEcoOpen(false)}
         />
 
         {/* Global Cart Slideout Drawer */}
