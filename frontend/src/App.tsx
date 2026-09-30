@@ -44,6 +44,9 @@ import { RiderPortalPage } from './pages/RiderPortalPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { VendorStorePage } from './pages/VendorStorePage';
+import { TermsPage } from './pages/TermsPage';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { FAQPage } from './pages/FAQPage';
 import { LuckySpinWheel } from './components/LuckySpinWheel';
 import { WhatsAppOrderButton } from './components/WhatsAppOrderButton';
 import { MobileBottomNav } from './components/MobileBottomNav';
@@ -139,7 +142,17 @@ export const App: React.FC = () => {
             <Route path="/seller-portal" element={<VendorRegisterPage />} />
             <Route path="/seller-center" element={<VendorRegisterPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/about-us" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/terms-and-conditions" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/faqs" element={<FAQPage />} />
+            <Route path="/refund" element={<TermsPage />} />
+            <Route path="/refund-policy" element={<TermsPage />} />
+            <Route path="/shipping-policy" element={<TermsPage />} />
             <Route path="/store/:slug" element={<VendorStorePage />} />
           </Routes>
         </main>
