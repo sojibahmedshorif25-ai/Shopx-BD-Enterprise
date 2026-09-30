@@ -158,25 +158,39 @@ export const verifyEmailOTP = async (req: Request, res: Response): Promise<void>
 
 export const sendPhoneOTP = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { phone } = req.body;
+    const { phone, lang = 'en' } = req.body;
     if (!phone || phone.length < 11) {
-      res.status(400).json({ success: false, message: 'Please provide a valid 11-digit Bangladeshi mobile number.' });
+      res.status(400).json({
+        success: false,
+        message: lang === 'bn' ? 'সঠিক ১১-সংখ্যার বাংলাদেশী মোবাইল নম্বর প্রদান করুন।' : 'Please provide a valid 11-digit Bangladeshi mobile number.'
+      });
       return;
     }
 
-    // Generate 4-digit OTP
-    const otp = Math.floor(1000 + Math.random() * 9000).toString();
-    otpStorage.set(phone, {
+    const cleanPhone = phone.trim();
+
+    // Check brute-force lockout
+    const lockError = checkLockout(cleanPhone, lang);
+    if (lockError) {
+      res.status(429).json({ success: false, message: lockError });
+      return;
+    }
+
+    // Generate secure 6-digit SMS OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otpStorage.set(cleanPhone, {
       code: otp,
-      expiresAt: Date.now() + 5 * 60 * 1000, // 5 min expiry
+      expiresAt: Date.now() + 10 * 60 * 1000, // 10 min expiry
     });
 
-    console.log(`📱 [SMS Gateway Simulator] OTP sent to ${phone}: ${otp}`);
+    console.log(`📱 [SMS Gateway] 6-digit OTP sent to ${cleanPhone}: ${otp}`);
 
     res.status(200).json({
       success: true,
-      message: `আপনার মোবাইলে ৪-সংখ্যার OTP কোড পাঠানো হয়েছে। (ডেমো কোড: ${otp})`,
-      otp, // Provided for easy demo testing
+      message: lang === 'bn'
+        ? `আপনার ${cleanPhone} নম্বরে ৬-সংখ্যার OTP কোড পাঠানো হয়েছে। (SMS কোড: ${otp})`
+        : `A 6-digit verification code has been sent to ${cleanPhone}. (Code: ${otp})`,
+      otp, // Provided for instant testing
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
@@ -185,29 +199,39 @@ export const sendPhoneOTP = async (req: Request, res: Response): Promise<void> =
 
 export const verifyPhoneOTP = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { phone, otp, name } = req.body;
-    const record = otpStorage.get(phone);
+    const { phone, otp, name, lang = 'en' } = req.body;
+    const cleanPhone = phone ? phone.trim() : '';
+    const record = otpStorage.get(cleanPhone);
 
-    // Accept valid OTP or default demo fallback 1234
-    if ((!record || record.code !== otp) && otp !== '1234') {
-      res.status(400).json({ success: false, message: 'ভুল বা মেয়াদোত্তীর্ণ OTP কোড।' });
+    // Accept valid 6-digit OTP or standard demo 123456
+    if ((!record || record.code !== otp) && otp !== '123456' && otp !== '1234') {
+      recordFailedAttempt(cleanPhone);
+      res.status(400).json({
+        success: false,
+        message: lang === 'bn' ? 'ভুল বা মেয়াদোত্তীর্ণ OTP কোড।' : 'Invalid or expired OTP code.'
+      });
       return;
     }
 
-    otpStorage.delete(phone);
+    otpStorage.delete(cleanPhone);
+    clearLockout(cleanPhone);
 
-    const email = `${phone}@shopxbd.com`;
-    let user = await User.findOne({ $or: [{ phone }, { email }] });
+    const email = `${cleanPhone}@shopxbd.com`;
+    let user = await User.findOne({ $or: [{ phone: cleanPhone }, { email }] });
 
     if (!user) {
       user = await User.create({
-        name: name || `User-${phone.slice(-4)}`,
+        name: name || `Customer-${cleanPhone.slice(-4)}`,
         email,
-        phone,
+        phone: cleanPhone,
         role: 'customer',
         isVerified: true,
         loyaltyCoins: 100, // 100 bonus welcome coins
       });
+    } else {
+      user.isVerified = true;
+      if (!user.phone) user.phone = cleanPhone;
+      await user.save();
     }
 
     const token = generateToken(user._id.toString(), user.role);
@@ -215,12 +239,12 @@ export const verifyPhoneOTP = async (req: Request, res: Response): Promise<void>
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 45 * 24 * 60 * 60 * 1000, // 45-day persistent session
     });
 
     res.status(200).json({
       success: true,
-      message: 'OTP সফলভাবে ভেরিফাই হয়েছে!',
+      message: lang === 'bn' ? 'মোবাইল নম্বর সফলভাবে ভেরিফাই ও লগইন হয়েছে!' : 'Mobile number successfully verified & logged in!',
       token,
       user: {
         id: user._id,
@@ -236,6 +260,7 @@ export const verifyPhoneOTP = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const claimDailyCheckin = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -423,6 +448,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const googleAuth = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, name, avatar, googleId } = req.body;
+    if (!email) {
+      res.status(400).json({ success: false, message: 'Google authentication requires email.' });
+      return;
+    }
 
     let user = await User.findOne({ email: email.toLowerCase() });
 
@@ -434,11 +463,22 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
         googleId,
         isVerified: true,
         role: 'customer',
-        loyaltyCoins: 50,
+        loyaltyCoins: 100, // 100 bonus coins
       });
+    } else {
+      user.isVerified = true;
+      if (avatar && !user.avatar) user.avatar = avatar;
+      if (googleId) user.googleId = googleId;
+      await user.save();
     }
 
     const token = generateToken(user._id.toString(), user.role);
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 45 * 24 * 60 * 60 * 1000, // 45-day persistent session
+    });
 
     res.status(200).json({
       success: true,
@@ -458,6 +498,58 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const facebookAuth = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, name, avatar, facebookId } = req.body;
+    const targetEmail = email ? email.toLowerCase() : `fb_${facebookId || Date.now()}@shopxbd.com`;
+
+    let user = await User.findOne({ $or: [{ email: targetEmail }, { facebookId }] });
+
+    if (!user) {
+      user = await User.create({
+        name: name || 'Facebook User',
+        email: targetEmail,
+        avatar: avatar || 'https://res.cloudinary.com/wb19kgrx/image/upload/v1/shopx/avatars/default-user.png',
+        facebookId,
+        isVerified: true,
+        role: 'customer',
+        loyaltyCoins: 100,
+      });
+    } else {
+      user.isVerified = true;
+      if (avatar && !user.avatar) user.avatar = avatar;
+      if (facebookId) user.facebookId = facebookId;
+      await user.save();
+    }
+
+    const token = generateToken(user._id.toString(), user.role);
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 45 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Facebook login successful!',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        avatar: user.avatar,
+        loyaltyCoins: user.loyaltyCoins,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {

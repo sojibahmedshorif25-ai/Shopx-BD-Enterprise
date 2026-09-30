@@ -7,6 +7,7 @@ import {
   adminLoginStep1,
   adminLoginStep2,
   googleAuth,
+  facebookAuth,
   sendEmailOTP,
   verifyEmailOTP,
   sendPhoneOTP,
@@ -29,10 +30,12 @@ router.post('/rider/login', riderLogin);
 router.post('/admin/login-step1', adminLoginStep1);
 router.post('/admin/login-step2', adminLoginStep2);
 router.post('/google', googleAuth);
+router.post('/facebook', facebookAuth);
 router.post('/send-email-otp', sendEmailOTP);
 router.post('/verify-email-otp', verifyEmailOTP);
 router.post('/send-otp', sendPhoneOTP);
 router.post('/verify-otp', verifyPhoneOTP);
+
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 router.put('/profile', authenticate, updateProfile);

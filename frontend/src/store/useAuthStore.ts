@@ -9,6 +9,8 @@ interface AuthState {
   login: (data: any) => Promise<void>;
   register: (data: any) => Promise<void>;
   googleLogin: (data: any) => Promise<void>;
+  facebookLogin: (data: any) => Promise<void>;
+  setAuthData: (user: User, token: string) => void;
   logout: () => Promise<void>;
   fetchCurrentUser: () => Promise<void>;
 }
@@ -17,6 +19,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: localStorage.getItem('shopx_token'),
   isLoading: false,
+
+  setAuthData: (user, token) => {
+    localStorage.setItem('shopx_token', token);
+    set({ user, token, isLoading: false });
+  },
 
   login: async (credentials) => {
     set({ isLoading: true });
@@ -60,6 +67,20 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
+  facebookLogin: async (data) => {
+    set({ isLoading: true });
+    try {
+      const res = await api.post('/auth/facebook', data);
+      if (res.data.success) {
+        localStorage.setItem('shopx_token', res.data.token);
+        set({ user: res.data.user, token: res.data.token, isLoading: false });
+      }
+    } catch (error: any) {
+      set({ isLoading: false });
+      throw new Error(error.response?.data?.message || 'Facebook login failed');
+    }
+  },
+
   logout: async () => {
     try {
       await api.post('/auth/logout');
@@ -82,3 +103,4 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 }));
+

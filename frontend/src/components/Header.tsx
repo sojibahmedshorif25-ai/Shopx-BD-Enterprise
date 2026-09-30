@@ -204,70 +204,70 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-100 shadow-sm transition-all">
-      {/* 1. Top Bar: Deliver Location, Hotline, Currency, Language */}
-      <div className="bg-[#f8fafc] text-slate-600 text-xs py-1.5 px-4 border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-emerald-700 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200 shadow-md transition-all">
+      {/* 1. Top Bar: Deliver Location, Hotline, Portals, Currency, Language */}
+      <div className="bg-slate-900 text-slate-300 text-xs sm:text-sm py-2 px-4 sm:px-6 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <span className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs sm:text-sm">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span>{lang === 'bn' ? '১০০% অরিজিনাল ব্র্যান্ড ও ক্যাশ অন ডেলিভারি' : '100% Authentic Brands, Official Warranty & COD'}</span>
             </span>
-            <span className="hidden sm:inline-block text-slate-300">|</span>
-            <span className="hidden md:flex items-center gap-1.5 text-slate-600">
-              <PhoneCall className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{t('hotline')}: <strong>01942791004</strong> (24/7 Helpline)</span>
-            </span>
+            <span className="hidden sm:inline-block text-slate-700">|</span>
+            <a
+              href="tel:+8801942791004"
+              className="hidden md:flex items-center gap-1.5 text-slate-300 hover:text-white transition text-xs sm:text-sm"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-amber-400" />
+              <span>{t('hotline')}: <strong className="text-white font-mono">01942791004</strong> (24/7 Helpline)</span>
+            </a>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* 4 Daraz Portals Navigation Links */}
-            {/* 1. Become a Seller / Seller Center */}
+          <div className="flex items-center gap-2.5 sm:gap-4 text-xs sm:text-sm font-semibold">
+            {/* 4 Role Portals Navigation Links */}
             <Link
               to="/vendor-register"
-              className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 transition"
+              className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 transition"
             >
               <Store className="w-3.5 h-3.5" />
               <span>{lang === 'bn' ? 'সেলার হাব' : 'Seller Hub'}</span>
             </Link>
 
-            <span className="text-slate-300">|</span>
+            <span className="text-slate-700">|</span>
 
-            {/* 2. DEX Rider Portal */}
             <Link
               to="/rider-portal"
-              className="hidden lg:flex items-center gap-1 text-slate-600 hover:text-blue-600 font-semibold transition"
+              className="hidden lg:flex items-center gap-1 text-slate-300 hover:text-blue-400 font-semibold transition"
             >
-              <Truck className="w-3.5 h-3.5 text-blue-600" />
+              <Truck className="w-3.5 h-3.5 text-blue-400" />
               <span>{lang === 'bn' ? 'রাইডার হাব' : 'Rider Hub'}</span>
             </Link>
 
-            <span className="hidden lg:inline text-slate-300">|</span>
+            <span className="hidden lg:inline text-slate-700">|</span>
 
-            {/* 3. Super Admin Portal */}
             <a
               href="http://localhost:5174/login"
               target="_blank"
               rel="noreferrer"
-              className="hidden xl:flex items-center gap-1 text-purple-700 hover:text-purple-800 font-bold transition"
+              className="hidden xl:flex items-center gap-1 text-purple-400 hover:text-purple-300 font-bold transition"
             >
               <Crown className="w-3.5 h-3.5" />
               <span>{lang === 'bn' ? 'এডমিন পোর্টাল' : 'Admin 2FA'}</span>
             </a>
 
-            <span className="hidden xl:inline text-slate-300">|</span>
+            <span className="hidden xl:inline text-slate-700">|</span>
 
             {/* Currency Selector */}
             <div className="relative">
               <button
                 onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-                className="flex items-center gap-1 text-slate-700 font-semibold hover:text-emerald-600 transition"
+                className="flex items-center gap-1 text-slate-200 hover:text-emerald-400 transition font-bold"
               >
                 <span>{currency} ({CURRENCIES[currency]?.symbol})</span>
                 <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
               {showCurrencyDropdown && (
-                <div className="absolute right-0 mt-1 w-40 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50">
+                <div className="absolute right-0 mt-1 w-44 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl py-1.5 z-50 text-xs">
                   {(Object.keys(CURRENCIES) as CurrencyCode[]).map((cCode) => (
                     <button
                       key={cCode}
@@ -275,27 +275,27 @@ export const Header: React.FC<HeaderProps> = ({
                         setCurrency(cCode);
                         setShowCurrencyDropdown(false);
                       }}
-                      className="w-full text-left px-3 py-1.5 text-xs hover:bg-emerald-50 hover:text-emerald-700 flex justify-between"
+                      className="w-full text-left px-3 py-2 hover:bg-slate-800 text-slate-200 hover:text-emerald-400 flex justify-between font-semibold"
                     >
                       <span>{CURRENCIES[cCode].name}</span>
-                      <span className="font-mono text-slate-400">{CURRENCIES[cCode].symbol}</span>
+                      <span className="font-mono text-emerald-400">{CURRENCIES[cCode].symbol}</span>
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            <span className="text-slate-300">|</span>
+            <span className="text-slate-700">|</span>
 
-            {/* Clear Segmented Language Switcher [ EN | বাংলা ] */}
-            <div className="flex items-center bg-slate-200/90 p-0.5 rounded-lg border border-slate-300">
+            {/* Language Switcher [ EN | বাংলা ] */}
+            <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700">
               <button
                 type="button"
                 onClick={() => setLang('en')}
-                className={`px-2 py-0.5 text-[11px] font-extrabold rounded-md transition ${
+                className={`px-2.5 py-1 text-xs font-black rounded-lg transition ${
                   lang === 'en'
-                    ? 'bg-emerald-700 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
                 }`}
                 title="Switch to English"
               >
@@ -304,10 +304,10 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 type="button"
                 onClick={() => setLang('bn')}
-                className={`px-2 py-0.5 text-[11px] font-extrabold rounded-md transition ${
+                className={`px-2.5 py-1 text-xs font-black rounded-lg transition ${
                   lang === 'bn'
-                    ? 'bg-emerald-700 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
                 }`}
                 title="বাংলায় পরিবর্তন করুন"
               >
@@ -319,21 +319,21 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* 2. Main Center Header: Logo, Search Bar, Quick Action Icons */}
-      <div className="py-3.5 px-4 max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8">
+      <div className="py-4 px-4 sm:px-6 max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8">
         {/* Brand Logo: ShopX Supermall */}
-        <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-black text-lg shadow-md shadow-emerald-700/20 group-hover:scale-105 transition">
-            <Sparkles className="w-5 h-5 fill-white" />
+        <Link to="/" className="flex items-center gap-3.5 group flex-shrink-0">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-700/25 group-hover:scale-105 transition">
+            <Sparkles className="w-6 h-6 fill-white" />
           </div>
           <div className="flex flex-col">
-            <div className="font-extrabold text-2xl tracking-tight text-slate-900 flex items-center gap-1.5 leading-none">
+            <div className="font-black text-2xl sm:text-3xl tracking-tight text-slate-900 flex items-center gap-2 leading-none">
               Shop<span className="text-emerald-700">X</span>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-extrabold uppercase tracking-wider">
+              <span className="text-[11px] bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider shadow-sm">
                 MALL
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 font-medium tracking-normal mt-1">
-              {lang === 'bn' ? 'মাল্টি-ভেন্ডর সুপারমল' : 'Supermall & SaaS Hub'}
+            <p className="text-xs text-slate-500 font-semibold tracking-normal mt-1">
+              {lang === 'bn' ? 'মাল্টি-ভেন্ডর সুপারমল ও SaaS হাব' : 'Supermall & SaaS Commerce Hub'}
             </p>
           </div>
         </Link>
@@ -345,15 +345,15 @@ export const Header: React.FC<HeaderProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={lang === 'bn' ? 'স্মার্টফোন, গ্যাজেট, ফ্যাশন, খাঁটি ফুড ও নিত্যপণ্য খুঁজুন...' : 'Search 50,000+ smartphones, tech gadgets, fashion, organic foods...'}
-              className="w-full bg-[#f8fafc] border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-full py-2.5 pl-5 pr-28 text-sm text-slate-800 outline-none transition-all placeholder-slate-400 shadow-sm"
+              placeholder={lang === 'bn' ? 'স্মার্টফোন, গ্যাজেট, ফ্যাশন, খাঁটি অর্গানিক ফুড ও নিত্যপণ্য খুঁজুন...' : 'Search 50,000+ smartphones, tech gadgets, fashion, organic foods...'}
+              className="w-full bg-[#f8fafc] border-2 border-slate-200 focus:border-emerald-600 focus:bg-white rounded-full py-3 pl-6 pr-32 text-sm sm:text-base text-slate-800 outline-none transition-all placeholder-slate-400 shadow-sm"
             />
 
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-24 text-slate-400 hover:text-slate-600"
+                className="absolute right-28 text-slate-400 hover:text-slate-600"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -363,28 +363,28 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={() => setIsImageSearchOpen(true)}
-              className="absolute right-16 p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-emerald-600 transition"
+              className="absolute right-20 p-2 rounded-full hover:bg-slate-200 text-slate-400 hover:text-emerald-600 transition"
               title="AI Camera Search"
             >
-              <Camera className="w-4 h-4" />
+              <Camera className="w-5 h-5" />
             </button>
 
             {/* Voice Search */}
             <button
               type="button"
               onClick={handleVoiceSearch}
-              className={`absolute right-10 p-1.5 rounded-full hover:bg-slate-200 transition ${
+              className={`absolute right-12 p-2 rounded-full hover:bg-slate-200 transition ${
                 isListening ? 'text-red-500 animate-ping' : 'text-slate-400 hover:text-emerald-600'
               }`}
               title="Voice Search"
             >
-              <Mic className="w-4 h-4" />
+              <Mic className="w-5 h-5" />
             </button>
 
-            {/* Green Circular Submit Button matching reference */}
+            {/* Green Circular Submit Button */}
             <button
               type="submit"
-              className="absolute right-1 bg-emerald-600 hover:bg-emerald-700 text-white p-2.5 rounded-full shadow-md shadow-emerald-600/20 transition flex items-center justify-center"
+              className="absolute right-1.5 bg-emerald-600 hover:bg-emerald-700 text-white p-2.5 rounded-full shadow-md shadow-emerald-600/30 transition flex items-center justify-center"
             >
               <Search className="w-4 h-4 stroke-[2.5]" />
             </button>
@@ -393,7 +393,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Autocomplete Suggestions */}
           {suggestions.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-50">
-              <div className="p-2.5 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              <div className="p-3 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
                 {lang === 'bn' ? `পণ্য সাজেশন্স (${suggestions.length})` : `Products Found (${suggestions.length})`}
               </div>
               <div className="max-h-80 overflow-y-auto">
@@ -402,18 +402,18 @@ export const Header: React.FC<HeaderProps> = ({
                     key={item._id}
                     to={`/product/${item.slug}`}
                     onClick={() => setSuggestions([])}
-                    className="flex items-center gap-3 p-2.5 hover:bg-emerald-50 transition border-b border-slate-50"
+                    className="flex items-center gap-3 p-3 hover:bg-emerald-50 transition border-b border-slate-50"
                   >
                     <img
                       src={item.thumbnail}
                       alt={item.title}
-                      className="w-10 h-10 object-cover rounded-xl bg-slate-100"
+                      className="w-12 h-12 object-cover rounded-xl bg-slate-100"
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-slate-800 truncate">
                         {lang === 'bn' && item.banglaTitle ? item.banglaTitle : item.title}
                       </p>
-                      <p className="text-xs font-black text-emerald-600 font-mono">
+                      <p className="text-xs font-black text-emerald-600 font-mono mt-0.5">
                         {formatPrice(item.discountPrice || item.price)}
                       </p>
                     </div>
@@ -424,17 +424,17 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* Right Action Icons (Track, Wishlist, Account, Cart) matching reference image */}
-        <div className="flex items-center gap-4 sm:gap-6">
+        {/* Right Action Icons & Login / Sign Up */}
+        <div className="flex items-center gap-3 sm:gap-5">
           {/* 1. Track Order */}
           <Link
             to="/track-order"
-            className="flex flex-col items-center text-slate-600 hover:text-emerald-600 transition group"
+            className="flex flex-col items-center text-slate-700 hover:text-emerald-600 transition group p-1"
           >
             <div className="relative">
-              <Truck className="w-5 h-5 group-hover:scale-110 transition" />
+              <Truck className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition" />
             </div>
-            <span className="text-[11px] font-medium mt-0.5 hidden lg:inline-block">
+            <span className="text-xs font-semibold mt-0.5 hidden lg:inline-block">
               {lang === 'bn' ? 'ট্র্যাক অর্ডার' : 'Track Order'}
             </span>
           </Link>
@@ -442,145 +442,132 @@ export const Header: React.FC<HeaderProps> = ({
           {/* 2. Wishlist */}
           <Link
             to="/products?filter=wishlist"
-            className="flex flex-col items-center text-slate-600 hover:text-emerald-600 transition group relative"
+            className="flex flex-col items-center text-slate-700 hover:text-emerald-600 transition group relative p-1"
           >
             <div className="relative">
-              <Heart className="w-5 h-5 group-hover:scale-110 transition" />
+              <Heart className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition" />
               {wishlistItems.length > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">
+                <span className="absolute -top-1.5 -right-2.5 bg-rose-500 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
                   {wishlistItems.length}
                 </span>
               )}
             </div>
-            <span className="text-[11px] font-medium mt-0.5 hidden lg:inline-block">
+            <span className="text-xs font-semibold mt-0.5 hidden lg:inline-block">
               {lang === 'bn' ? 'উইশলিস্ট' : 'Wishlist'}
             </span>
           </Link>
 
-          {/* 3. Account */}
-          <div className="relative">
-            <button
-              onClick={() => setShowUserDropdown(!showUserDropdown)}
-              className="flex flex-col items-center text-slate-600 hover:text-emerald-600 transition group"
-            >
-              <User className="w-5 h-5 group-hover:scale-110 transition" />
-              <span className="text-[11px] font-medium mt-0.5 hidden lg:inline-block">
-                {user ? user.name.split(' ')[0] : lang === 'bn' ? 'অ্যাকাউন্ট' : 'Account'}
-              </span>
-            </button>
+          {/* 3. Account / Dedicated Login Button */}
+          {user ? (
+            <div className="relative">
+              <button
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
+                className="flex items-center gap-2 p-1.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition group"
+              >
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xs shadow-sm">
+                  {user.name?.charAt(0) || 'U'}
+                </div>
+                <div className="hidden xl:block text-left pr-1">
+                  <p className="text-xs font-bold text-slate-900 truncate max-w-[100px]">
+                    {user.name.split(' ')[0]}
+                  </p>
+                  <span className="text-[10px] text-emerald-700 font-black font-mono flex items-center gap-0.5">
+                    🪙 {user.loyaltyCoins || 0}
+                  </span>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-700" />
+              </button>
 
-            {showUserDropdown && (
-              <div className="absolute right-0 mt-2 w-52 bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50">
-                {user ? (
-                  <>
-                    <div className="px-4 py-2 border-b border-slate-100">
-                      <p className="text-xs font-bold text-slate-800">{user.name}</p>
-                      <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
-                    </div>
-                    <Link
-                      to="/profile"
-                      onClick={() => setShowUserDropdown(false)}
-                      className="block px-4 py-2 text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700"
-                    >
-                      👤 {lang === 'bn' ? 'আমার প্রোফাইল ও ঠিকানা' : 'My Profile & Addresses'}
-                    </Link>
-                    <Link
-                      to="/profile"
-                      onClick={() => setShowUserDropdown(false)}
-                      className="block px-4 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
-                    >
-                      📦 {lang === 'bn' ? 'আমার অর্ডারসমূহ' : 'My Orders'}
-                    </Link>
-                    {user.role === 'admin' && (
-                      <a
-                        href="http://localhost:5174"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block px-4 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50"
-                      >
-                        👑 {lang === 'bn' ? 'অ্যাডমিন প্যানেল' : 'Admin Portal'}
-                      </a>
-                    )}
-                    <button
-                      onClick={() => {
-                        logout();
-                        setShowUserDropdown(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 font-semibold"
-                    >
-                      🚪 {lang === 'bn' ? 'লগআউট' : 'Sign Out'}
-                    </button>
-                  </>
-                ) : (
-                  <div className="p-3 space-y-2">
-                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                      {lang === 'bn' ? 'দারাজ ৪টি পোর্টাল লগইন' : '4 Role Portals Login'}
-                    </p>
-                    <Link
-                      to="/auth"
-                      onClick={() => setShowUserDropdown(false)}
-                      className="block w-full py-2 text-center bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md"
-                    >
-                      🛒 {lang === 'bn' ? 'কাস্টমার লগইন / সাইন আপ' : 'Customer Sign In'}
-                    </Link>
-                    <div className="pt-1 border-t border-slate-100 space-y-1">
-                      <Link
-                        to="/vendor-register"
-                        onClick={() => setShowUserDropdown(false)}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-orange-50 hover:text-orange-600 transition"
-                      >
-                        <Store className="w-3.5 h-3.5 text-orange-500" />
-                        <span>{lang === 'bn' ? 'সেলার সেন্টার' : 'Seller Center'}</span>
-                      </Link>
-                      <a
-                        href="http://localhost:5174/login"
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={() => setShowUserDropdown(false)}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-purple-700 hover:bg-purple-50 transition"
-                      >
-                        <Crown className="w-3.5 h-3.5 text-purple-600" />
-                        <span>{lang === 'bn' ? 'সুপার এডমিন (2FA)' : 'Super Admin (2FA)'}</span>
-                      </a>
-                      <Link
-                        to="/rider-portal"
-                        onClick={() => setShowUserDropdown(false)}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-blue-700 hover:bg-blue-50 transition"
-                      >
-                        <Truck className="w-3.5 h-3.5 text-blue-600" />
-                        <span>{lang === 'bn' ? 'ডেলিভারি রাইডার' : 'Delivery Rider App'}</span>
-                      </Link>
+              {showUserDropdown && (
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-2xl py-2 z-50 animate-in fade-in">
+                  <div className="px-4 py-2.5 border-b border-slate-100 bg-slate-50">
+                    <p className="text-xs font-bold text-slate-900">{user.name}</p>
+                    <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                    <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black">
+                      <span>🪙 {user.loyaltyCoins || 0} ShopX Coins</span>
                     </div>
                   </div>
-                )}
-              </div>
-            )}
-          </div>
+                  <Link
+                    to="/profile"
+                    onClick={() => setShowUserDropdown(false)}
+                    className="block px-4 py-2 text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700"
+                  >
+                    👤 {lang === 'bn' ? 'আমার প্রোফাইল ও ঠিকানা' : 'My Profile & Addresses'}
+                  </Link>
+                  <Link
+                    to="/profile"
+                    onClick={() => setShowUserDropdown(false)}
+                    className="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                  >
+                    📦 {lang === 'bn' ? 'আমার অর্ডারসমূহ' : 'My Orders'}
+                  </Link>
+                  {user.role === 'admin' && (
+                    <a
+                      href="http://localhost:5174"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block px-4 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50"
+                    >
+                      👑 {lang === 'bn' ? 'সুপার অ্যাডমিন পোর্টাল' : 'Super Admin Portal'}
+                    </a>
+                  )}
+                  {user.role === 'vendor' && (
+                    <a
+                      href="http://localhost:5174"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block px-4 py-2 text-xs font-bold text-amber-700 hover:bg-amber-50"
+                    >
+                      🏪 {lang === 'bn' ? 'সেলার ড্যাশবোর্ড' : 'Vendor Dashboard'}
+                    </a>
+                  )}
+                  <button
+                    onClick={() => {
+                      logout();
+                      setShowUserDropdown(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 font-bold border-t border-slate-100 mt-1"
+                  >
+                    🚪 {lang === 'bn' ? 'লগআউট' : 'Sign Out'}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/auth"
+              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-700/20 transition hover:shadow-lg"
+            >
+              <User className="w-4 h-4" />
+              <span className="whitespace-nowrap">{lang === 'bn' ? 'লগইন / সাইন আপ' : 'Login / Sign Up'}</span>
+            </Link>
+          )}
 
-          {/* 4. Cart with Drawer Open */}
+          {/* 4. Cart Button */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="flex items-center gap-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3.5 py-2 rounded-2xl transition border border-emerald-200 group"
+            className="flex items-center gap-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 sm:px-4 py-2 rounded-2xl transition border border-emerald-200 group shadow-sm"
           >
             <div className="relative">
-              <ShoppingCart className="w-5 h-5 text-emerald-700 group-hover:scale-110 transition" />
+              <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-700 group-hover:scale-110 transition" />
               {totalCartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-emerald-600 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
+                <span className="absolute -top-2 -right-2.5 bg-emerald-600 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
                   {totalCartCount}
                 </span>
               )}
             </div>
             <div className="hidden sm:block text-left">
-              <span className="block text-[10px] text-emerald-600 uppercase font-bold">
+              <span className="block text-[10px] text-emerald-600 uppercase font-bold tracking-wider">
                 {lang === 'bn' ? 'কার্ট' : 'Cart'}
               </span>
-              <span className="block text-xs font-extrabold font-mono text-emerald-900">
+              <span className="block text-xs font-black font-mono text-emerald-950">
                 {formatPrice(totalCartPrice)}
               </span>
             </div>
           </button>
         </div>
       </div>
+
 
       {/* 3. Bottom Navigation Bar matching reference image */}
       <div className="border-t border-slate-100 bg-white px-4">
