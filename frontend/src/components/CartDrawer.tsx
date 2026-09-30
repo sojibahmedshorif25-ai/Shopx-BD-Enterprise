@@ -15,6 +15,7 @@ export const CartDrawer: React.FC = () => {
     items,
     isDrawerOpen,
     setDrawerOpen,
+    addItem,
     removeItem,
     updateQuantity,
     getSubTotal,
@@ -201,6 +202,60 @@ export const CartDrawer: React.FC = () => {
           {/* 4. Footer & Coupon & Checkout CTA */}
           {items.length > 0 && (
             <div className="p-4 border-t border-slate-100 bg-[#f8fafc] space-y-3">
+              {/* AI Smart Cross-Sell Recommendations */}
+              <div className="p-3 bg-emerald-50/70 rounded-2xl border border-emerald-100 space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-bold text-emerald-900">
+                  <span className="flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    {lang === 'bn' ? 'স্মার্ট অ্যাড-অন রেকমেন্ডেশন' : 'Frequently Added Together'}
+                  </span>
+                  <span className="text-[9px] bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded font-mono font-black">
+                    AI PICK
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 p-2 bg-white rounded-xl border border-emerald-100 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🍯</span>
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-900 leading-tight">
+                        {lang === 'bn' ? 'সুন্দরবনের খাঁটি মধু (২৫০ গ্রাম)' : 'Sundarban Raw Honey (250g)'}
+                      </p>
+                      <span className="text-[10px] font-mono text-emerald-700 font-black">৳380</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      addItem({
+                        _id: 'upsell-honey-250',
+                        title: 'সুন্দরবনের খাঁটি মধু (২৫০ গ্রাম)',
+                        banglaTitle: 'সুন্দরবনের খাঁটি মধু (২৫০ গ্রাম)',
+                        slug: 'sundarban-raw-honey-250g',
+                        price: 380,
+                        discountPrice: 380,
+                        thumbnail: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=100&auto=format&fit=crop',
+                        images: ['https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=500&auto=format&fit=crop'],
+                        category: 'organic-foods',
+                        categorySlug: 'organic-foods',
+                        stock: 50,
+                        rating: 5,
+                        numReviews: 48,
+                        deliveryInsideDhaka: 60,
+                        deliveryOutsideDhaka: 120,
+                        isOrganic: true,
+                        soldCount: 120,
+                        sku: 'ORG-HNY-250',
+                        description: '100% pure raw organic honey',
+                        shortDescription: '100% pure raw organic honey',
+                      } as any, 1);
+                    }}
+                    className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold transition flex items-center gap-1 shadow-sm"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>{lang === 'bn' ? 'যোগ করুন' : 'Add'}</span>
+                  </button>
+                </div>
+              </div>
+
               {/* Coupon input */}
               <form onSubmit={handleApplyCoupon} className="flex gap-2">
                 <div className="relative flex-1">
