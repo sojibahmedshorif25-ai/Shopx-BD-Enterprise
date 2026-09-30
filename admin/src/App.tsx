@@ -20,6 +20,8 @@ import { InventoryAdminPage } from './pages/InventoryAdminPage';
 import { AuditLogsAdminPage } from './pages/AuditLogsAdminPage';
 import { BroadcastAdminPage } from './pages/BroadcastAdminPage';
 import { GatewaysAdminPage } from './pages/GatewaysAdminPage';
+import { BannersAdminPage } from './pages/BannersAdminPage';
+import { AbandonedCartsAdminPage } from './pages/AbandonedCartsAdminPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 import { useAdminAuthStore } from './store/useAdminAuthStore';
 
@@ -185,6 +187,22 @@ export const App: React.FC = () => {
           element={
             <ProtectedLayout>
               <GatewaysAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/banners"
+          element={
+            <ProtectedLayout>
+              <BannersAdminPage />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/abandoned-carts"
+          element={
+            <ProtectedLayout>
+              <AbandonedCartsAdminPage />
             </ProtectedLayout>
           }
         />

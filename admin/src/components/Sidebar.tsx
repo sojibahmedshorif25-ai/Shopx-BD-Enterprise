@@ -24,6 +24,8 @@ import {
   Terminal,
   Radio,
   Activity,
+  Image,
+  ShoppingBag,
 } from 'lucide-react';
 import { useAdminAuthStore } from '../store/useAdminAuthStore';
 import { useSidebarStore } from '../store/useSidebarStore';
@@ -57,6 +59,8 @@ export const Sidebar: React.FC = () => {
     {
       title: isBn ? 'মার্কেটপ্লেস ও গ্রোথ' : 'SELLERS & MARKETING',
       items: [
+        ...(isAdmin ? [{ to: '/banners', label: isBn ? 'হিরো ব্যানার ও স্লাইডার' : 'Banners & Hero Sliders', icon: Image }] : []),
+        ...(isAdmin ? [{ to: '/abandoned-carts', label: isBn ? 'অ্যাবান্ডনড কার্ট রিকভারি' : 'Abandoned Cart Recovery', icon: ShoppingBag }] : []),
         ...(isAdmin ? [{ to: '/coupons', label: isBn ? 'প্রমো ভাউচার ও ডিসকাউন্ট' : 'Promo Vouchers & Deals', icon: Ticket }] : []),
         ...(isAdmin ? [{ to: '/broadcast', label: isBn ? 'ক্যাম্পেইন ব্রডকাস্টার' : 'Campaign Broadcast Center', icon: Radio }] : []),
         ...(isAdmin ? [{ to: '/vendors', label: isBn ? 'সেলার ও ভেন্ডর হাব' : 'Vendors & Multi-Seller Hub', icon: Store }] : []),

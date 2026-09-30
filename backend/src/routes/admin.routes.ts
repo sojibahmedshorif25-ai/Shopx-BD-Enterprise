@@ -26,6 +26,12 @@ import {
   getAuditLogsAdmin,
   sendBroadcastAdmin,
   getGatewaysAdmin,
+  getAllBannersAdmin,
+  createBannerAdmin,
+  updateBannerAdmin,
+  deleteBannerAdmin,
+  getAbandonedCartsAdmin,
+  sendAbandonedCartRecoveryAdmin,
 } from '../controllers/admin.controller.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 
@@ -63,6 +69,16 @@ router.post('/broadcast', authenticate, authorize('admin'), sendBroadcastAdmin);
 
 // Gateways & Logistics Health
 router.get('/gateways', authenticate, authorize('admin'), getGatewaysAdmin);
+
+// Banners & Hero Sliders
+router.get('/banners', authenticate, authorize('admin'), getAllBannersAdmin);
+router.post('/banners', authenticate, authorize('admin'), createBannerAdmin);
+router.put('/banners/:id', authenticate, authorize('admin'), updateBannerAdmin);
+router.delete('/banners/:id', authenticate, authorize('admin'), deleteBannerAdmin);
+
+// Abandoned Carts
+router.get('/abandoned-carts', authenticate, authorize('admin'), getAbandonedCartsAdmin);
+router.post('/abandoned-carts/:id/recover', authenticate, authorize('admin'), sendAbandonedCartRecoveryAdmin);
 
 // Categories
 router.get('/categories', authenticate, authorize('admin'), getAllCategoriesAdmin);

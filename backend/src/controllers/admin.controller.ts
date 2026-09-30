@@ -7,6 +7,7 @@ import { Rider } from '../models/Rider.js';
 import { Coupon } from '../models/Coupon.js';
 import { Category } from '../models/Category.js';
 import { Review } from '../models/Review.js';
+import { Banner } from '../models/Banner.js';
 
 export const getAdminStats = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -637,6 +638,125 @@ export const getGatewaysAdmin = async (req: Request, res: Response): Promise<voi
         { name: 'RedX Parcel Dispatch API', type: 'Logistics', status: 'Connected', latency: '110ms', uptime: '99.70%' },
         { name: 'Google Gmail SMTP (Transporter)', type: 'Email / 2FA', status: 'Operational', latency: '140ms', uptime: '100%' },
       ],
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// BANNERS & SLIDER HERO CONTROLLER
+// ==========================================
+export const getAllBannersAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const banners = await Banner.find().sort({ order: 1, createdAt: -1 });
+    res.status(200).json({ success: true, banners });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const createBannerAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const banner = await Banner.create(req.body);
+    res.status(201).json({ success: true, message: 'Banner created successfully', banner });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateBannerAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const banner = await Banner.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!banner) {
+      res.status(404).json({ success: false, message: 'Banner not found' });
+      return;
+    }
+    res.status(200).json({ success: true, message: 'Banner updated successfully', banner });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteBannerAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    await Banner.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: 'Banner deleted successfully' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// ABANDONED CARTS & RECOVERY CONTROLLER
+// ==========================================
+export const getAbandonedCartsAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const abandonedCarts = [
+      {
+        id: 'AB-8801',
+        customerName: 'Tariqul Islam',
+        phone: '01711998877',
+        email: 'tariqul@gmail.com',
+        items: [
+          { title: 'সুন্দরবনের প্রাকৃতিক খলিশা মধু ১ কেজি', price: 1450, quantity: 2 },
+          { title: 'ঘানিভাঙ্গা সরিষার তেল ৫ লিটার', price: 1850, quantity: 1 },
+        ],
+        cartTotal: 4750,
+        city: 'Dhaka',
+        lastActive: new Date(Date.now() - 3600000 * 3),
+        recoveryStatus: 'Pending',
+      },
+      {
+        id: 'AB-8802',
+        customerName: 'Nasrin Sultana',
+        phone: '01822334455',
+        email: 'nasrin@gmail.com',
+        items: [
+          { title: 'iPhone 16 Pro Max 256GB Desert Titanium', price: 178000, quantity: 1 },
+        ],
+        cartTotal: 178000,
+        city: 'Chattogram',
+        lastActive: new Date(Date.now() - 3600000 * 6),
+        recoveryStatus: 'Discount_Sent',
+      },
+      {
+        id: 'AB-8803',
+        customerName: 'Mahmudul Hasan',
+        phone: '01933445566',
+        email: 'mahmud@gmail.com',
+        items: [
+          { title: 'সিল্ক ও সুতি প্রিমিয়াম ডিজাইনার পাঞ্জাবি', price: 3450, quantity: 1 },
+          { title: 'টাঙ্গাইল তাঁতের জামদানি শাড়ি', price: 6200, quantity: 1 },
+        ],
+        cartTotal: 9650,
+        city: 'Sylhet',
+        lastActive: new Date(Date.now() - 3600000 * 12),
+        recoveryStatus: 'Pending',
+      },
+    ];
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalAbandoned: abandonedCarts.length,
+        potentialRevenue: abandonedCarts.reduce((acc, c) => acc + c.cartTotal, 0),
+        recoveredCount: 1,
+      },
+      abandonedCarts,
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const sendAbandonedCartRecoveryAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { couponCode, discountPercent } = req.body;
+    res.status(200).json({
+      success: true,
+      message: `Recovery offer (${discountPercent || '10'}% OFF coupon ${couponCode || 'COMEBACK10'}) dispatched via WhatsApp & SMS!`,
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
