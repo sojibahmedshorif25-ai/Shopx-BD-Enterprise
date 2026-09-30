@@ -635,122 +635,226 @@ export const Header: React.FC<HeaderProps> = ({
               {lang === 'bn' ? 'যোগাযোগ' : 'Contact'}
             </Link>
 
-            {/* Smart AI & SaaS Hub Dropdown */}
+            {/* Smart AI & Super Services Hub Dropdown */}
             <div ref={servicesRef} className="relative">
               <button
                 onClick={() => setShowServicesDropdown(!showServicesDropdown)}
-                className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full font-bold text-xs hover:bg-emerald-100 transition"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-800 border border-emerald-300 rounded-full font-extrabold text-xs hover:bg-emerald-100 hover:shadow-sm transition"
               >
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{lang === 'bn' ? 'স্মার্ট সার্ভিসেস' : 'Smart Hub'}</span>
-                <ChevronDown className="w-3 h-3 text-emerald-600" />
+                <Sparkles className="w-3.5 h-3.5 text-emerald-700 animate-spin" style={{ animationDuration: '8s' }} />
+                <span>{lang === 'bn' ? 'স্মার্ট হাব (Smart Hub)' : 'Smart Hub'}</span>
+                <ChevronDown className="w-3 h-3 text-emerald-700" />
               </button>
 
               {showServicesDropdown && (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-2xl p-2 z-50 text-xs">
-                  <div className="p-2 border-b border-slate-100 font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                    {lang === 'bn' ? 'এআই ও SaaS পাওয়ার টুলস' : 'AI & SaaS Power Tools'}
+                <div className="absolute top-full right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-4 z-50 text-xs animate-in fade-in space-y-3">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <span className="w-7 h-7 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-black text-xs shadow-sm">
+                        SX
+                      </span>
+                      <div>
+                        <h4 className="font-extrabold text-slate-900 dark:text-white">
+                          {lang === 'bn' ? 'ShopX স্মার্ট হাব ও সুপার পাওয়ার টুলস' : 'ShopX Smart Hub & Power Services'}
+                        </h4>
+                        <p className="text-[10px] text-slate-400">
+                          {lang === 'bn' ? 'এআই, ভাউচার, লজিস্টিকস ও শপিং সার্ভিসেস' : 'AI, vouchers, logistics & customer tools'}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-1 mt-1">
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* 1. AI Shopping Copilot */}
                     <button
                       onClick={() => { onOpenAI?.(); setShowServicesDropdown(false); }}
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-700 flex items-center gap-2 font-medium"
+                      className="p-2.5 rounded-2xl bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100/70 border border-purple-200 text-left transition flex flex-col justify-between"
                     >
-                      🤖 {lang === 'bn' ? 'এআই পার্সোনাল অ্যাসিস্ট্যান্ট' : 'AI Shopping Assistant'}
+                      <span className="text-base mb-1">🤖</span>
+                      <p className="font-bold text-purple-900 dark:text-purple-300 text-[11px] leading-tight">
+                        {lang === 'bn' ? 'এআই শপিং অ্যাসিস্ট্যান্ট' : 'AI Shopping Copilot'}
+                      </p>
+                      <span className="text-[9px] text-purple-600 mt-0.5">{lang === 'bn' ? 'ভয়েস ও স্মার্ট পরামর্শ' : 'Voice & Chat Advice'}</span>
                     </button>
-                    <button
-                      onClick={() => { onOpenBudgetCart?.(); setShowServicesDropdown(false); }}
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 flex items-center gap-2 font-medium"
+
+                    {/* 2. Voucher & Deals */}
+                    <Link
+                      to="/products?filter=deals"
+                      onClick={() => setShowServicesDropdown(false)}
+                      className="p-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100/70 border border-amber-200 text-left transition flex flex-col justify-between"
                     >
-                      💡 {lang === 'bn' ? 'এআই বাজেট কার্ট বিল্ডার' : 'AI Budget Cart Builder'}
-                    </button>
-                    <button
-                      onClick={() => { onOpenSaaSStoreBuilder?.(); setShowServicesDropdown(false); }}
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-blue-50 text-slate-700 hover:text-blue-700 flex items-center gap-2 font-medium"
-                    >
-                      🚀 {lang === 'bn' ? 'SaaS ভেন্ডর স্টোর বিল্ডার' : 'SaaS Vendor Storefront'}
-                    </button>
-                    <button
-                      onClick={() => { onOpenLive?.(); setShowServicesDropdown(false); }}
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-rose-50 text-slate-700 hover:text-rose-700 flex items-center gap-2 font-medium"
-                    >
-                      🎥 {lang === 'bn' ? 'লাইভ স্ট্রিম শপিং' : 'Live Stream Shopping'}
-                    </button>
-                    <button
-                      onClick={() => { onOpenB2BQuote?.(); setShowServicesDropdown(false); }}
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-cyan-50 text-slate-700 hover:text-cyan-700 flex items-center gap-2 font-medium"
-                    >
-                      🏢 {lang === 'bn' ? 'B2B হোলসেল কোটেশন' : 'B2B Wholesale Quotes'}
-                    </button>
+                      <span className="text-base mb-1">🎟️</span>
+                      <p className="font-bold text-amber-900 dark:text-amber-300 text-[11px] leading-tight">
+                        {lang === 'bn' ? 'ভাউচার ও মেগা ডিলস' : 'Voucher & Mega Deals'}
+                      </p>
+                      <span className="text-[9px] text-amber-600 mt-0.5">{lang === 'bn' ? '১-ক্লিকে ৳১০০ ছাড়' : 'Flat ৳100 Off & Free Ship'}</span>
+                    </Link>
+
+                    {/* 3. Daily Coins & VIP */}
                     <button
                       onClick={() => { onOpenVIP?.(); setShowServicesDropdown(false); }}
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-700 hover:text-amber-700 flex items-center gap-2 font-medium"
+                      className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100/70 border border-emerald-200 text-left transition flex flex-col justify-between"
                     >
-                      👑 {lang === 'bn' ? 'ভিআইপি রিওয়ার্ডস ক্লাব' : 'VIP Loyalty Club'}
+                      <span className="text-base mb-1">🪙</span>
+                      <p className="font-bold text-emerald-900 dark:text-emerald-300 text-[11px] leading-tight">
+                        {lang === 'bn' ? 'ডেইলি কয়েন ও ভিআইপি' : 'Daily Coins & VIP Club'}
+                      </p>
+                      <span className="text-[9px] text-emerald-600 mt-0.5">{lang === 'bn' ? '৭-দিনের স্ট্রিক রিওয়ার্ড' : '7-Day Check-in Streak'}</span>
                     </button>
+
+                    {/* 4. Live Stream Shopping */}
                     <button
-                      onClick={() => { onOpenRecruiter?.(); setShowServicesDropdown(false); }}
-                      className="w-full text-left px-3 py-2 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 hover:from-orange-100 hover:to-amber-100 text-orange-950 font-bold border border-orange-200 flex items-center gap-2 mt-1"
+                      onClick={() => { onOpenLive?.(); setShowServicesDropdown(false); }}
+                      className="p-2.5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100/70 border border-rose-200 text-left transition flex flex-col justify-between"
                     >
-                      ⭐ {lang === 'bn' ? 'টেক লিড / সিভি আর্কিটেকচার' : 'System Architecture (CV / Blueprint)'}
+                      <span className="text-base mb-1">🎥</span>
+                      <p className="font-bold text-rose-900 dark:text-rose-300 text-[11px] leading-tight">
+                        {lang === 'bn' ? 'লাইভ স্ট্রিম শপিং' : 'Live Stream Shop'}
+                      </p>
+                      <span className="text-[9px] text-rose-600 mt-0.5">{lang === 'bn' ? 'ভিডিও কমার্স ও ডিল' : 'Real-Time Video Sales'}</span>
                     </button>
+
+                    {/* 5. Live DEX Tracking */}
+                    <Link
+                      to="/track-order"
+                      onClick={() => setShowServicesDropdown(false)}
+                      className="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100/70 border border-blue-200 text-left transition flex flex-col justify-between"
+                    >
+                      <span className="text-base mb-1">🚚</span>
+                      <p className="font-bold text-blue-900 dark:text-blue-300 text-[11px] leading-tight">
+                        {lang === 'bn' ? 'অর্ডার লাইভ ট্র্যাকিং' : 'Live DEX GPS Tracking'}
+                      </p>
+                      <span className="text-[9px] text-blue-600 mt-0.5">{lang === 'bn' ? '২৪ ঘণ্টার সুপার ডেলিভারি' : 'Real-Time Rider Status'}</span>
+                    </Link>
+
+                    {/* 6. AI Virtual Try-On */}
+                    <button
+                      onClick={() => { onOpenTryOn?.(); setShowServicesDropdown(false); }}
+                      className="p-2.5 rounded-2xl bg-cyan-50 dark:bg-cyan-950/30 hover:bg-cyan-100/70 border border-cyan-200 text-left transition flex flex-col justify-between"
+                    >
+                      <span className="text-base mb-1">🥼</span>
+                      <p className="font-bold text-cyan-900 dark:text-cyan-300 text-[11px] leading-tight">
+                        {lang === 'bn' ? 'ভার্চুয়াল ট্রাই-অন (AR)' : 'Virtual Try-On AR'}
+                      </p>
+                      <span className="text-[9px] text-cyan-600 mt-0.5">{lang === 'bn' ? 'পোশাক ও চশমা ট্রায়াল' : '3D Studio Experience'}</span>
+                    </button>
+                  </div>
+
+                  {/* Head Office & Hotline Footer */}
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-2xl text-[10px] space-y-1">
+                    <div className="flex items-center justify-between font-bold text-slate-800 dark:text-white">
+                      <span>🏢 {lang === 'bn' ? 'হেড অফিস:' : 'Head Office:'}</span>
+                      <span className="text-emerald-700">{lang === 'bn' ? 'রৌমারী, কুড়িগ্রাম, রংপুর' : 'Rowmari, Kurigram, Rangpur'}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-slate-500">
+                      <span>📞 24/7 Helpline:</span>
+                      <strong className="text-emerald-700 font-mono">01942791004</strong>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
           </nav>
 
-          {/* Right: Deliver to Selector */}
-          <div className="flex items-center gap-2 text-xs py-2">
-            <MapPin className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-            <span className="text-slate-500 font-medium">{lang === 'bn' ? 'ডেলিভারি এরিয়া:' : 'Deliver to:'}</span>
-            <button
-              onClick={() => setShowLocationModal(true)}
-              className="text-slate-800 font-bold hover:text-emerald-700 flex items-center gap-1 underline underline-offset-2"
-            >
-              <span>{deliveryLocation}</span>
-              <ChevronDown className="w-3 h-3 text-slate-500" />
-            </button>
+          {/* Right: Deliver to 64-District Selector */}
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs py-2">
+            <div className="w-7 h-7 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 flex items-center justify-center flex-shrink-0">
+              <MapPin className="w-3.5 h-3.5" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-[10px] text-slate-400 font-semibold leading-none">{lang === 'bn' ? 'ডেলিভারি এরিয়া:' : 'Deliver to:'}</span>
+              <button
+                onClick={() => setShowLocationModal(true)}
+                className="text-slate-800 dark:text-white font-black hover:text-emerald-700 flex items-center gap-1 text-xs underline underline-offset-2 transition"
+              >
+                <span>{deliveryLocation}</span>
+                <ChevronDown className="w-3 h-3 text-emerald-600" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Location Selector Modal */}
+      {/* Comprehensive 64-District Location Selector Modal */}
       {showLocationModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-emerald-600" />
-                <span>{lang === 'bn' ? 'ডেলিভারি স্থান নির্বাচন করুন' : 'Select Delivery Location'}</span>
-              </h3>
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 flex items-center justify-center">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
+                    {lang === 'bn' ? 'ডেলিভারি এরিয়া ও শিপিং ক্যালকুলেটর' : 'Select Delivery Location & Shipping Calculator'}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    {lang === 'bn' ? 'বাংলাদেশের ৬৪ জেলায় দ্রুততম এক্সপ্রেস ডেলিভারি' : 'Express Doorstep Delivery Across all 64 Districts'}
+                  </p>
+                </div>
+              </div>
               <button
                 onClick={() => setShowLocationModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-xs text-slate-500 mb-4">
-              {lang === 'bn' ? 'দ্রুততম ৩০ মিনিটে হোম ডেলিভারির জন্য আপনার এলাকা নির্বাচন করুন:' : 'Choose your delivery area for 30-minute fast doorstep delivery:'}
-            </p>
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {['Dhaka, Dhanmondi', 'Dhaka, Gulshan', 'Dhaka, Uttara', 'Dhaka, Mirpur', 'Chittagong, Nasirabad', 'Sylhet, Zindabazar'].map((loc) => (
-                <button
-                  key={loc}
-                  onClick={() => {
-                    setDeliveryLocation(loc);
-                    setShowLocationModal(false);
-                  }}
-                  className={`p-3 rounded-2xl text-xs font-semibold text-left border transition ${
-                    deliveryLocation === loc
-                      ? 'border-emerald-600 bg-emerald-50 text-emerald-800 font-bold'
-                      : 'border-slate-200 hover:border-emerald-300 text-slate-700'
-                  }`}
-                >
-                  📍 {loc}
-                </button>
-              ))}
+
+            {/* Quick Popular Locations */}
+            <div>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">
+                {lang === 'bn' ? 'জনপ্রিয় দ্রুত ডেলিভারি জোন:' : 'Popular Fast Delivery Zones:'}
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {[
+                  { name: 'Rowmari, Kurigram', tag: 'Head Hub • 24h', fee: '৳60' },
+                  { name: 'Dhaka, Dhanmondi', tag: 'Express • 24h', fee: '৳60' },
+                  { name: 'Dhaka, Gulshan', tag: 'Express • 24h', fee: '৳60' },
+                  { name: 'Dhaka, Uttara', tag: 'Express • 24h', fee: '৳60' },
+                  { name: 'Chattogram City', tag: 'Express • 48h', fee: '৳120' },
+                  { name: 'Sylhet, Zindabazar', tag: 'Express • 48h', fee: '৳120' },
+                  { name: 'Rajshahi Sadar', tag: 'Express • 48h', fee: '৳120' },
+                  { name: 'Khulna City', tag: 'Express • 48h', fee: '৳120' },
+                  { name: 'Rangpur City', tag: 'Express • 24h', fee: '৳60' },
+                ].map((loc) => (
+                  <button
+                    key={loc.name}
+                    onClick={() => {
+                      setDeliveryLocation(loc.name);
+                      localStorage.setItem('shopx_delivery_location', loc.name);
+                      setShowLocationModal(false);
+                    }}
+                    className={`p-2.5 rounded-2xl text-left border transition flex flex-col justify-between ${
+                      deliveryLocation === loc.name
+                        ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 ring-2 ring-emerald-500/30 font-bold'
+                        : 'border-slate-200 dark:border-slate-800 hover:border-emerald-300 text-slate-700 dark:text-slate-300 bg-slate-50/50'
+                    }`}
+                  >
+                    <span className="font-extrabold text-xs truncate">{loc.name}</span>
+                    <div className="flex items-center justify-between text-[10px] text-emerald-700 dark:text-emerald-400 mt-1">
+                      <span>{loc.tag}</span>
+                      <span className="font-mono font-black">{loc.fee}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Delivery Guarantee Info Card */}
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-800 dark:text-white">
+                <span className="flex items-center gap-1.5">
+                  <Truck className="w-4 h-4 text-emerald-600" />
+                  <span>{lang === 'bn' ? 'ডেলিভারি চার্জ রেট:' : 'Delivery Charge Rate:'}</span>
+                </span>
+                <span className="text-emerald-700 font-mono font-black">
+                  {deliveryLocation.toLowerCase().includes('dhaka') || deliveryLocation.toLowerCase().includes('rowmari') || deliveryLocation.toLowerCase().includes('rangpur') || deliveryLocation.toLowerCase().includes('kurigram') ? '৳৬০ (24h Express)' : '৳১২০ (48-72h Express)'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                ✓ {lang === 'bn' ? 'ক্যাশ অন ডেলিভারি (পণ্য দেখে মূল্য পরিশোধ)' : 'Cash on Delivery (Pay after inspecting product)'} • ✓ {lang === 'bn' ? '৭ দিনের সহজ রিটার্ন গ্যারান্টি' : '7-Day Easy Returns Guarantee'}
+              </p>
             </div>
           </div>
         </div>
