@@ -276,28 +276,28 @@ export const HeroSlider: React.FC = () => {
             </div>
 
             {/* 4 Clean Deal Items List */}
-            <div className="grid grid-cols-2 gap-3 my-3">
+            <div className="grid grid-cols-2 gap-3.5 my-3.5">
               {dealProducts.map((item) => (
                 <div
                   key={item.id}
-                  className="border border-slate-100 rounded-2xl p-2.5 bg-slate-50/50 hover:bg-emerald-50/40 hover:border-emerald-200 transition group flex flex-col justify-between"
+                  className="border border-slate-100 rounded-2xl p-3 bg-slate-50/70 hover:bg-emerald-50/50 hover:border-emerald-200 transition-all duration-200 group flex flex-col justify-between shadow-xs hover:shadow-sm"
                 >
                   <div className="relative">
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-20 object-cover rounded-xl bg-white mb-1.5 group-hover:scale-105 transition"
+                      className="w-full h-24 object-cover rounded-xl bg-white mb-2 group-hover:scale-105 transition-transform duration-300"
                     />
-                    <span className="absolute top-1 left-1 bg-rose-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-md">
+                    <span className="absolute top-1.5 left-1.5 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md shadow-sm">
                       {item.discount}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[9px] text-slate-400 font-medium truncate block">{item.unit}</span>
-                    <h4 className="text-xs font-bold text-slate-800 truncate">{item.title}</h4>
-                    <div className="flex items-baseline gap-1 mt-0.5">
-                      <span className="text-xs font-black text-emerald-700 font-mono">
+                    <span className="text-[10px] text-slate-400 font-semibold truncate block">{item.unit}</span>
+                    <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 truncate mt-0.5">{item.title}</h4>
+                    <div className="flex items-baseline gap-1.5 mt-1">
+                      <span className="text-xs sm:text-sm font-black text-emerald-800 font-mono">
                         {formatPrice(item.price)}
                       </span>
                       <span className="text-[10px] text-slate-400 line-through font-mono">
@@ -308,17 +308,17 @@ export const HeroSlider: React.FC = () => {
 
                   <button
                     onClick={() => handleAddToCart(item)}
-                    className="mt-2 w-full py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold rounded-xl flex items-center justify-center gap-1 shadow-sm transition"
+                    className="mt-2.5 w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition"
                   >
                     {addedId === item.id ? (
                       <>
-                        <Check className="w-3 h-3 text-white" />
-                        <span>Added</span>
+                        <Check className="w-3.5 h-3.5 text-white" />
+                        <span>{lang === 'bn' ? 'যোগ হয়েছে' : 'Added'}</span>
                       </>
                     ) : (
                       <>
-                        <Plus className="w-3 h-3 text-white" />
-                        <span>Add to Cart</span>
+                        <Plus className="w-3.5 h-3.5 text-white" />
+                        <span>{lang === 'bn' ? '+ কার্ট' : '+ Add to Cart'}</span>
                       </>
                     )}
                   </button>
@@ -328,42 +328,42 @@ export const HeroSlider: React.FC = () => {
 
             <Link
               to="/products?filter=deals"
-              className="text-center text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline pt-2 border-t border-slate-100 flex items-center justify-center gap-1"
+              className="text-center text-xs sm:text-sm font-bold text-emerald-700 hover:text-emerald-800 hover:underline pt-2.5 border-t border-slate-100 flex items-center justify-center gap-1.5"
             >
-              <span>View All Mega Deals</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>{lang === 'bn' ? 'সকল মেগা ডিল দেখুন' : 'View All Mega Deals'}</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
           {/* Right Side Promo Mini Cards */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-gradient-to-br from-emerald-800 to-teal-900 text-white p-4 rounded-2xl flex flex-col justify-between shadow-sm">
+          <div className="grid grid-cols-2 gap-3.5">
+            <div className="bg-gradient-to-br from-emerald-800 to-teal-900 text-white p-5 rounded-3xl flex flex-col justify-between shadow-sm hover:shadow-md transition">
               <div>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-300">
-                  Code: SHOPX100
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-300 bg-white/10 px-2 py-0.5 rounded-md inline-block">
+                  CODE: SHOPX100
                 </span>
-                <h4 className="text-xs font-extrabold mt-1">Flat ৳100 Off on First Order</h4>
+                <h4 className="text-sm font-extrabold mt-2 leading-snug">{lang === 'bn' ? 'প্রথম অর্ডারে ৳১০০ ছাড়' : 'Flat ৳100 Off on First Order'}</h4>
               </div>
               <Link
                 to="/products"
-                className="mt-2 text-[10px] font-bold bg-white text-emerald-900 py-1.5 px-3 rounded-lg text-center shadow hover:bg-emerald-50 transition"
+                className="mt-3 text-xs font-bold bg-white text-emerald-900 py-2 px-3.5 rounded-xl text-center shadow hover:bg-emerald-50 transition block"
               >
-                Shop Now →
+                {lang === 'bn' ? 'এখনই কিনুন →' : 'Shop Now →'}
               </Link>
             </div>
 
-            <div className="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-4 rounded-2xl flex flex-col justify-between shadow-sm">
+            <div className="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 rounded-3xl flex flex-col justify-between shadow-sm hover:shadow-md transition">
               <div>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-amber-200">
-                  SaaS Multi-Vendor Hub
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-200 bg-white/10 px-2 py-0.5 rounded-md inline-block">
+                  {lang === 'bn' ? 'মাল্টি-ভেন্ডর হাব' : 'SaaS Multi-Vendor Hub'}
                 </span>
-                <h4 className="text-xs font-extrabold mt-1">Start Selling on ShopX BD</h4>
+                <h4 className="text-sm font-extrabold mt-2 leading-snug">{lang === 'bn' ? 'ShopX-এ দোকান খুলুন' : 'Start Selling on ShopX BD'}</h4>
               </div>
               <Link
                 to="/vendor-register"
-                className="mt-2 text-[10px] font-bold bg-white text-orange-950 py-1.5 px-3 rounded-lg text-center shadow hover:bg-orange-50 transition"
+                className="mt-3 text-xs font-bold bg-white text-orange-950 py-2 px-3.5 rounded-xl text-center shadow hover:bg-orange-50 transition block"
               >
-                Open Store →
+                {lang === 'bn' ? 'দোকান খুলুন →' : 'Open Store →'}
               </Link>
             </div>
           </div>

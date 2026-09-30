@@ -70,7 +70,7 @@ export const HomePage: React.FC = () => {
       });
 
   return (
-    <div className="space-y-6 pb-16 bg-[#f8fafc]">
+    <div className="space-y-10 sm:space-y-14 pb-20 bg-[#f8fafc]">
       {/* 1. Mega Hero Slider & Deals of the Day */}
       <HeroSlider />
 
@@ -112,7 +112,7 @@ export const HomePage: React.FC = () => {
             <h2 className="text-2xl font-extrabold text-slate-900">
               {lang === 'bn' ? 'জনপ্রিয় ও শীর্ষ রেটেড পণ্যসমূহ' : 'Popular & Trending Products'}
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
               {lang === 'bn'
                 ? 'জেনুইন ব্র্যান্ড ওয়্যারেন্টি সহ শীর্ষ ক্যাটাগরির সেরা পণ্য'
                 : 'Top authenticated products across all departments with warranty'}
@@ -120,14 +120,14 @@ export const HomePage: React.FC = () => {
           </div>
 
           {/* Department Filter Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap ${
+                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-emerald-700 text-white shadow-sm'
+                    ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
                     : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
                 }`}
               >
@@ -139,7 +139,7 @@ export const HomePage: React.FC = () => {
 
         {/* Product Grid */}
         {isLoading ? (
-          <div className="py-12 text-center text-slate-400 font-bold">
+          <div className="py-16 text-center text-slate-400 font-bold text-sm">
             {lang === 'bn' ? 'ক্যাটালগ লোড হচ্ছে...' : 'Loading flagship catalog...'}
           </div>
         ) : filteredProducts.length === 0 ? (
@@ -149,13 +149,13 @@ export const HomePage: React.FC = () => {
             </p>
             <button
               onClick={() => setActiveTab('all')}
-              className="mt-3 px-5 py-2 bg-emerald-700 text-white font-bold text-xs rounded-full shadow"
+              className="mt-3 px-5 py-2.5 bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-full shadow"
             >
               {lang === 'bn' ? 'সকল পণ্য দেখুন' : 'Show All Products'}
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product._id}

@@ -151,49 +151,49 @@ export const CategoryExplorerGrid: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto px-4 py-2">
+    <div className="space-y-10 max-w-7xl mx-auto px-4 py-4">
       {/* 1. SHOP BY DEPARTMENT (World Standard Categories with Accurate Item Counts) */}
       <section>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
           <div>
-            <h2 className="text-xl font-extrabold text-slate-900">
+            <h2 className="text-2xl font-extrabold text-slate-900">
               {lang === 'bn' ? 'বিশ্বমানের সকল ক্যাটাগরি ও ডিপার্টমেন্ট' : 'Explore Global Departments'}
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
               {lang === 'bn' ? 'স্মার্টফোন, গ্যাজেট, অর্গানিক খাদ্য, ফ্যাশন, হোম ও গেমিং কালেকশন' : 'Shop authentic smartphones, gadgets, organic food, fashion & lifestyle'}
             </p>
           </div>
           <Link
             to="/products"
-            className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 group"
+            className="text-xs sm:text-sm font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1.5 group self-start sm:self-auto"
           >
-            <span>{lang === 'bn' ? 'সকল পণ্য দেখুন' : 'View All'}</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            <span>{lang === 'bn' ? 'সকল পণ্য দেখুন' : 'View All Departments'}</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-4 sm:gap-5">
           {worldCategories.map((cat) => {
             const count = productCounts[cat.slug] !== undefined ? productCounts[cat.slug] : cat.defaultCount;
             return (
               <Link
                 key={cat.id}
                 to={`/products?category=${cat.slug}`}
-                className="group flex flex-col items-center p-3.5 rounded-2xl bg-white border border-slate-100 hover:border-emerald-400 hover:shadow-md transition-all text-center relative"
+                className="group flex flex-col items-center p-5 sm:p-6 rounded-3xl bg-white border border-slate-100/90 hover:border-emerald-400 hover:shadow-xl transition-all duration-300 text-center relative"
               >
-                <div className={`w-16 h-16 rounded-full ${cat.bg} border p-1 mb-2.5 flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform shadow-sm`}>
+                <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-3xl ${cat.bg} border p-1.5 mb-3 flex items-center justify-center overflow-hidden group-hover:scale-108 transition-all duration-300 shadow-sm group-hover:shadow-md`}>
                   <img
                     src={cat.image}
                     alt={cat.name}
-                    className="w-full h-full object-cover rounded-full"
+                    className="w-full h-full object-cover rounded-2xl"
                     loading="lazy"
                   />
                 </div>
-                <h3 className="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-tight">
+                <h3 className="text-sm sm:text-base font-extrabold text-slate-800 group-hover:text-emerald-700 transition-colors leading-tight">
                   {lang === 'bn' ? cat.bn : cat.name}
                 </h3>
-                <span className="text-[10px] text-slate-400 mt-1 font-mono">
-                  {count} {lang === 'bn' ? 'টি আইটেম' : 'Items'}
+                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full mt-2 font-mono">
+                  {count} {lang === 'bn' ? 'পণ্য' : 'Items'}
                 </span>
               </Link>
             );
@@ -202,76 +202,79 @@ export const CategoryExplorerGrid: React.FC = () => {
       </section>
 
       {/* 2. 3-COLUMN MEGA PROMO CARDS */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Banner 1: Apple & Tech Fest */}
-        <div className="bg-[#eef5fa] border border-blue-200/80 rounded-3xl p-6 flex items-center justify-between relative overflow-hidden shadow-sm group">
-          <div className="z-10 space-y-2 max-w-[60%]">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-800 bg-blue-200/60 px-2 py-0.5 rounded-full">
+        <div className="bg-[#eef5fa] border border-blue-200/90 rounded-3xl p-7 sm:p-8 flex items-center justify-between relative overflow-hidden shadow-sm hover:shadow-md transition-all group">
+          <div className="z-10 space-y-2.5 max-w-[62%]">
+            <span className="text-[11px] font-black uppercase tracking-wider text-blue-800 bg-blue-200/80 px-3 py-1 rounded-full">
               {lang === 'bn' ? '৪০% পর্যন্ত ছাড়' : 'Up to 40% Off'}
             </span>
-            <h3 className="text-xl font-extrabold text-slate-900 leading-tight">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
               {lang === 'bn' ? 'অ্যাপল ও গ্যাজেট' : 'Apple & Gadgets'} <br />
               <span className="text-blue-700">{lang === 'bn' ? 'ফ্ল্যাগশিপ ফেস্ট' : 'Flagship Fest'}</span>
             </h3>
             <Link
               to="/products?category=smartphones-tablets"
-              className="inline-block mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition"
+              className="inline-flex items-center gap-1.5 mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl shadow-md transition"
             >
-              {lang === 'bn' ? 'ডিল দেখুন →' : 'Explore Deals →'}
+              <span>{lang === 'bn' ? 'ডিল দেখুন' : 'Explore Deals'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
           <img
             src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&auto=format&fit=crop&q=80"
             alt="Flagship Tech"
-            className="w-28 h-28 object-cover rounded-2xl shadow-md group-hover:scale-105 transition-transform"
+            className="w-32 h-32 object-cover rounded-2xl shadow-md group-hover:scale-108 transition-transform duration-300"
           />
         </div>
 
         {/* Banner 2: 100% Pure Organic Foods */}
-        <div className="bg-[#eaf8ee] border border-emerald-200/80 rounded-3xl p-6 flex items-center justify-between relative overflow-hidden shadow-sm group">
-          <div className="z-10 space-y-2 max-w-[60%]">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded-full">
+        <div className="bg-[#eaf8ee] border border-emerald-200/90 rounded-3xl p-7 sm:p-8 flex items-center justify-between relative overflow-hidden shadow-sm hover:shadow-md transition-all group">
+          <div className="z-10 space-y-2.5 max-w-[62%]">
+            <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-200/80 px-3 py-1 rounded-full">
               {lang === 'bn' ? 'বিএসটিআই পরীক্ষিত' : 'BSTI Certified'}
             </span>
-            <h3 className="text-xl font-extrabold text-slate-900 leading-tight">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
               {lang === 'bn' ? '১০০% খাঁটি' : 'Pure Organic'} <br />
               <span className="text-emerald-700">{lang === 'bn' ? 'মধু ও গাওয়া ঘি' : 'Honey & Ghee'}</span>
             </h3>
             <Link
               to="/products?category=organic-foods"
-              className="inline-block mt-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition"
+              className="inline-flex items-center gap-1.5 mt-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl shadow-md transition"
             >
-              {lang === 'bn' ? 'অর্গানিক কিনুন →' : 'Shop Organic →'}
+              <span>{lang === 'bn' ? 'অর্গানিক কিনুন' : 'Shop Organic'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
           <img
             src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&auto=format&fit=crop&q=80"
             alt="Pure Honey"
-            className="w-28 h-28 object-cover rounded-2xl shadow-md group-hover:scale-105 transition-transform"
+            className="w-32 h-32 object-cover rounded-2xl shadow-md group-hover:scale-108 transition-transform duration-300"
           />
         </div>
 
         {/* Banner 3: Luxury Fashion & Watches */}
-        <div className="bg-[#fef4ea] border border-orange-200/80 rounded-3xl p-6 flex items-center justify-between relative overflow-hidden shadow-sm group">
-          <div className="z-10 space-y-2 max-w-[60%]">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-full">
+        <div className="bg-[#fef4ea] border border-orange-200/90 rounded-3xl p-7 sm:p-8 flex items-center justify-between relative overflow-hidden shadow-sm hover:shadow-md transition-all group">
+          <div className="z-10 space-y-2.5 max-w-[62%]">
+            <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-200/80 px-3 py-1 rounded-full">
               {lang === 'bn' ? 'নতুন কালেকশন' : 'New Arrival'}
             </span>
-            <h3 className="text-xl font-extrabold text-slate-900 leading-tight">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
               {lang === 'bn' ? 'রাজকীয় ফ্যাশন' : 'Royal Fashion'} <br />
               <span className="text-amber-700">{lang === 'bn' ? 'ও আতর সুগন্ধি' : '& Fragrances'}</span>
             </h3>
             <Link
               to="/products?category=fashion-lifestyle"
-              className="inline-block mt-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow transition"
+              className="inline-flex items-center gap-1.5 mt-2 bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl shadow-md transition"
             >
-              {lang === 'bn' ? 'ফ্যাশন দেখুন →' : 'Shop Fashion →'}
+              <span>{lang === 'bn' ? 'ফ্যাশন দেখুন' : 'Shop Fashion'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
           <img
             src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=300&auto=format&fit=crop&q=80"
             alt="Royal Watches"
-            className="w-28 h-28 object-cover rounded-2xl shadow-md group-hover:scale-105 transition-transform"
+            className="w-32 h-32 object-cover rounded-2xl shadow-md group-hover:scale-108 transition-transform duration-300"
           />
         </div>
       </section>

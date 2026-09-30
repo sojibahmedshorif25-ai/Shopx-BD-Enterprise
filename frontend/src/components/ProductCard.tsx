@@ -72,10 +72,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div className="group relative bg-white rounded-2xl border border-slate-100 hover:border-emerald-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden p-3.5">
+    <div className="group relative bg-white rounded-3xl border border-slate-100/80 hover:border-emerald-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden p-4 sm:p-5">
       {/* Top Badges & Actions */}
-      <div className="flex items-center justify-between mb-2">
-        <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow-sm ${badge.bg}`}>
+      <div className="flex items-center justify-between mb-2.5">
+        <span className={`text-[11px] font-black px-2.5 py-1 rounded-lg shadow-sm ${badge.bg}`}>
           {badge.text}
         </span>
 
@@ -86,10 +86,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             if (isLiked) removeWishlist(product._id);
             else addWishlist(product);
           }}
-          className="text-slate-300 hover:text-rose-500 transition p-1"
+          className="text-slate-300 hover:text-rose-500 transition p-1.5 rounded-full hover:bg-rose-50"
           title="Wishlist"
         >
-          <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+          <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
         </button>
       </div>
 
@@ -97,12 +97,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <Link
         to={`/product/${product.slug}`}
         onClick={() => recordView(product)}
-        className="relative block aspect-square bg-[#f8fafc] rounded-xl overflow-hidden mb-3"
+        className="relative block aspect-square bg-[#f8fafc] rounded-2xl overflow-hidden mb-3.5 group-hover:bg-[#f1f5f9] transition-colors"
       >
         <img
           src={product.thumbnail || product.images[0]}
           alt={title}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
           loading="lazy"
         />
 
@@ -114,18 +114,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             recordView(product);
             if (onQuickView) onQuickView(product);
           }}
-          className="absolute bottom-2 right-2 bg-white/90 hover:bg-white text-slate-700 p-2 rounded-xl shadow opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute bottom-2.5 right-2.5 bg-white/95 hover:bg-white text-slate-800 p-2.5 rounded-xl shadow-md opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0"
           title={lang === 'bn' ? 'কুইক ভিউ' : 'Quick View'}
         >
-          <Eye className="w-3.5 h-3.5" />
+          <Eye className="w-4 h-4 text-slate-700" />
         </button>
       </Link>
 
       {/* Body Details */}
-      <div className="space-y-1.5 flex-1 flex flex-col justify-between">
+      <div className="space-y-2 flex-1 flex flex-col justify-between">
         <div>
           {/* Category info */}
-          <span className="text-[11px] text-slate-400 font-medium capitalize">
+          <span className="text-xs text-slate-400 font-semibold capitalize block mb-0.5">
             {getCategoryLabel()}
           </span>
 
@@ -133,31 +133,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <Link
             to={`/product/${product.slug}`}
             onClick={() => recordView(product)}
-            className="block text-xs sm:text-sm font-bold text-slate-800 hover:text-emerald-700 transition line-clamp-2 leading-snug"
+            className="block text-sm sm:text-[15px] font-bold text-slate-800 hover:text-emerald-700 transition line-clamp-2 leading-snug"
           >
             {title}
           </Link>
 
           {/* Ratings */}
-          <div className="flex items-center gap-1 mt-1 text-xs text-amber-500">
-            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span className="font-bold text-[11px] text-slate-700">
+          <div className="flex items-center gap-1.5 mt-1.5 text-xs text-amber-500">
+            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+            <span className="font-extrabold text-xs text-slate-800">
               {product.rating || 4.9}
             </span>
-            <span className="text-[10px] text-slate-400">
-              ({product.soldCount || 18})
+            <span className="text-xs text-slate-400 font-medium">
+              ({product.soldCount || 18} {lang === 'bn' ? 'বিক্রয়' : 'sold'})
             </span>
           </div>
         </div>
 
         {/* Price & Add to Cart Button */}
-        <div className="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div className="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between gap-2">
           <div>
-            <div className="text-sm sm:text-base font-extrabold text-emerald-800 font-mono">
+            <div className="text-base sm:text-lg font-black text-emerald-800 font-mono tracking-tight">
               {formatPrice(discountPrice || price)}
             </div>
             {hasDiscount && (
-              <div className="text-[11px] text-slate-400 line-through font-mono">
+              <div className="text-xs text-slate-400 line-through font-mono">
                 {formatPrice(price)}
               </div>
             )}
@@ -165,20 +165,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           <button
             onClick={handleAdd}
-            className={`py-2 px-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition shadow-sm ${
+            className={`py-2 px-3 sm:px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all shadow-sm ${
               isAdded
-                ? 'bg-emerald-800 text-white'
-                : 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                ? 'bg-emerald-800 text-white shadow-emerald-800/30'
+                : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-md hover:shadow-lg'
             }`}
           >
             {isAdded ? (
               <>
-                <Check className="w-3.5 h-3.5 text-white" />
+                <Check className="w-4 h-4 text-white" />
                 <span>{lang === 'bn' ? 'যোগ হয়েছে' : 'Added'}</span>
               </>
             ) : (
               <>
-                <Plus className="w-3.5 h-3.5 text-white" />
+                <Plus className="w-4 h-4 text-white" />
                 <span>{lang === 'bn' ? '+ কার্ট' : '+ Add'}</span>
               </>
             )}

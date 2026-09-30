@@ -144,19 +144,19 @@ export const ShopXChannelsBar: React.FC<ShopXChannelsBarProps> = ({
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 pt-1 pb-3">
-      <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+    <section className="max-w-7xl mx-auto px-4 pt-2 pb-4">
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-sm">
         <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-3 sm:gap-4">
           {channels.map((ch) => {
             const Icon = ch.icon;
             const content = (
               <div
-                className={`group relative flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer ${ch.bgLight}`}
+                className={`group relative flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-md cursor-pointer ${ch.bgLight}`}
               >
                 {/* Badge */}
                 {ch.badge && (
                   <span
-                    className={`absolute -top-2 -right-1 text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-sm ${ch.badgeBg}`}
+                    className={`absolute -top-2 -right-1 text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm ${ch.badgeBg}`}
                   >
                     {ch.badge}
                   </span>
@@ -164,18 +164,18 @@ export const ShopXChannelsBar: React.FC<ShopXChannelsBarProps> = ({
 
                 {/* Icon Circle */}
                 <div
-                  className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br ${ch.color} text-white flex items-center justify-center shadow-sm group-hover:scale-110 transition duration-200 mb-1.5`}
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ${ch.color} text-white flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:shadow-md transition duration-300 mb-2`}
                 >
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
 
                 {/* Title */}
-                <span className="text-[11px] sm:text-xs font-black text-slate-800 text-center line-clamp-1 group-hover:text-emerald-700">
+                <span className="text-xs sm:text-sm font-extrabold text-slate-800 text-center line-clamp-1 group-hover:text-emerald-700">
                   {ch.title}
                 </span>
 
                 {/* Subtitle */}
-                <span className="text-[9px] sm:text-[10px] text-slate-500 text-center line-clamp-1 hidden sm:block">
+                <span className="text-[10px] sm:text-xs text-slate-500 text-center line-clamp-1 hidden sm:block mt-0.5 font-medium">
                   {ch.subtitle}
                 </span>
               </div>

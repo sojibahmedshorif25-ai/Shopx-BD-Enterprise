@@ -3,7 +3,7 @@ import { ShieldCheck, Zap, RotateCcw, CreditCard, Headphones } from 'lucide-reac
 import { useLanguageStore } from '../store/useLanguageStore';
 
 export const TrustGuaranteeBar: React.FC = () => {
-  const { lang, t } = useLanguageStore();
+  const { lang } = useLanguageStore();
 
   const guarantees = [
     {
@@ -39,23 +39,23 @@ export const TrustGuaranteeBar: React.FC = () => {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-3">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <section className="max-w-7xl mx-auto px-4 py-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
         {guarantees.map((item, idx) => {
           const Icon = item.icon;
           return (
             <div
               key={idx}
-              className={`p-3.5 rounded-2xl bg-white border border-slate-100 hover:border-emerald-300 shadow-sm hover:shadow-md transition flex items-center gap-3`}
+              className={`p-4 sm:p-5 rounded-3xl bg-white border border-slate-100/90 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-3.5`}
             >
               <div
-                className={`w-10 h-10 rounded-xl ${item.bg} border flex items-center justify-center flex-shrink-0 shadow-sm`}
+                className={`w-12 h-12 rounded-2xl ${item.bg} border flex items-center justify-center flex-shrink-0 shadow-sm`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-6 h-6" />
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="font-bold text-xs text-slate-800 truncate">{item.title}</h4>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">{item.subtitle}</p>
+                <h4 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">{item.title}</h4>
+                <p className="text-[11px] text-slate-500 truncate mt-0.5 font-medium">{item.subtitle}</p>
               </div>
             </div>
           );
@@ -64,3 +64,4 @@ export const TrustGuaranteeBar: React.FC = () => {
     </section>
   );
 };
+

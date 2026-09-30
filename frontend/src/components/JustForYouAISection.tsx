@@ -109,8 +109,8 @@ export const JustForYouAISection: React.FC<JustForYouAISectionProps> = ({
           {lang === 'bn' ? 'এআই পার্সোনালাইজড ফিড লোড হচ্ছে...' : 'Curating personalized feed...'}
         </div>
       ) : (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="space-y-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
             {recommendedProducts.map((prod) => (
               <ProductCard
                 key={prod._id}
