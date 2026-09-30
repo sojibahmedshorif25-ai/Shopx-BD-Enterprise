@@ -295,37 +295,82 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  // 5. Customer: Google 1-Click Login
+  // 5. Customer: Google Login (Enforces Real Gmail 6-Digit OTP Verification)
   const handleGoogleOneClick = async () => {
     setError('');
+    setSuccessMsg('');
+    setAuthMode('gmail_otp');
+
+    if (!gmail.trim() || !gmail.includes('@')) {
+      setError(
+        isBn
+          ? '🔑 গুগল লগইনের জন্য অনুগ্রহ করে উপরে আপনার আসল জিমেইল অ্যাড্রেস লিখুন। আপনার ইনবক্সে ৬-সংখ্যার রিয়েল ওটিপি (OTP) কোড যাবে।'
+          : '🔑 For Google Sign In, please enter your real Gmail address above. A 6-digit verification OTP code will be sent to your inbox.'
+      );
+      return;
+    }
+
+    // Trigger real 6-digit Gmail OTP dispatch
     try {
-      const email = gmail || 'customer.google@shopxbd.com';
-      await googleLogin({
-        email,
-        name: 'Google Customer',
-        googleId: 'g_' + Date.now(),
+      setIsSendingOtp(true);
+      const res = await api.post('/auth/send-email-otp', {
+        email: gmail.trim(),
+        name: gmailName.trim() || undefined,
+        lang,
       });
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-      navigate('/');
+
+      if (res.data.success) {
+        setOtpSent(true);
+        setDemoOtpHint(res.data.otp);
+        setSuccessMsg(
+          isBn
+            ? `গুগল একাউন্ট যাচাইয়ের জন্য ${gmail} ইনবক্সে ৬-সংখ্যার ওটিপি কোড পাঠানো হয়েছে!`
+            : `A 6-digit verification code has been dispatched to ${gmail} for Google authentication!`
+        );
+      }
     } catch (err: any) {
-      setError(err.message || 'Google login failed');
+      setError(err.response?.data?.message || (isBn ? 'জিমেইলে ওটিপি কোড পাঠাতে সমস্যা হয়েছে।' : 'Failed to send OTP to Gmail.'));
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
-  // 6. Customer: Facebook 1-Click Login
+  // 6. Customer: Facebook Login (Enforces Real Email/Phone OTP Verification)
   const handleFacebookOneClick = async () => {
     setError('');
+    setSuccessMsg('');
+    setAuthMode('gmail_otp');
+
+    if (!gmail.trim() || !gmail.includes('@')) {
+      setError(
+        isBn
+          ? '🔑 ফেসবুক লগইনের জন্য অনুগ্রহ করে আপনার আসল ফেসবুক রেজিস্টার্ড ইমেইল/জিমেইল অ্যাড্রেস লিখুন। আপনার ইনবক্সে ৬-সংখ্যার রিয়েল ভেরিফিকেশন কোড পাঠানো হবে।'
+          : '🔑 For Facebook Sign In, please enter your registered Facebook Email/Gmail above. A 6-digit verification code will be sent to verify your identity.'
+      );
+      return;
+    }
+
     try {
-      const { facebookLogin } = useAuthStore.getState();
-      await facebookLogin({
-        email: 'customer.fb@shopxbd.com',
-        name: 'Facebook Customer',
-        facebookId: 'fb_' + Date.now(),
+      setIsSendingOtp(true);
+      const res = await api.post('/auth/send-email-otp', {
+        email: gmail.trim(),
+        name: gmailName.trim() || undefined,
+        lang,
       });
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-      navigate('/');
+
+      if (res.data.success) {
+        setOtpSent(true);
+        setDemoOtpHint(res.data.otp);
+        setSuccessMsg(
+          isBn
+            ? `ফেসবুক ভেরিফিকেশনের জন্য ${gmail} ইনবক্সে ৬-সংখ্যার কোড পাঠানো হয়েছে!`
+            : `A 6-digit verification code has been dispatched to ${gmail} for Facebook authentication!`
+        );
+      }
     } catch (err: any) {
-      setError(err.message || 'Facebook login failed');
+      setError(err.response?.data?.message || (isBn ? 'ইমেইলে ওটিপি কোড পাঠাতে সমস্যা হয়েছে।' : 'Failed to send OTP to email.'));
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 

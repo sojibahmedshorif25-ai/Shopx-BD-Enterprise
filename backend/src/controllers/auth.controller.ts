@@ -471,7 +471,7 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
       user = await User.create({
         name: isSuperAdmin ? 'Sojib Ahmed Shorif (Super Admin)' : (name || 'Google User'),
         email: cleanEmail,
-        avatar: avatar || 'https://res.cloudinary.com/wb19kgrx/image/upload/v1/shopx/avatars/default-user.png',
+        avatar: avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
         googleId,
         isVerified: true,
         role: isSuperAdmin ? 'admin' : 'customer',
@@ -532,7 +532,7 @@ export const facebookAuth = async (req: Request, res: Response): Promise<void> =
       user = await User.create({
         name: isSuperAdmin ? 'Sojib Ahmed Shorif (Super Admin)' : (name || 'Facebook User'),
         email: cleanEmail,
-        avatar: avatar || 'https://res.cloudinary.com/wb19kgrx/image/upload/v1/shopx/avatars/default-user.png',
+        avatar: avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
         facebookId,
         isVerified: true,
         role: isSuperAdmin ? 'admin' : 'customer',

@@ -123,7 +123,7 @@ export const ProfilePage: React.FC = () => {
     setDistrict(user.district || 'Rowmari');
     setUpazila(user.upazila || 'Rowmari Sadar');
     setBio(user.bio || '');
-    setAddresses(user.addresses || []);
+    setAddresses(Array.isArray(user.addresses) ? user.addresses : []);
     setAddrRecipient(user.name || '');
     setAddrPhone(user.phone || '');
     fetchOrders();
@@ -141,8 +141,17 @@ export const ProfilePage: React.FC = () => {
     try {
       setIsLoadingOrders(true);
       const res = await api.get('/orders/my-orders');
-      if (res.data.success) {
-        setOrders(res.data.orders);
+      if (res.data?.success) {
+        const orderList = Array.isArray(res.data.orders)
+          ? res.data.orders
+          : Array.isArray(res.data.data)
+          ? res.data.data
+          : Array.isArray(res.data)
+          ? res.data
+          : [];
+        setOrders(orderList);
+      } else {
+        setOrders([]);
       }
     } catch (err) {
       setOrders([
@@ -406,7 +415,7 @@ export const ProfilePage: React.FC = () => {
               }`}
             >
               <MapPin className="w-4 h-4" />
-              <span>{isBn ? `ডেলিভারি ঠিকানা (${addresses.length})` : `Address Book (${addresses.length})`}</span>
+              <span>{isBn ? `ডেলিভারি ঠিকানা (${(addresses || []).length})` : `Address Book (${(addresses || []).length})`}</span>
             </button>
 
             <button
@@ -418,7 +427,7 @@ export const ProfilePage: React.FC = () => {
               }`}
             >
               <Package className="w-4 h-4" />
-              <span>{isBn ? `অর্ডার হিস্টোরি (${orders.length})` : `My Orders (${orders.length})`}</span>
+              <span>{isBn ? `অর্ডার হিস্টোরি (${(orders || []).length})` : `My Orders (${(orders || []).length})`}</span>
             </button>
 
             <button
@@ -681,7 +690,7 @@ export const ProfilePage: React.FC = () => {
               </div>
 
               {/* Address Cards Grid */}
-              {addresses.length === 0 ? (
+              {(addresses || []).length === 0 ? (
                 <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl space-y-3">
                   <MapPin className="w-10 h-10 text-slate-400 mx-auto" />
                   <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
@@ -696,7 +705,7 @@ export const ProfilePage: React.FC = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {addresses.map((addr, idx) => (
+                  {(addresses || []).map((addr, idx) => (
                     <div
                       key={idx}
                       className={`p-5 rounded-2xl border-2 transition relative space-y-3 ${
@@ -919,7 +928,7 @@ export const ProfilePage: React.FC = () => {
                 <div className="py-12 text-center">
                   <RefreshCw className="w-8 h-8 animate-spin text-emerald-700 mx-auto" />
                 </div>
-              ) : orders.length === 0 ? (
+              ) : (orders || []).length === 0 ? (
                 <div className="py-12 text-center text-slate-400 space-y-3">
                   <Package className="w-10 h-10 mx-auto text-slate-300" />
                   <p className="font-bold">{isBn ? 'এখনও কোনো অর্ডার করেননি।' : 'No orders placed yet.'}</p>
@@ -929,7 +938,7 @@ export const ProfilePage: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {orders.map((order) => (
+                  {(orders || []).map((order) => (
                     <div
                       key={order._id}
                       className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 space-y-4"

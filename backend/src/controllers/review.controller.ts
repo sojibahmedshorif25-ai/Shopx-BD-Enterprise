@@ -25,7 +25,7 @@ export const addReview = async (req: AuthRequest, res: Response): Promise<void> 
       product: productId,
       user: req.userId || '65e900000000000000000001',
       userName: userName || req.user?.name || 'Verified Customer',
-      userAvatar: req.user?.avatar || 'https://res.cloudinary.com/wb19kgrx/image/upload/v1/shopx/avatars/default-user.png',
+      userAvatar: req.user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
       rating: Number(rating),
       comment,
       images: images || [],
