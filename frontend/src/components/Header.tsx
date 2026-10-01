@@ -319,27 +319,27 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* 2. Main Center Header: Logo, Search Bar, Quick Action Icons */}
-      <div className="py-4 px-4 sm:px-6 max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8">
+      <div className="py-2.5 sm:py-4 px-3 sm:px-6 max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
         {/* Brand Logo: ShopX Official Supermall */}
-        <Link to="/" className="flex items-center gap-3.5 group flex-shrink-0">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-700/25 group-hover:scale-105 transition">
-            <Sparkles className="w-6 h-6 fill-white" />
+        <Link to="/" className="flex items-center gap-2 sm:gap-3.5 group flex-shrink-0">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-lg sm:text-xl shadow-md sm:shadow-lg shadow-emerald-700/25 group-hover:scale-105 transition">
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 fill-white" />
           </div>
           <div className="flex flex-col">
-            <div className="font-black text-2xl sm:text-3xl tracking-tight text-slate-900 flex items-center gap-2 leading-none">
+            <div className="font-black text-xl sm:text-3xl tracking-tight text-slate-900 flex items-center gap-1.5 sm:gap-2 leading-none">
               Shop<span className="text-emerald-700">X</span>
-              <span className="text-[10px] bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider shadow-sm">
+              <span className="text-[9px] sm:text-[10px] bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wider shadow-sm">
                 OFFICIAL
               </span>
             </div>
-            <p className="text-xs text-slate-500 font-semibold tracking-normal mt-1">
+            <p className="text-[10px] sm:text-xs text-slate-500 font-semibold tracking-normal mt-0.5 sm:mt-1 hidden sm:block">
               {lang === 'bn' ? 'অফিসিয়াল প্রিমিয়াম সুপারমল ও স্মার্ট কমার্স' : 'Official Supermall & Smart Commerce'}
             </p>
           </div>
         </Link>
 
-        {/* Big Clean Search Bar */}
-        <div ref={searchRef} className="relative flex-1 max-w-2xl">
+        {/* Big Clean Search Bar (Desktop View) */}
+        <div ref={searchRef} className="hidden md:block relative flex-1 max-w-2xl min-w-0">
           <form onSubmit={handleSearchSubmit} className="relative flex items-center">
             <input
               type="text"
@@ -425,16 +425,16 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Right Action Icons & Login / Sign Up */}
-        <div className="flex items-center gap-3 sm:gap-5">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           {/* 1. Track Order */}
           <Link
             to="/track-order"
-            className="flex flex-col items-center text-slate-700 hover:text-emerald-600 transition group p-1"
+            className="hidden lg:flex flex-col items-center text-slate-700 hover:text-emerald-600 transition group p-1"
           >
             <div className="relative">
               <Truck className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition" />
             </div>
-            <span className="text-xs font-semibold mt-0.5 hidden lg:inline-block">
+            <span className="text-xs font-semibold mt-0.5">
               {lang === 'bn' ? 'ট্র্যাক অর্ডার' : 'Track Order'}
             </span>
           </Link>
@@ -442,7 +442,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* 2. Wishlist */}
           <Link
             to="/products?filter=wishlist"
-            className="flex flex-col items-center text-slate-700 hover:text-emerald-600 transition group relative p-1"
+            className="hidden sm:flex flex-col items-center text-slate-700 hover:text-emerald-600 transition group relative p-1"
           >
             <div className="relative">
               <Heart className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition" />
@@ -462,9 +462,9 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-                className="flex items-center gap-2 p-1.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition group"
+                className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition group"
               >
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xs shadow-sm">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xs shadow-sm">
                   {user.name?.charAt(0) || 'U'}
                 </div>
                 <div className="hidden xl:block text-left pr-1">
@@ -503,7 +503,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </Link>
                   {user.role === 'admin' && (
                     <a
-                      href="http://localhost:5174"
+                      href="https://shopx-bd-enterprise-qoj6.vercel.app"
                       target="_blank"
                       rel="noreferrer"
                       className="block px-4 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50"
@@ -513,7 +513,7 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                   {user.role === 'vendor' && (
                     <a
-                      href="http://localhost:5174"
+                      href="https://shopx-bd-enterprise-qoj6.vercel.app"
                       target="_blank"
                       rel="noreferrer"
                       className="block px-4 py-2 text-xs font-bold text-amber-700 hover:bg-amber-50"
@@ -534,12 +534,12 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Link
                 to="/login"
-                className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 font-bold text-xs sm:text-sm border border-slate-200 transition shadow-xs"
+                className="flex items-center gap-1 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 font-bold text-xs sm:text-sm border border-slate-200 transition shadow-xs"
               >
-                <User className="w-4 h-4 text-emerald-600" />
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
                 <span className="whitespace-nowrap">{lang === 'bn' ? 'লগইন' : 'Login'}</span>
               </Link>
               <Link
@@ -555,7 +555,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* 4. Cart Button */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="flex items-center gap-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 sm:px-4 py-2 rounded-2xl transition border border-emerald-200 group shadow-sm"
+            className="flex items-center gap-1.5 sm:gap-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-2xl transition border border-emerald-200 group shadow-sm flex-shrink-0"
           >
             <div className="relative">
               <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-700 group-hover:scale-110 transition" />
@@ -575,6 +575,54 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </button>
         </div>
+      </div>
+
+      {/* Mobile Dedicated Full-Width Search Bar */}
+      <div className="block md:hidden px-3 pb-3">
+        <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={lang === 'bn' ? 'পণ্য, গ্যাজেট, ফ্যাশন খুঁজুন...' : 'Search 50,000+ products...'}
+            className="w-full bg-[#f8fafc] border-2 border-slate-200 focus:border-emerald-600 focus:bg-white rounded-full py-2.5 pl-4 pr-28 text-xs text-slate-800 outline-none transition-all placeholder-slate-400 shadow-sm"
+          />
+
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-24 text-slate-400 hover:text-slate-600"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsImageSearchOpen(true)}
+            className="absolute right-16 p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-emerald-600"
+          >
+            <Camera className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleVoiceSearch}
+            className={`absolute right-9 p-1.5 rounded-full hover:bg-slate-200 ${
+              isListening ? 'text-red-500 animate-ping' : 'text-slate-400 hover:text-emerald-600'
+            }`}
+          >
+            <Mic className="w-4 h-4" />
+          </button>
+
+          <button
+            type="submit"
+            className="absolute right-1 bg-emerald-600 text-white p-2 rounded-full shadow-md"
+          >
+            <Search className="w-3.5 h-3.5 stroke-[2.5]" />
+          </button>
+        </form>
       </div>
 
 
