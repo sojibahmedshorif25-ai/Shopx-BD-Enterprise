@@ -143,46 +143,49 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Full-Width Smooth Scrollable Department Tabs Bar with Left/Right Click Navigators */}
-        <div className="relative group bg-white p-2 rounded-2xl border border-slate-200/90 shadow-sm flex items-center">
-          {/* Scroll Left Button */}
-          <button
-            type="button"
-            onClick={() => scrollTabs('left')}
-            className="p-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition flex-shrink-0 shadow-sm mr-2 z-10"
-            title="Scroll Left"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
+        <div className="relative group bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2">
+          <div className="flex items-center flex-1 overflow-hidden">
+            {/* Scroll Left Button */}
+            <button
+              type="button"
+              onClick={() => scrollTabs('left')}
+              className="p-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition flex-shrink-0 shadow-xs mr-2 z-10"
+              title="Scroll Left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
 
-          {/* Scrollable Container */}
-          <div
-            ref={tabsContainerRef}
-            className="flex items-center gap-2 overflow-x-auto custom-scrollbar scroll-smooth flex-1 py-1 px-1"
-          >
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 shadow-xs ${
-                  activeTab === tab.id
-                    ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/25 ring-2 ring-emerald-600/30'
-                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {/* Scrollable Container (no scrollbar track) */}
+            <div
+              ref={tabsContainerRef}
+              className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-1 px-0.5"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition whitespace-nowrap flex-shrink-0 flex items-center gap-2 shadow-xs ${
+                    activeTab === tab.id
+                      ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/25 ring-2 ring-emerald-600/40 scale-102'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200/80'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Scroll Right Button */}
+            <button
+              type="button"
+              onClick={() => scrollTabs('right')}
+              className="p-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition flex-shrink-0 shadow-xs ml-2 z-10"
+              title="Scroll Right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-
-          {/* Scroll Right Button */}
-          <button
-            type="button"
-            onClick={() => scrollTabs('right')}
-            className="p-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition flex-shrink-0 shadow-sm ml-2 z-10"
-            title="Scroll Right"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
         </div>
 
         {/* Product Grid */}
