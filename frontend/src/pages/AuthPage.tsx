@@ -375,7 +375,55 @@ export const AuthPage: React.FC = () => {
     setError('');
     setSuccessMsg('');
 
-    // Check if Google Identity Services is available in window
+    // Method 1: Google OAuth2 Token Client (Opens clean popup window - works on all browsers without FedCM restrictions)
+    if (typeof window !== 'undefined' && (window as any).google?.accounts?.oauth2) {
+      try {
+        const client = (window as any).google.accounts.oauth2.initTokenClient({
+          client_id: googleClientId,
+          scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+          callback: async (tokenResponse: any) => {
+            if (tokenResponse.error) {
+              console.warn('Google OAuth Token Error:', tokenResponse);
+              return;
+            }
+            try {
+              const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+              });
+              const profile = await userInfoRes.json();
+              if (profile && profile.email) {
+                const res = await api.post('/auth/google', {
+                  email: profile.email,
+                  name: profile.name || profile.email.split('@')[0],
+                  avatar: profile.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+                  googleId: profile.sub || `g_${Date.now()}`,
+                });
+
+                if (res.data.success) {
+                  localStorage.setItem('shopx_token', res.data.token);
+                  useAuthStore.setState({ user: res.data.user, token: res.data.token });
+                  confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                  setSuccessMsg(
+                    isBn
+                      ? `স্বাগতম ${profile.name || profile.email}! গুগল দিয়ে সফলভাবে লগইন হয়েছে!`
+                      : `Welcome ${profile.name || profile.email}! Google login successful!`
+                  );
+                  setTimeout(() => navigate('/'), 600);
+                }
+              }
+            } catch (err: any) {
+              setError(err.response?.data?.message || err.message || (isBn ? 'গুগল লগইন ব্যর্থ হয়েছে।' : 'Google login failed.'));
+            }
+          },
+        });
+        client.requestAccessToken({ prompt: 'select_account' });
+        return;
+      } catch (e) {
+        console.warn('Google OAuth2 Token Client fallback:', e);
+      }
+    }
+
+    // Method 2: Google One Tap Fallback
     if (typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
       try {
         (window as any).google.accounts.id.initialize({
@@ -384,7 +432,7 @@ export const AuthPage: React.FC = () => {
         });
         (window as any).google.accounts.id.prompt((notification: any) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            console.log('Google One Tap not displayed, using OAuth fallback');
+            console.log('Google One Tap skipped or not displayed');
           }
         });
         return;
@@ -393,36 +441,13 @@ export const AuthPage: React.FC = () => {
       }
     }
 
-    // Direct OAuth Popup or Custom Email fallback
-    try {
-      const emailToUse = gmail.trim();
-      if (!emailToUse || !emailToUse.includes('@')) {
-        setAuthMode('gmail_otp');
-        setError(
-          isBn
-            ? 'গুগল সাইন-ইনের জন্য আপনার আসল জিমেইল এড্রেস লিখুন অথবা গুগল ওয়ান-ট্যাপ ডায়ালগ থেকে সিলেক্ট করুন।'
-            : 'For Google Sign-In, please enter your Gmail address or select from the Google dialog.'
-        );
-        return;
-      }
-
-      const res = await api.post('/auth/google', {
-        email: emailToUse,
-        name: gmailName.trim() || emailToUse.split('@')[0],
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        googleId: 'g_' + Date.now(),
-      });
-
-      if (res.data.success) {
-        localStorage.setItem('shopx_token', res.data.token);
-        useAuthStore.setState({ user: res.data.user, token: res.data.token });
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        setSuccessMsg(isBn ? 'গুগল দিয়ে সফলভাবে লগইন হয়েছে!' : 'Google login successful!');
-        setTimeout(() => navigate('/'), 600);
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || (isBn ? 'গুগল লগইন ব্যর্থ হয়েছে।' : 'Google login failed.'));
-    }
+    // Method 3: Direct Email / OTP Fallback
+    setAuthMode('gmail_otp');
+    setError(
+      isBn
+        ? 'গুগল সাইন-ইনের জন্য আপনার আসল জিমেইল এড্রেস লিখুন।'
+        : 'Please enter your Gmail address to receive a 6-digit login OTP code.'
+    );
   };
 
   // 6. Customer: Social Real Facebook Login
