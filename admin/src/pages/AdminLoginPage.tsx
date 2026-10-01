@@ -10,6 +10,8 @@ import {
   RefreshCw,
   CheckCircle2,
   Smartphone,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { useAdminAuthStore } from '../store/useAdminAuthStore';
 import { useAdminLanguageStore } from '../store/useAdminLanguageStore';
@@ -35,6 +37,7 @@ export const AdminLoginPage: React.FC = () => {
   // State
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
@@ -284,13 +287,21 @@ export const AdminLoginPage: React.FC = () => {
                   <div className="relative">
                     <Lock className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
                     <input
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       required
+                      autoComplete="new-password"
                       placeholder="••••••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full py-3 pl-10 pr-3 rounded-xl border border-slate-700 bg-slate-800 text-white outline-none focus:border-orange-500 shadow-inner"
+                      className="w-full py-3 pl-10 pr-10 rounded-xl border border-slate-700 bg-slate-800 text-white outline-none focus:border-orange-500 shadow-inner"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white transition"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 

@@ -1113,18 +1113,55 @@ export const AuthPage: React.FC = () => {
               {authMode === 'email_pass' && (
                 <form onSubmit={handleCustomerEmailPassSubmit} className="space-y-3.5 text-xs">
                   {isRegister && (
+                    <div className="p-3 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 border border-emerald-200 dark:border-emerald-800/40 rounded-2xl space-y-1.5 animate-in fade-in">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 animate-bounce" />
+                        <p className="text-xs font-black text-emerald-900 dark:text-emerald-300">
+                          {isBn ? '🎉 নতুন একাউন্ট খুললেই ১০০৳ বোনাস ও কয়েন!' : '🎉 Join & Get ৳100 Welcome Bonus!'}
+                        </p>
+                      </div>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                        {isBn ? '১০০% অরিজিনাল পণ্য, ৬৪ জেলায় দ্রুততম ডেলিভারি ও ফ্রি রিটার্ন সুবিধা।' : '100% genuine products, nationwide express delivery & easy 7-day returns.'}
+                      </p>
+                    </div>
+                  )}
+
+                  {isRegister && (
                     <div>
                       <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                         {isBn ? 'আপনার পূর্ণ নাম' : 'Full Name'} <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder={isBn ? 'যেমন: মোঃ শরিফ হোসেন' : 'e.g. Sharif Ahmed'}
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white"
-                      />
+                      <div className="relative">
+                        <User className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                        <input
+                          type="text"
+                          required
+                          autoComplete="name"
+                          placeholder={isBn ? 'যেমন: মোঃ শরিফ হোসেন' : 'e.g. Sharif Ahmed'}
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white text-sm"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {isRegister && (
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        {isBn ? 'মোবাইল নম্বর (ঐচ্ছিক)' : 'Mobile Phone (Optional)'}
+                      </label>
+                      <div className="relative">
+                        <Smartphone className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                        <input
+                          type="tel"
+                          autoComplete="tel"
+                          placeholder="01712-345678"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white text-sm font-mono"
+                        />
+                      </div>
                     </div>
                   )}
 
@@ -1132,14 +1169,18 @@ export const AuthPage: React.FC = () => {
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                       {isBn ? 'ইমেইল এড্রেস' : 'Email Address'} <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="user@gmail.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white"
-                    />
+                    <div className="relative">
+                      <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="email"
+                        required
+                        autoComplete="email"
+                        placeholder="user@gmail.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white text-sm"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -1155,7 +1196,7 @@ export const AuthPage: React.FC = () => {
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full py-2.5 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white"
+                        className="w-full py-2.5 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white text-sm"
                       />
                       <button
                         type="button"
@@ -1165,30 +1206,49 @@ export const AuthPage: React.FC = () => {
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
+
+                    {isRegister && password && (
+                      <div className="pt-2 space-y-1">
+                        <div className="flex gap-1.5 h-1.5 w-full">
+                          <div className={`h-full flex-1 rounded-full ${password.length >= 6 ? 'bg-amber-500' : 'bg-red-500'}`} />
+                          <div className={`h-full flex-1 rounded-full ${password.length >= 8 ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-slate-700'}`} />
+                          <div className={`h-full flex-1 rounded-full ${password.length >= 10 && /[A-Z]/.test(password) ? 'bg-emerald-600' : 'bg-gray-200 dark:bg-slate-700'}`} />
+                        </div>
+                        <p className="text-[10px] text-slate-500">
+                          {password.length < 6
+                            ? (isBn ? 'ন্যূনতম ৬ অক্ষর লিখুন' : 'At least 6 characters')
+                            : password.length < 8
+                            ? (isBn ? 'পাসওয়ার্ড মান: সাধারণ' : 'Strength: Fair')
+                            : (isBn ? 'পাসওয়ার্ড মান: শক্তিশালী' : 'Strength: Strong')}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex items-center justify-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForgotEmail(email);
-                        setForgotStep('email');
-                        setForgotErr('');
-                        setForgotMsg('');
-                        setShowForgotModal(true);
-                      }}
-                      className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"
-                    >
-                      {isBn ? 'পাসওয়ার্ড ভুলে গেছেন?' : 'Forgot Password?'}
-                    </button>
-                  </div>
+                  {!isRegister && (
+                    <div className="flex items-center justify-end">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForgotEmail(email);
+                          setForgotStep('email');
+                          setForgotErr('');
+                          setForgotMsg('');
+                          setShowForgotModal(true);
+                        }}
+                        className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline"
+                      >
+                        {isBn ? 'পাসওয়ার্ড ভুলে গেছেন?' : 'Forgot Password?'}
+                      </button>
+                    </div>
+                  )}
 
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-3 rounded-2xl shadow-xl shadow-emerald-700/20 transition flex items-center justify-center gap-2 text-sm"
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-3.5 rounded-2xl shadow-xl shadow-emerald-700/20 transition flex items-center justify-center gap-2 text-sm"
                   >
-                    <span>{isRegister ? (isBn ? 'রেজিস্ট্রেশন সম্পন্ন করুন' : 'Complete Registration') : (isBn ? 'লগইন করুন' : 'Sign In')}</span>
+                    <span>{isRegister ? (isBn ? 'রেজিস্ট্রেশন সম্পন্ন করুন' : 'Create Free Account') : (isBn ? 'লগইন করুন' : 'Sign In')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
 

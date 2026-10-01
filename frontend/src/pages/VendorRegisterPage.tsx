@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Store, ShieldCheck, CheckCircle2, ArrowRight, Zap, TrendingUp, Sparkles, Building2, ExternalLink } from 'lucide-react';
+import { Store, ShieldCheck, CheckCircle2, ArrowRight, Zap, TrendingUp, Sparkles, Building2, ExternalLink, Lock, Eye, EyeOff } from 'lucide-react';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { api } from '../services/api';
 
@@ -14,6 +14,7 @@ export const VendorRegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [address, setAddress] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -240,14 +241,25 @@ export const VendorRegisterPage: React.FC = () => {
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     {isBn ? 'পাসওয়ার্ড' : 'Account Password'} <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full text-xs sm:text-sm p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 dark:text-white"
-                  />
+                  <div className="relative">
+                    <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      autoComplete="new-password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full text-xs sm:text-sm py-3 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 dark:text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
