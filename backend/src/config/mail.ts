@@ -4,6 +4,9 @@ const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: Number(process.env.SMTP_PORT) || 587,
   secure: false,
+  connectionTimeout: 3500,
+  greetingTimeout: 3500,
+  socketTimeout: 4000,
   auth: {
     user: process.env.SMTP_USER || 'sojibahmedshorif25@gmail.com',
     pass: process.env.SMTP_PASS || 'txdx mdvk exmz oboa',
@@ -20,15 +23,27 @@ export const sendEmail = async ({
   html: string;
 }): Promise<boolean> => {
   try {
-    const info = await transporter.sendMail({
+    const sendPromise = transporter.sendMail({
       from: process.env.EMAIL_FROM || '"Shopx-BD-Enterprise" <sojibahmedshorif25@gmail.com>',
       replyTo: 'sojibahmedshorif25@gmail.com',
       to,
       subject,
       html,
     });
-    console.log(`📧 [Nodemailer] Email delivered to ${to}: ${info.messageId}`);
-    return true;
+
+    const timeoutPromise = new Promise<null>((resolve) =>
+      setTimeout(() => {
+        console.warn(`⏱️ [Nodemailer] SMTP sending timed out after 3.5s for ${to}`);
+        resolve(null);
+      }, 3500)
+    );
+
+    const result = await Promise.race([sendPromise, timeoutPromise]);
+    if (result && 'messageId' in result) {
+      console.log(`📧 [Nodemailer] Email delivered to ${to}: ${result.messageId}`);
+      return true;
+    }
+    return false;
   } catch (error: any) {
     console.warn(`⚠️ [Nodemailer] Failed to deliver email to ${to}: ${error.message}`);
     return false;
