@@ -74,7 +74,11 @@ export const HomePage: React.FC = () => {
     ? products
     : products.filter((p) => {
         const catSlug = typeof p.category === 'string' ? p.category : (p.category as any)?.slug;
-        return catSlug === activeTab || p.categorySlug === activeTab;
+        const pSlug = catSlug || p.categorySlug;
+        if (activeTab === 'gaming-consoles') {
+          return pSlug === 'gaming-consoles' || pSlug === 'cameras-drones';
+        }
+        return pSlug === activeTab;
       });
 
   return (

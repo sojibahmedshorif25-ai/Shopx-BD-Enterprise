@@ -48,7 +48,11 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
     }
 
     if (category) {
-      query.categorySlug = category;
+      if (category === 'gaming-consoles') {
+        query.categorySlug = { $in: ['gaming-consoles', 'cameras-drones'] };
+      } else {
+        query.categorySlug = category;
+      }
     }
 
     if (brand) {
