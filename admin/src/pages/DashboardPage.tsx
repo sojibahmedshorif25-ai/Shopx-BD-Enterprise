@@ -29,6 +29,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAdminAuthStore } from '../store/useAdminAuthStore';
 import { useAdminLanguageStore } from '../store/useAdminLanguageStore';
+import { BangladeshOrderHeatmap } from '../components/BangladeshOrderHeatmap';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAdminAuthStore();
@@ -354,6 +355,9 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Bangladesh Live Customer Order Origin Heatmap & 64-District Telemetry */}
+      <BangladeshOrderHeatmap />
     </div>
   );
 };

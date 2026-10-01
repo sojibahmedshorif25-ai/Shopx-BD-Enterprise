@@ -14,6 +14,7 @@ import {
   Users,
 } from 'lucide-react';
 import { api } from '../services/api';
+import { BangladeshOrderHeatmap } from '../components/BangladeshOrderHeatmap';
 
 export const AnalyticsAdminPage: React.FC = () => {
   const [data, setData] = useState<any>(null);
@@ -159,6 +160,9 @@ export const AnalyticsAdminPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Live Bangladesh Customer Order Origin Heatmap & Telemetry */}
+      <BangladeshOrderHeatmap />
 
       {/* Top Products & Top Vendors Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

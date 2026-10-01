@@ -27,12 +27,18 @@ import {
   Globe,
   Camera,
   HeartHandshake,
+  Printer,
+  QrCode,
+  Receipt,
+  BadgeCheck,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuthStore } from '../store/useAuthStore';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useCurrencyStore } from '../store/useCurrencyStore';
 import { api } from '../services/api';
+import { ThermalInvoiceModal } from '../components/ThermalInvoiceModal';
+import { DigitalWarrantyLookupModal } from '../components/DigitalWarrantyLookupModal';
 
 const BD_DIVISIONS = [
   'Dhaka', 'Chattogram', 'Rajshahi', 'Khulna', 'Barishal', 'Sylhet', 'Rangpur', 'Mymensingh'
@@ -108,6 +114,11 @@ export const ProfilePage: React.FC = () => {
   const [passwordMsg, setPasswordMsg] = useState('');
   const [passwordErr, setPasswordErr] = useState('');
   const [resetCountdown, setResetCountdown] = useState(0);
+
+  // Invoice & Warranty Modals State
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<any>(null);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [isWarrantyOpen, setIsWarrantyOpen] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -976,18 +987,39 @@ export const ProfilePage: React.FC = () => {
                         ))}
                       </div>
 
-                      <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                      <div className="pt-3 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                         <div>
-                          <span className="text-xs text-slate-400">{isBn ? 'মোট মূল্য' : 'Total Amount'}:</span>{' '}
-                          <span className="text-sm font-black text-emerald-700">{formatPrice(order.totalAmount)}</span>
+                          <span className="text-xs text-slate-400">{isBn ? 'সর্বমোট প্রদেয় মূল্য' : 'Total Payable'}:</span>{' '}
+                          <span className="text-base font-black text-emerald-700">{formatPrice(order.totalAmount)}</span>
                         </div>
-                        <Link
-                          to={`/track-order?id=${order._id}`}
-                          className="px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1"
-                        >
-                          <Truck className="w-3.5 h-3.5" />
-                          <span>{isBn ? 'ট্র্যাক করুন' : 'Track'}</span>
-                        </Link>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedInvoiceOrder(order);
+                              setIsInvoiceOpen(true);
+                            }}
+                            className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center gap-1 border border-slate-300 dark:border-slate-700 transition"
+                          >
+                            <Printer className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>{isBn ? 'ট্যাক্স ইনভয়েস (PDF)' : 'Invoice (PDF)'}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsWarrantyOpen(true)}
+                            className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 text-purple-700 dark:text-purple-300 font-bold text-xs flex items-center gap-1 border border-purple-200 dark:border-purple-800 transition"
+                          >
+                            <BadgeCheck className="w-3.5 h-3.5 text-purple-600" />
+                            <span>{isBn ? 'ওয়ারেন্টি লুকআপ' : 'Warranty'}</span>
+                          </button>
+                          <Link
+                            to={`/track-order?orderId=${order.orderNumber || order.orderId || order._id}`}
+                            className="px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition"
+                          >
+                            <Truck className="w-3.5 h-3.5" />
+                            <span>{isBn ? 'লাইভ জিপিএস ট্র্যাকিং' : 'Live GPS Track'}</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1122,6 +1154,39 @@ export const ProfilePage: React.FC = () => {
           )}
         </div>
       </div>
+      {/* Official Thermal & A4 Tax Invoice Modal */}
+      {selectedInvoiceOrder && (
+        <ThermalInvoiceModal
+          isOpen={isInvoiceOpen}
+          onClose={() => {
+            setIsInvoiceOpen(false);
+            setSelectedInvoiceOrder(null);
+          }}
+          order={{
+            orderNumber: selectedInvoiceOrder.orderNumber || selectedInvoiceOrder.orderId || selectedInvoiceOrder._id,
+            customerInfo: selectedInvoiceOrder.customerInfo || {
+              name: user?.name || name,
+              phone: user?.phone || phone,
+              address: user?.addresses?.[0]?.street || `${district}, ${division}`,
+              district: district,
+              thana: upazila,
+            },
+            items: (selectedInvoiceOrder.items || []).map((i: any) => ({
+              product: { title: i.title || i.product?.title, price: i.price },
+              quantity: i.quantity || 1,
+              price: i.price,
+            })),
+            totalAmount: selectedInvoiceOrder.totalAmount,
+            paymentMethod: selectedInvoiceOrder.paymentMethod,
+          }}
+        />
+      )}
+
+      {/* Digital IMEI & Serial Warranty Verification Modal */}
+      <DigitalWarrantyLookupModal
+        isOpen={isWarrantyOpen}
+        onClose={() => setIsWarrantyOpen(false)}
+      />
     </div>
   );
 };
