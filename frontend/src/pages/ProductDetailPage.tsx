@@ -485,6 +485,89 @@ export const ProductDetailPage: React.FC = () => {
         </div>
       </div>
 
+      {/* ShopX vs Traditional E-Commerce Superiority Guarantee */}
+      <div className="bg-gradient-to-br from-slate-900 via-emerald-950/40 to-slate-900 rounded-3xl p-6 sm:p-8 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -z-0 pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-emerald-500 text-slate-950 rounded-xl font-black">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-black text-white">
+                  {lang === 'bn' ? 'কেন ShopX BD সাধারণ ই-কমার্সের চেয়ে বহুগুণে বিশ্বস্ত ও সেরা?' : 'Why ShopX BD is Superior to Traditional E-Commerce?'}
+                </h3>
+                <p className="text-xs text-emerald-400 font-medium">
+                  {lang === 'bn' ? '১০০% ঝুঁকিহীন শপিং, ওপেন বক্স যাচাই ও অফিশিয়াল অথেনটিসিটি নিশ্চয়তা' : '100% Risk-Free Shopping, Open-Box Check & Authentic Guarantee'}
+                </p>
+              </div>
+            </div>
+            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-full text-xs font-bold font-mono">
+              ★ OFFICIAL MALL VERIFIED
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-slate-950/60 p-4 rounded-2xl border border-emerald-500/20 flex flex-col justify-between">
+              <div className="flex items-center gap-2 mb-2 text-emerald-400">
+                <PackageCheck className="w-5 h-5" />
+                <h4 className="font-extrabold text-xs text-white">
+                  {lang === 'bn' ? '১. ওপেন বক্স চেক ডেলিভারি' : '1. Open-Box Inspection'}
+                </h4>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                {lang === 'bn'
+                  ? 'ডেলিভারি রাইডারের সামনে প্যাকেট খুলে পণ্য ও কোয়ালিটি নিশ্চিত হয়ে ক্যাশ অন ডেলিভারি পরিশোধের শতভাগ সুযোগ।'
+                  : 'Open & verify parcel contents in front of rider before paying Cash on Delivery.'}
+              </p>
+            </div>
+
+            <div className="bg-slate-950/60 p-4 rounded-2xl border border-emerald-500/20 flex flex-col justify-between">
+              <div className="flex items-center gap-2 mb-2 text-amber-400">
+                <Truck className="w-5 h-5" />
+                <h4 className="font-extrabold text-xs text-white">
+                  {lang === 'bn' ? '২. নিশ্চিত দ্রুততম ডেলিভারি' : '2. 24H Express Delivery'}
+                </h4>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                {lang === 'bn'
+                  ? 'ঢাকা সিটিতে ২৪ ঘণ্টায় এবং দেশের ৬৩ জেলায় ৪৮-৭২ ঘণ্টায় লাইভ GPS ট্র্যাকিং সহ গ্যারান্টেড হোম ডেলিভারি।'
+                  : 'Guaranteed 24h in Dhaka, 48-72h nationwide with live GPS rider tracking.'}
+              </p>
+            </div>
+
+            <div className="bg-slate-950/60 p-4 rounded-2xl border border-emerald-500/20 flex flex-col justify-between">
+              <div className="flex items-center gap-2 mb-2 text-purple-400">
+                <Award className="w-5 h-5" />
+                <h4 className="font-extrabold text-xs text-white">
+                  {lang === 'bn' ? '৩. BSTI ও BCSIR সনদ' : '3. 100% Lab Tested'}
+                </h4>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                {lang === 'bn'
+                  ? 'খাদ্যপণ্যে শতভাগ খাঁটি ল্যাব সার্টিফিকেট এবং গ্যাজেটে অফিশিয়াল ১-২ বছরের ব্র্যান্ড ওয়ারেন্টি কার্ড।'
+                  : 'Govt. lab purity tested organics & 100% genuine brand warranty for electronics.'}
+              </p>
+            </div>
+
+            <div className="bg-slate-950/60 p-4 rounded-2xl border border-emerald-500/20 flex flex-col justify-between">
+              <div className="flex items-center gap-2 mb-2 text-cyan-400">
+                <RotateCcw className="w-5 h-5" />
+                <h4 className="font-extrabold text-xs text-white">
+                  {lang === 'bn' ? '৪. ৭ দিনের ফ্রি রিটার্ন' : '4. 7-Day Free Return'}
+                </h4>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                {lang === 'bn'
+                  ? 'পণ্য অপছন্দ বা ডিফেক্ট হলে ৭ দিনের মধ্যে ডোরস্টেপ ফ্রি রিটার্ন ও ইনস্ট্যান্ট রিফান্ড সুবিধা।'
+                  : 'Hassle-free 7-day doorstep replacement & instant money-back guarantee.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Product Full Description Tab */}
       <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl">
         <h3 className="text-base sm:text-lg font-black text-white mb-4">
