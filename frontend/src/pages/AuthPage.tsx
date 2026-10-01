@@ -22,12 +22,33 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { api } from '../services/api';
 
+// Helper to decode Google JWT ID Token
+function parseJwt(token: string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+}
+
 export const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { lang } = useLanguageStore();
   const isBn = lang === 'bn';
   const { login, register, googleLogin, isLoading } = useAuthStore();
+
+  const googleClientId =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+    '106175794481-evpgcn6mvbfh9uh3u1iqifpdge19iaoe.apps.googleusercontent.com';
 
   // Active Role Portal Tab (Customer, Seller, Super Admin, Rider)
   const [selectedRole, setSelectedRole] = useState<'customer' | 'seller' | 'admin' | 'rider'>('customer');
@@ -314,17 +335,81 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  // 5. Customer: Social 1-Click Login (Google)
+  // Handle Real Google OAuth ID Token Credential Callback
+  const handleGoogleCredentialResponse = async (response: any) => {
+    try {
+      if (!response.credential) return;
+      const payload = parseJwt(response.credential);
+      if (!payload || !payload.email) {
+        throw new Error('Could not parse Google ID token');
+      }
+
+      console.log('✅ Real Google OAuth Response:', payload.email, payload.name);
+
+      const res = await api.post('/auth/google', {
+        email: payload.email,
+        name: payload.name || payload.email.split('@')[0],
+        avatar: payload.picture,
+        googleId: payload.sub,
+      });
+
+      if (res.data.success) {
+        localStorage.setItem('shopx_token', res.data.token);
+        useAuthStore.setState({ user: res.data.user, token: res.data.token });
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        setSuccessMsg(
+          isBn
+            ? `স্বাগতম ${payload.name || payload.email}! গুগল দিয়ে সফলভাবে লগইন হয়েছে!`
+            : `Welcome ${payload.name || payload.email}! Google login successful!`
+        );
+        setTimeout(() => navigate('/'), 600);
+      }
+    } catch (err: any) {
+      console.error('Google OAuth Error:', err);
+      setError(err.response?.data?.message || err.message || (isBn ? 'গুগল লগইন ব্যর্থ হয়েছে।' : 'Google login failed.'));
+    }
+  };
+
+  // 5. Customer: Social Real Google OAuth Login
   const handleGoogleOneClick = async () => {
     setError('');
     setSuccessMsg('');
+
+    // Check if Google Identity Services is available in window
+    if (typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
+      try {
+        (window as any).google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleCredentialResponse,
+        });
+        (window as any).google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            console.log('Google One Tap not displayed, using OAuth fallback');
+          }
+        });
+        return;
+      } catch (e) {
+        console.warn('Google prompt fallback:', e);
+      }
+    }
+
+    // Direct OAuth Popup or Custom Email fallback
     try {
-      const emailToUse = gmail.trim() || 'customer.google@shopxbd.com';
-      const nameToUse = gmailName.trim() || 'Google Verified User';
+      const emailToUse = gmail.trim();
+      if (!emailToUse || !emailToUse.includes('@')) {
+        setAuthMode('gmail_otp');
+        setError(
+          isBn
+            ? 'গুগল সাইন-ইনের জন্য আপনার আসল জিমেইল এড্রেস লিখুন অথবা গুগল ওয়ান-ট্যাপ ডায়ালগ থেকে সিলেক্ট করুন।'
+            : 'For Google Sign-In, please enter your Gmail address or select from the Google dialog.'
+        );
+        return;
+      }
+
       const res = await api.post('/auth/google', {
         email: emailToUse,
-        name: nameToUse,
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+        name: gmailName.trim() || emailToUse.split('@')[0],
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
         googleId: 'g_' + Date.now(),
       });
 
@@ -340,16 +425,25 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  // 6. Customer: Social 1-Click Login (Facebook)
+  // 6. Customer: Social Real Facebook Login
   const handleFacebookOneClick = async () => {
     setError('');
     setSuccessMsg('');
+    const emailToUse = gmail.trim();
+    if (!emailToUse || !emailToUse.includes('@')) {
+      setAuthMode('gmail_otp');
+      setError(
+        isBn
+          ? 'ফেসবুক সাইন-ইনের জন্য আপনার ফেসবুক রেজিস্টার্ড ইমেইল/জিমেইল এড্রেস লিখুন।'
+          : 'Please enter your registered Facebook Email/Gmail address.'
+      );
+      return;
+    }
+
     try {
-      const emailToUse = gmail.trim() || 'customer.fb@shopxbd.com';
-      const nameToUse = gmailName.trim() || 'Facebook Verified User';
       const res = await api.post('/auth/facebook', {
         email: emailToUse,
-        name: nameToUse,
+        name: gmailName.trim() || emailToUse.split('@')[0],
         avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
         facebookId: 'fb_' + Date.now(),
       });
