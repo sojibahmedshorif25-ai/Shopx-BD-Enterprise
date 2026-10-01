@@ -36,12 +36,13 @@ graph TD
 
 ## 🏛️ 4 Dedicated Enterprise Portals
 
-| Portal / Role | Port / Route | Description & Key Features |
+| Portal / Role | Live Production URL | Description & Key Features |
 | :--- | :--- | :--- |
-| 🛒 **1. Customer Storefront** | `http://localhost:5173` | Groq AI Voice/Text search, 10 Flagship Departments, Open-box check, 1-Click COD, 45-day session persistence, Daily Spin Wheel & Coins streak, 0% EMI Calculator. |
-| 🏬 **2. Merchant & SaaS Center** | `http://localhost:5173/store/:slug` & `http://localhost:5174/login` | Multi-tenant branded storefronts, thermal POS receipt generation, automated stock alerts, instant wallet payouts, product variants manager. |
-| 🛡️ **3. Super Admin Command Center** | `http://localhost:5174` | 64-District Live Order Heatmap Radar, GMV telemetry, revenue analytics, dynamic flash sale & coupon engine, seller verification, fraud detection shield. |
-| 🚴 **4. DEX Rider Hub** | `http://localhost:5173/rider-portal` | Real-time GPS order dispatch, 1-tap customer call & Google Maps routing, digital POD signature verification, daily COD reconciliation. |
+| 🛒 **1. Customer Storefront** | [https://shopx-bd-enterprise.vercel.app](https://shopx-bd-enterprise.vercel.app) | Groq AI Voice/Text search, 10 Flagship Departments, Open-box check, 1-Click COD, 45-day session persistence, Daily Spin Wheel & Coins streak, 0% EMI Calculator. |
+| 🏬 **2. Merchant & SaaS Center** | [https://shopx-bd-enterprise.vercel.app/vendor-register](https://shopx-bd-enterprise.vercel.app/vendor-register) | Multi-tenant branded storefronts, thermal POS receipt generation, automated stock alerts, instant wallet payouts, product variants manager. |
+| 🛡️ **3. Super Admin Command Center** | [https://shopx-bd-enterprise-qoj6.vercel.app](https://shopx-bd-enterprise-qoj6.vercel.app) | 64-District Live Order Heatmap Radar, GMV telemetry, revenue analytics, dynamic flash sale & coupon engine, seller verification, fraud detection shield. |
+| 🚴 **4. DEX Rider Hub** | [https://shopx-bd-enterprise.vercel.app/rider-portal](https://shopx-bd-enterprise.vercel.app/rider-portal) | Real-time GPS order dispatch, 1-tap customer call & Google Maps routing, digital POD signature verification, daily COD reconciliation. |
+| ⚡ **5. Cloud REST API & AI Brain** | [https://shopx-bd-enterprise.onrender.com](https://shopx-bd-enterprise.onrender.com) | Node.js + Express + TypeScript + MongoDB Atlas + Upstash Redis + Groq/Gemini LLMs. |
 
 ---
 
