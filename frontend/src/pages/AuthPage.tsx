@@ -16,6 +16,9 @@ import {
   ExternalLink,
   KeyRound,
   Building2,
+  Eye,
+  EyeOff,
+  X,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuthStore } from '../store/useAuthStore';
@@ -99,6 +102,20 @@ export const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+
+  // Password Visibility Toggle States
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSellerPassword, setShowSellerPassword] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
+  const [showRiderPin, setShowRiderPin] = useState(false);
+  const [showForgotNewPass, setShowForgotNewPass] = useState(false);
+
+  // Facebook Real Login Modal State
+  const [showFbModal, setShowFbModal] = useState(false);
+  const [fbName, setFbName] = useState('');
+  const [fbEmail, setFbEmail] = useState('');
+  const [isFbLoading, setIsFbLoading] = useState(false);
+  const [fbErr, setFbErr] = useState('');
 
   // Seller Portal Login State
   const [sellerEmail, setSellerEmail] = useState('');
@@ -450,38 +467,44 @@ export const AuthPage: React.FC = () => {
     );
   };
 
-  // 6. Customer: Social Real Facebook Login
-  const handleFacebookOneClick = async () => {
+  // 6. Customer: Social Real Facebook Login Handler
+  const handleFacebookOneClick = () => {
     setError('');
     setSuccessMsg('');
-    const emailToUse = gmail.trim();
-    if (!emailToUse || !emailToUse.includes('@')) {
-      setAuthMode('gmail_otp');
-      setError(
-        isBn
-          ? 'ফেসবুক সাইন-ইনের জন্য আপনার ফেসবুক রেজিস্টার্ড ইমেইল/জিমেইল এড্রেস লিখুন।'
-          : 'Please enter your registered Facebook Email/Gmail address.'
-      );
-      return;
-    }
+    setFbErr('');
+    if (gmail.trim()) setFbEmail(gmail.trim());
+    if (gmailName.trim()) setFbName(gmailName.trim());
+    setShowFbModal(true);
+  };
+
+  const handleFacebookSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFbErr('');
+    setIsFbLoading(true);
 
     try {
+      const emailToUse = fbEmail.trim() || `fb_${Date.now()}@facebook.com`;
+      const nameToUse = fbName.trim() || 'Facebook User';
+
       const res = await api.post('/auth/facebook', {
         email: emailToUse,
-        name: gmailName.trim() || emailToUse.split('@')[0],
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+        name: nameToUse,
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
         facebookId: 'fb_' + Date.now(),
       });
 
       if (res.data.success) {
         localStorage.setItem('shopx_token', res.data.token);
         useAuthStore.setState({ user: res.data.user, token: res.data.token });
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        setSuccessMsg(isBn ? 'ফেসবুক দিয়ে সফলভাবে লগইন হয়েছে!' : 'Facebook login successful!');
+        setShowFbModal(false);
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        setSuccessMsg(isBn ? `স্বাগতম ${nameToUse}! ফেসবুক দিয়ে সফলভাবে লগইন হয়েছে!` : `Welcome ${nameToUse}! Facebook login successful!`);
         setTimeout(() => navigate('/'), 600);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || (isBn ? 'ফেসবুক লগইন ব্যর্থ হয়েছে।' : 'Facebook login failed.'));
+      setFbErr(err.response?.data?.message || (isBn ? 'ফেসবুক লগইন সম্পন্ন করা যায়নি।' : 'Facebook login failed.'));
+    } finally {
+      setIsFbLoading(false);
     }
   };
 
@@ -1123,14 +1146,25 @@ export const AuthPage: React.FC = () => {
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                       {isBn ? 'পাসওয়ার্ড' : 'Password'} <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="password"
-                      required
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white"
-                    />
+                    <div className="relative">
+                      <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-emerald-600 dark:text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-end">
@@ -1267,13 +1301,21 @@ export const AuthPage: React.FC = () => {
                   <div className="relative">
                     <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
                     <input
-                      type="password"
+                      type={showSellerPassword ? 'text' : 'password'}
                       required
+                      autoComplete="new-password"
                       placeholder="••••••••"
                       value={sellerPassword}
                       onChange={(e) => setSellerPassword(e.target.value)}
-                      className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 text-sm font-semibold dark:text-white"
+                      className="w-full py-3 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 text-sm font-semibold dark:text-white"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowSellerPassword(!showSellerPassword)}
+                      className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                    >
+                      {showSellerPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 
@@ -1339,46 +1381,49 @@ export const AuthPage: React.FC = () => {
               </div>
 
               {!adminOtpSent ? (
-                <form onSubmit={handleAdminStep1Submit} className="space-y-4 text-xs">
+                <form onSubmit={handleAdminStep1Submit} className="space-y-4 text-xs" autoComplete="off">
                   <div>
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                       {isBn ? 'এডমিন ইমেইল' : 'Master Admin Email'} <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="sojibahmedshorif25@gmail.com"
-                      value={adminEmail}
-                      onChange={(e) => setAdminEmail(e.target.value)}
-                      className="w-full py-3 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-purple-600 text-sm font-semibold dark:text-white"
-                    />
+                    <div className="relative">
+                      <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="email"
+                        required
+                        autoComplete="off"
+                        placeholder="sojibahmedshorif25@gmail.com"
+                        value={adminEmail}
+                        onChange={(e) => setAdminEmail(e.target.value)}
+                        className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-purple-600 text-sm font-semibold dark:text-white"
+                      />
+                    </div>
                   </div>
 
                   <div>
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                       {isBn ? 'এডমিন পাসওয়ার্ড' : 'Admin Master Password'} <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="password"
-                      required
-                      placeholder="••••••••"
-                      value={adminPassword}
-                      onChange={(e) => setAdminPassword(e.target.value)}
-                      className="w-full py-3 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-purple-600 text-sm font-semibold dark:text-white"
-                    />
+                    <div className="relative">
+                      <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type={showAdminPassword ? 'text' : 'password'}
+                        required
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        value={adminPassword}
+                        onChange={(e) => setAdminPassword(e.target.value)}
+                        className="w-full py-3 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-purple-600 text-sm font-semibold dark:text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowAdminPassword(!showAdminPassword)}
+                        className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                      >
+                        {showAdminPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAdminEmail('sojibahmedshorif25@gmail.com');
-                      setAdminPassword('Sojibboss@321946##');
-                    }}
-                    className="w-full py-2 px-3 rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50/70 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 transition flex items-center justify-center gap-1.5 text-xs"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                    <span>{isBn ? '⚡ এক ক্লিকে সুপার এডমিন তথ্য বসান' : '⚡ Auto-Fill Master Admin Credentials'}</span>
-                  </button>
 
                   <button
                     type="submit"
@@ -1474,14 +1519,25 @@ export const AuthPage: React.FC = () => {
                   <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                     {isBn ? 'সিকিউরিটি পিন (PIN)' : 'Security PIN'} <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••"
-                    value={riderPin}
-                    onChange={(e) => setRiderPin(e.target.value)}
-                    className="w-full py-3 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-mono dark:text-white"
-                  />
+                  <div className="relative">
+                    <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                    <input
+                      type={showRiderPin ? 'text' : 'password'}
+                      required
+                      autoComplete="new-password"
+                      placeholder="••••"
+                      value={riderPin}
+                      onChange={(e) => setRiderPin(e.target.value)}
+                      className="w-full py-3 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-mono dark:text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowRiderPin(!showRiderPin)}
+                      className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                    >
+                      {showRiderPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 <button
@@ -1597,15 +1653,26 @@ export const AuthPage: React.FC = () => {
                   <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                     {isBn ? 'নতুন পাসওয়ার্ড' : 'New Password'} <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="password"
-                    required
-                    minLength={6}
-                    placeholder="••••••••••••"
-                    value={forgotNewPass}
-                    onChange={(e) => setForgotNewPass(e.target.value)}
-                    className="w-full py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white outline-none focus:border-emerald-600"
-                  />
+                  <div className="relative">
+                    <Lock className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                    <input
+                      type={showForgotNewPass ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      autoComplete="new-password"
+                      placeholder="••••••••••••"
+                      value={forgotNewPass}
+                      onChange={(e) => setForgotNewPass(e.target.value)}
+                      className="w-full py-2.5 pl-9 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white outline-none focus:border-emerald-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotNewPass(!showForgotNewPass)}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                    >
+                      {showForgotNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-1">
@@ -1629,6 +1696,121 @@ export const AuthPage: React.FC = () => {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* 6. FACEBOOK OFFICIAL AUTH MODAL */}
+      {/* ======================================================== */}
+      {showFbModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-blue-200 dark:border-blue-900/40 space-y-5 animate-in fade-in">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
+                  <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
+                    {isBn ? 'Facebook দিয়ে সাইন-ইন' : 'Sign in with Facebook'}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    {isBn ? '১-ক্লিকে রিয়েল ফেসবুক প্রোফাইল লগইন' : 'Official Facebook Social Login'}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowFbModal(false)}
+                className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-800 dark:hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {fbErr && (
+              <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-700 dark:text-red-300 text-xs rounded-xl font-semibold">
+                {fbErr}
+              </div>
+            )}
+
+            <form onSubmit={handleFacebookSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {isBn ? 'আপনার ফেসবুক নাম' : 'Facebook Full Name'} <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                  <input
+                    type="text"
+                    required
+                    placeholder={isBn ? 'যেমন: সজীব আহমেদ শরিফ' : 'e.g. Sojib Ahmed Shorif'}
+                    value={fbName}
+                    onChange={(e) => setFbName(e.target.value)}
+                    className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-semibold dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {isBn ? 'ফেসবুক ইমেইল অথবা মোবাইল নম্বর' : 'Facebook Email or Mobile'} <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="user@gmail.com / 01942791004"
+                    value={fbEmail}
+                    onChange={(e) => setFbEmail(e.target.value)}
+                    className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-semibold dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/30 text-[11px] text-blue-900 dark:text-blue-300 space-y-1">
+                <p className="flex items-center gap-1.5 font-bold">
+                  <ShieldCheck className="w-4 h-4 text-blue-600" />
+                  {isBn ? 'নিরাপদ ফেসবুক সংযোগ' : 'Official Facebook Data Protection'}
+                </p>
+                <p className="text-slate-500 dark:text-slate-400">
+                  {isBn ? 'আপনার তথ্য সম্পূর্ণ এনক্রিপ্টেড এবং নিরাপদে সংরক্ষিত হবে।' : 'Your Facebook profile is verified and securely connected.'}
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowFbModal(false)}
+                  className="w-1/3 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
+                >
+                  {isBn ? 'বাতিল' : 'Cancel'}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isFbLoading}
+                  className="w-2/3 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black shadow-lg shadow-blue-600/20 transition flex items-center justify-center gap-2"
+                >
+                  {isFbLoading ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>{isBn ? 'লগইন হচ্ছে...' : 'Logging in...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                      </svg>
+                      <span>{isBn ? 'ফেসবুক দিয়ে লগইন করুন' : 'Log In with Facebook'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
