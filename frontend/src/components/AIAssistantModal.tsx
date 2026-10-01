@@ -112,27 +112,60 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({ isOpen, onCl
       // Fallback local smart response in matching language
       let fallback = '';
       const lower = textToSend.toLowerCase();
+      const isBangla =
+        lang === 'bn' ||
+        /[\u0980-\u09FF]/.test(textToSend) ||
+        lower.includes('bangla') ||
+        lower.includes('bolo') ||
+        lower.includes('kemon') ||
+        lower.includes('pabo') ||
+        lower.includes('paoya') ||
+        lower.includes('taka') ||
+        lower.includes('dam') ||
+        lower.includes('ache') ||
+        lower.includes('ki ') ||
+        lower.includes('modhu');
 
-      if (lower.includes('voucher') || lower.includes('coupon') || lower.includes('ভাউচার') || lower.includes('অফার')) {
-        fallback = lang === 'bn'
-          ? '🎁 আপনি SHOPX100 ভাউচার ব্যবহার করে প্রথম অর্ডারে ৳১০০ ফ্ল্যাট ছাড় এবং EID50 কোডে ১০% ক্যাশব্যাক পেতে পারেন! ভাউচার সেন্টারে গিয়ে ১-ক্লিকে সংগ্রহ করুন।'
+      if (lower === 'bangla bolo' || lower.includes('bangla bol') || lower === 'বাংলায় বলো' || lower === 'বাংলা') {
+        fallback = 'অবশ্যই! আমি ShopX AI কো-পাইলট, আপনার সাথে সম্পূর্ণ বাংলায় কথা বলছি। আমাদের ১০০% জেনুইন গ্যাজেট, খাঁটি সুন্দরবনের মধু, গাওয়া ঘি, অফিশিয়াল ব্র্যান্ডের ফোন ও আজকের মেগা ডিল সম্পর্কে আপনার যেকোনো প্রশ্ন করতে পারেন।';
+      } else if (
+        lower === 'hi' ||
+        lower === 'hello' ||
+        lower === 'hey' ||
+        lower === 'salam' ||
+        lower === 'assalamu alaikum' ||
+        lower === 'kemon acho' ||
+        lower === 'হাই' ||
+        lower === 'হ্যালো' ||
+        lower === 'সালাম'
+      ) {
+        fallback = isBangla
+          ? 'আসসালামু আলাইকুম! ShopX BD-তে আপনাকে স্বাগতম। আপনি কোন পণ্য খুঁজছেন? যেমন: বাজেট স্মার্টফোন, খাঁটি সুন্দরবনের মধু ও ঘি, ল্যাপটপ, ফ্যাশন বা আজকের স্পেশাল ডিল ও ভাউচার? যেকোনো প্রশ্ন আমাকে জানান।'
+          : 'Hello & Welcome to ShopX BD! How can I assist your shopping today? Feel free to ask about flagship smartphones, pure honey & ghee, vouchers, or 24h express delivery!';
+      } else if (lower.includes('200') || lower.includes('300') || lower.includes('500') || lower.includes('budget') || lower.includes('বাজেট') || lower.includes('paoya') || lower.includes('পাব')) {
+        fallback = isBangla
+          ? '৳২০০ - ৳৫০০ বাজেটের মধ্যে ShopX BD-তে আমাদের জনপ্রিয় বেস্টসেলার পণ্যসমূহ:\n• প্রিমিয়াম অর্গানিক চিয়া সিড (৫০০ গ্রাম) — ৳৩৪০ (ছাড় চলছে)\n• ১০০% খাঁটি ভার্জিন কালোজিরা তেল (২৫০ মিলি) — ৳৪৭০\n• ঘানি ভাঙা খাঁটি সরিষার তেল (১ লিটার) — ৳২৪০\n• 65W GaN ফাস্ট চার্জার ক্যাবল ও এক্সেসরিজ\n\n🎁 প্রথম অর্ডারে `SHOPX100` ভাউচার ব্যবহার করে অতিরিক্ত ৳১০০ ডিসকাউন্ট পেয়ে যাবেন!'
+          : 'Here are popular items under ৳500 at ShopX BD:\n• Organic Black Chia Seeds (500g) — ৳340\n• Pure Virgin Kalijira Oil (250ml) — ৳470\n• Cold-Pressed Mustard Oil (1L) — ৳240\n• 65W GaN Fast Charging Accessories\n\n🎁 Use voucher code "SHOPX100" for Flat ৳100 Off on your first order!';
+      } else if (lower.includes('voucher') || lower.includes('coupon') || lower.includes('ভাউচার') || lower.includes('অফার') || lower.includes('discount')) {
+        fallback = isBangla
+          ? '🎁 আজকের স্পেশাল ভাউচারসমূহ:\n• SHOPX100 — ৳১,০০০+ অর্ডারে ফ্ল্যাট ৳১০০ ডিসকাউন্ট\n• EID50 — ১০% ক্যাশব্যাক (সর্বোচ্চ ৳২০০)\n• FREE_DELIVERY — ফ্রি ডেলিভারি ভাউচার\nভাউচার কালেকশন সেন্টার থেকে ১-ক্লিকে সংগ্রহ করুন!'
           : '🎁 You can use voucher code SHOPX100 for Flat ৳100 Off on orders over ৳1,000, and EID50 for 10% Cashback! Head over to the Voucher Collection Center to claim!';
-      } else if (lower.includes('honey') || lower.includes('মধু') || lower.includes('organic') || lower.includes('ঘি')) {
-        fallback = lang === 'bn'
-          ? '🌿 আমাদের সুন্দরবনের প্রাকৃতিক চাকের মধু (৳৬৯০ / ৫০০ গ্রাম) এবং পাবনার খাঁটি গাওয়া ঘি (৳৭৯০ / ৫০০ গ্রাম) BSTI ও BCSIR ল্যাব টেস্টে ১০০% নির্ভেজাল প্রমাণিত।'
+      } else if (lower.includes('honey') || lower.includes('মধু') || lower.includes('organic') || lower.includes('ঘি') || lower.includes('ghee')) {
+        fallback = isBangla
+          ? '🌿 আমাদের সুন্দরবনের প্রাকৃতিক চাকের মধু (৳৬৯০ / ৫০০ গ্রাম) এবং পাবনার খাঁটি গাওয়া ঘি (৳৭৯০ / ৫০০ গ্রাম) BSTI ও BCSIR ল্যাব টেস্টে ১০০% নির্ভেজাল প্রমাণিত। ২৪-৪৮ ঘণ্টায় সারাদেশে ডেলিভারি পাওয়া যায়।'
           : '🌿 Our Sundarbans Natural Raw Honey (৳690 / 500g) and Pabna Cow Ghee (৳790 / 500g) are 100% BSTI & BCSIR lab tested and certified pure!';
-      } else if (lower.includes('phone') || lower.includes('smartphone') || lower.includes('মোবাইল') || lower.includes('ফোন')) {
-        fallback = lang === 'bn'
-          ? '📱 আমাদের কাছে রয়েছে অফিশিয়াল Apple iPhone 16 Pro Max (৳১৬৯,৯০০), Samsung Galaxy S25 Ultra (৳১৫৮,০০০) সহ ১ বছরের ব্র্যান্ড ওয়্যারেন্টির সকল লেটেস্ট স্মার্টফোন।'
+      } else if (lower.includes('phone') || lower.includes('smartphone') || lower.includes('মোবাইল') || lower.includes('ফোন') || lower.includes('iphone') || lower.includes('samsung')) {
+        fallback = isBangla
+          ? '📱 আমাদের কাছে রয়েছে অফিশিয়াল ১ বছরের ওয়্যারেন্টিসহ Apple iPhone 16 Pro Max (৳১৬৯,৯০০), Samsung Galaxy S25 Ultra (৳১৫৮,০০০) সহ সকল লেটেস্ট স্মার্টফোন। ক্যাশ অন ডেলিভারি ও ০% EMI সুবিধা রয়েছে।'
           : '📱 We offer official Apple iPhone 16 Pro Max (৳169,900) and Samsung Galaxy S25 Ultra (৳158,000) with 1-Year Brand Warranty & 0% EMI options!';
-      } else if (lower.includes('delivery') || lower.includes('shipping') || lower.includes('ডেলিভারি') || lower.includes('ঠিকানা') || lower.includes('office')) {
-        fallback = lang === 'bn'
-          ? '🚚 ঢাকা সিটির মধ্যে ২৪ ঘণ্টায় ৳৬০ এবং সারাদেশে ৪৮-৭২ ঘণ্টায় ৳১২০ ডেলিভারি চার্জ। ক্যাশ অন ডেলিভারি সুবিধা রয়েছে। আমাদের প্রধান কার্যালয়: রৌমারী, কুড়িগ্রাম, রংপুর, বাংলাদেশ। হটলাইন: 01942791004।'
+      } else if (lower.includes('delivery') || lower.includes('shipping') || lower.includes('ডেলিভারি') || lower.includes('ঠিকানা') || lower.includes('office') || lower.includes('hotline')) {
+        fallback = isBangla
+          ? '🚚 ঢাকা সিটির মধ্যে ২৪ ঘণ্টায় ৳৬০ এবং সারাদেশে ৪৮-৭২ ঘণ্টায় ৳১২০ ডেলিভারি চার্জ। ক্যাশ অন ডেলিভারি সুবিধা রয়েছে। আমাদের প্রধান কার্যালয়: রৌমারী, কুড়িগ্রাম, রংপুর, বাংলাদেশ। ২৪/৭ হেল্পলাইন: 01942791004।'
           : '🚚 Express Delivery inside Dhaka in 24h (৳60) and Nationwide in 48-72h (৳120). Cash on Delivery available! Head Office: Rowmari, Kurigram, Rangpur, Bangladesh. Hotline: 01942791004.';
       } else {
-        fallback = lang === 'bn'
-          ? `ShopX AI: আসসালামু আলাইকুম! আপনার প্রশ্নের জন্য ধন্যবাদ। আমাদের সব ক্যাটাগরির সেরা পণ্য, অফিসিয়াল ওয়্যারেন্টি ও ক্যাশ অন ডেলিভারি সুবিধা রয়েছে। আরও জানতে হটলাইনে কল করতে পারেন: 01942791004।`
-          : `ShopX AI: Thank you for asking! We offer 100% genuine brand products with official warranty, express shipping, and easy returns across all 64 districts of Bangladesh. Feel free to ask about any specific item or reach our hotline at 01942791004!`;
+        fallback = isBangla
+          ? 'আসসালামু আলাইকুম! আপনার যেকোনো পণ্য, দাম বা তথ্যের জন্য আমাকে জিজ্ঞেস করতে পারেন। আমাদের সকল পণ্যে রয়েছে ১০০% জেনুইন অফিসিয়াল ওয়্যারেন্টি ও ক্যাশ অন ডেলিভারি সুবিধা। হেল্পলাইন: 01942791004।'
+          : 'Thank you for asking! We offer 100% genuine brand products with official warranty, express shipping, and easy returns across all 64 districts of Bangladesh. Feel free to ask about any specific item or reach our hotline at 01942791004!';
       }
 
       setMessages((prev) => [
