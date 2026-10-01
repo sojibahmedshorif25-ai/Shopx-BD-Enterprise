@@ -1,188 +1,192 @@
 import React from 'react';
-import { X, Scale, Trash2, CheckCircle2, ShoppingCart, Zap, Star, ShieldCheck, Award } from 'lucide-react';
+import { X, Check, ArrowRight, Trash2, Scale, Star, ShieldCheck, Truck, ShoppingCart } from 'lucide-react';
 import { useCompareStore } from '../store/useCompareStore';
 import { useCartStore } from '../store/useCartStore';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { useCurrencyStore } from '../store/useCurrencyStore';
 
-interface ProductCompareModalProps {
-  onQuickOrder?: (product: any) => void;
-}
-
-export const ProductCompareModal: React.FC<ProductCompareModalProps> = ({ onQuickOrder }) => {
-  const { compareItems, isOpen, closeCompare, removeFromCompare, clearCompare } = useCompareStore();
+export const ProductCompareModal: React.FC = () => {
+  const { items, isOpen, setIsOpen, removeFromCompare, clearCompare } = useCompareStore();
   const { addItem } = useCartStore();
+  const { lang } = useLanguageStore();
+  const { formatPrice } = useCurrencyStore();
+  const isBn = lang === 'bn';
 
-  if (!isOpen || compareItems.length === 0) return null;
+  if (!isOpen && items.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-800 bg-slate-950/60">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-orange-500/20 border border-orange-500/30 rounded-2xl text-orange-400">
-              <Scale className="w-6 h-6" />
+    <>
+      {/* Floating Bottom Dock when items exist and modal is closed */}
+      {items.length > 0 && !isOpen && (
+        <div className="fixed bottom-20 md:bottom-6 right-6 z-40 animate-bounce">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="flex items-center gap-3 px-5 py-3.5 rounded-full bg-slate-900 text-white shadow-2xl border-2 border-emerald-500 hover:bg-slate-800 transition transform hover:scale-105 group"
+          >
+            <div className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-black text-xs">
+              <Scale className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
-                পণ্য তুলনা ম্যাট্রিক্স (Product Comparison)
-                <span className="text-xs bg-orange-500 text-white font-bold px-2 py-0.5 rounded-full">
-                  {compareItems.length}/4 টি পণ্য
-                </span>
-              </h3>
-              <p className="text-xs text-slate-400">
-                একসাথে একাধিক পণ্যের দাম, ডিসকাউন্ট, ল্যাব টেস্ট ও স্পেক্স তুলনা করুন
+            <div className="text-left">
+              <p className="text-xs font-black uppercase tracking-wider text-emerald-400">
+                {isBn ? 'পণ্য তুলনা ডক' : 'Compare Dock'} ({items.length}/4)
+              </p>
+              <p className="text-[10px] text-slate-400">
+                {isBn ? 'পাশাপাশি তুলনা দেখুন' : 'Compare specs side-by-side'}
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={clearCompare}
-              className="text-xs text-rose-400 hover:text-rose-300 font-bold px-3 py-1.5 rounded-xl bg-rose-950/30 border border-rose-900/50 flex items-center gap-1.5 transition"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>সব মুছুন</span>
-            </button>
-            <button
-              onClick={closeCompare}
-              className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
+          </button>
         </div>
+      )}
 
-        {/* Table comparison */}
-        <div className="flex-1 overflow-x-auto p-4 sm:p-6">
-          <table className="w-full min-w-[600px] border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-800">
-                <th className="p-3 text-slate-400 font-bold w-1/4">পণ্য তথ্য</th>
-                {compareItems.map((item) => (
-                  <th key={item._id} className="p-3 w-1/3 align-top">
-                    <div className="relative group bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex flex-col items-center text-center">
-                      <button
-                        onClick={() => removeFromCompare(item._id)}
-                        className="absolute top-2 right-2 p-1 bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white rounded-full transition"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                      <img
-                        src={item.images?.[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}
-                        alt={item.title}
-                        className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-xl mb-2"
-                      />
-                      <h4 className="font-bold text-xs sm:text-sm text-slate-200 line-clamp-2 mb-2">
-                        {item.title}
+      {/* Main Fullscreen Comparison Matrix Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-700 rounded-3xl p-5 sm:p-8 max-w-6xl w-full shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto custom-scrollbar text-white">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
+                  <Scale className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-black text-white">
+                    {isBn ? 'পণ্য পাশাপাশি স্পেসিফিকেশন তুলনা' : 'Side-by-Side Product Comparison'}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {isBn
+                      ? 'স্পেক্স, দাম, রেটিং এবং ওয়ারেন্টি সহজে যাচাই করুন।'
+                      : 'Compare technical specs, warranty, prices, and customer feedback.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {items.length > 0 && (
+                  <button
+                    onClick={clearCompare}
+                    className="text-xs font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-950/40 border border-rose-900 px-3 py-1.5 rounded-xl transition"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>{isBn ? 'সব ক্লিয়ার করুন' : 'Clear All'}</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Comparison Grid Table */}
+            {items.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 space-y-3">
+                <Scale className="w-12 h-12 mx-auto text-slate-600" />
+                <p className="font-bold text-sm">
+                  {isBn ? 'তুলনা করার জন্য কোনো পণ্য যোগ করা হয়নি।' : 'No products added to comparison yet.'}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {isBn
+                    ? 'পণ্য কার্ডের "তুলনা" বাটনে ক্লিক করে সর্বোচ্চ ৪টি পণ্য একসাথে তুলনা করুন।'
+                    : 'Click the "Compare" icon on any product card to compare up to 4 items.'}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {items.map((prod) => (
+                  <div
+                    key={prod._id}
+                    className="bg-slate-950 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between space-y-4 relative group"
+                  >
+                    {/* Remove button */}
+                    <button
+                      onClick={() => removeFromCompare(prod._id)}
+                      className="absolute top-3 right-3 p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-rose-400 transition"
+                      title={isBn ? 'মুছে ফেলুন' : 'Remove'}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+
+                    {/* Image & Title */}
+                    <div className="space-y-3">
+                      <div className="aspect-square bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+                        <img
+                          src={prod.thumbnail || prod.images[0]}
+                          alt={prod.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        />
+                      </div>
+                      <h4 className="font-bold text-xs sm:text-sm text-white line-clamp-2">
+                        {isBn && prod.banglaTitle ? prod.banglaTitle : prod.title}
                       </h4>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-base font-black text-orange-400">
-                          ৳{(item.discountPrice || item.price).toLocaleString()}
+                    </div>
+
+                    {/* Attributes Matrix */}
+                    <div className="space-y-2 text-xs border-t border-b border-slate-800/80 py-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">{isBn ? 'মূল্য' : 'Price'}:</span>
+                        <span className="font-mono font-black text-emerald-400 text-sm">
+                          {formatPrice(prod.discountPrice || prod.price)}
                         </span>
-                        {item.discountPrice && item.discountPrice < item.price && (
-                          <span className="text-xs text-slate-500 line-through">
-                            ৳{item.price.toLocaleString()}
-                          </span>
-                        )}
                       </div>
-                      <div className="flex flex-col w-full gap-2">
-                        <button
-                          onClick={() => {
-                            if (onQuickOrder) onQuickOrder(item);
-                          }}
-                          className="w-full py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-orange-500/20"
-                        >
-                          <Zap className="w-3.5 h-3.5 fill-slate-950" />
-                          <span>সরাসরি কিনুন</span>
-                        </button>
-                        <button
-                          onClick={() => addItem(item, 1)}
-                          className="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"
-                        >
-                          <ShoppingCart className="w-3.5 h-3.5" />
-                          <span>কার্টে যোগ করুন</span>
-                        </button>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">{isBn ? 'রেটিং' : 'Rating'}:</span>
+                        <span className="text-amber-400 font-bold flex items-center gap-1 font-mono">
+                          ★ {prod.rating || 4.9} ({prod.soldCount || 24} {isBn ? 'বিক্রয়' : 'sold'})
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">{isBn ? 'ক্যাটাগরি' : 'Category'}:</span>
+                        <span className="text-slate-200 capitalize font-medium">
+                          {prod.categorySlug?.replace('-', ' ') || 'General'}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">{isBn ? 'ব্র্যান্ড' : 'Brand'}:</span>
+                        <span className="text-slate-200 font-bold">
+                          {prod.brand || 'Official'}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">{isBn ? 'সার্টিফিকেশন' : 'Standard'}:</span>
+                        <span className="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          {prod.isOrganic ? 'BSTI Lab Certified' : '100% Genuine Official'}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">{isBn ? 'ডেলিভারি' : 'Delivery'}:</span>
+                        <span className="text-blue-400 font-bold text-[11px] flex items-center gap-1">
+                          <Truck className="w-3.5 h-3.5" />
+                          24-48h Express
+                        </span>
                       </div>
                     </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60 text-xs sm:text-sm">
-              <tr>
-                <td className="p-3 text-slate-400 font-bold">ক্যাটেগরি</td>
-                {compareItems.map((item) => {
-                  const catName = typeof item.category === 'object' ? item.category?.name : (item.categorySlug || 'General');
-                  return (
-                    <td key={item._id} className="p-3 text-slate-200 font-medium">
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono text-xs">
-                        {catName}
-                      </span>
-                    </td>
-                  );
-                })}
-              </tr>
 
-              <tr>
-                <td className="p-3 text-slate-400 font-bold">রেটিং ও রিভিউ</td>
-                {compareItems.map((item) => (
-                  <td key={item._id} className="p-3 text-slate-200">
-                    <div className="flex items-center gap-1.5 text-amber-400 font-bold">
-                      <Star className="w-4 h-4 fill-amber-400" />
-                      <span>{item.rating || 4.9}</span>
-                      <span className="text-xs text-slate-500">({item.numReviews || 48} রিভিউ)</span>
-                    </div>
-                  </td>
+                    {/* Action Button */}
+                    <button
+                      onClick={() => {
+                        addItem(prod, 1);
+                        alert(isBn ? 'কার্টে যোগ করা হয়েছে!' : 'Added to cart successfully!');
+                      }}
+                      className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      <span>{isBn ? 'কার্টে যোগ করুন' : 'Add to Cart'}</span>
+                    </button>
+                  </div>
                 ))}
-              </tr>
-
-              <tr>
-                <td className="p-3 text-slate-400 font-bold">স্টক স্ট্যাটাস</td>
-                {compareItems.map((item) => (
-                  <td key={item._id} className="p-3 text-emerald-400 font-bold">
-                    <div className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>স্টকে আছে ({item.stock || 50}+ টি)</span>
-                    </div>
-                  </td>
-                ))}
-              </tr>
-
-              <tr>
-                <td className="p-3 text-slate-400 font-bold">ল্যাব সার্টিফিকেট / বিশুদ্ধতা</td>
-                {compareItems.map((item) => (
-                  <td key={item._id} className="p-3">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-lg">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      BSTI & BCSIR অনুমোদিত
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              <tr>
-                <td className="p-3 text-slate-400 font-bold">০% ইন্টারেস্ট EMI</td>
-                {compareItems.map((item) => (
-                  <td key={item._id} className="p-3">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-400 bg-amber-950/40 border border-amber-800/40 px-2.5 py-1 rounded-lg">
-                      <Award className="w-3.5 h-3.5" />
-                      ৩-৩৬ মাস EMI প্রযোজ্য
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              <tr>
-                <td className="p-3 text-slate-400 font-bold">রিটার্ন পলিসি</td>
-                {compareItems.map((item) => (
-                  <td key={item._id} className="p-3 text-slate-300 font-medium text-xs">
-                    ৭ দিনের সহজ ফ্রি রিটার্ন ও রিফান্ড গ্যারান্টি
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };

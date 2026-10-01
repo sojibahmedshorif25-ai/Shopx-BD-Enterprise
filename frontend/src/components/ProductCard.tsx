@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Plus, Check, Heart, Eye } from 'lucide-react';
+import { Star, Plus, Check, Heart, Eye, Scale } from 'lucide-react';
 import { Product } from '../types';
 import { useCartStore } from '../store/useCartStore';
 import { useWishlistStore } from '../store/useWishlistStore';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useCurrencyStore } from '../store/useCurrencyStore';
 import { useRecentViewedStore } from '../store/useRecentViewedStore';
+import { useCompareStore } from '../store/useCompareStore';
 
 interface ProductCardProps {
   product: Product;
@@ -21,6 +22,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { addItem } = useCartStore();
   const { isInWishlist, addItem: addWishlist, removeItem: removeWishlist } = useWishlistStore();
+  const { addToCompare, removeFromCompare, isInCompare } = useCompareStore();
   const { lang } = useLanguageStore();
   const { formatPrice } = useCurrencyStore();
   const { addProduct: recordView } = useRecentViewedStore();
@@ -28,6 +30,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [isAdded, setIsAdded] = useState(false);
 
   const isLiked = isInWishlist(product._id);
+  const isCompared = isInCompare(product._id);
   const title = lang === 'bn' && product.banglaTitle ? product.banglaTitle : product.title;
   const price = product.price;
   const discountPrice = product.discountPrice;
@@ -79,18 +82,40 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {badge.text}
         </span>
 
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (isLiked) removeWishlist(product._id);
-            else addWishlist(product);
-          }}
-          className="text-slate-300 hover:text-rose-500 transition p-1.5 rounded-full hover:bg-rose-50"
-          title="Wishlist"
-        >
-          <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (isCompared) {
+                removeFromCompare(product._id);
+              } else {
+                addToCompare(product);
+              }
+            }}
+            className={`p-1.5 rounded-full transition ${
+              isCompared
+                ? 'bg-emerald-100 text-emerald-700'
+                : 'text-slate-300 hover:text-emerald-600 hover:bg-emerald-50'
+            }`}
+            title={lang === 'bn' ? 'তুলনা ডকে যোগ করুন' : 'Compare Product'}
+          >
+            <Scale className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (isLiked) removeWishlist(product._id);
+              else addWishlist(product);
+            }}
+            className="text-slate-300 hover:text-rose-500 transition p-1.5 rounded-full hover:bg-rose-50"
+            title="Wishlist"
+          >
+            <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Product Image Link */}
