@@ -320,7 +320,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* 2. Main Center Header: Logo, Search Bar, Quick Action Icons */}
       <div className="py-4 px-4 sm:px-6 max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8">
-        {/* Brand Logo: ShopX Supermall */}
+        {/* Brand Logo: ShopX Official Supermall */}
         <Link to="/" className="flex items-center gap-3.5 group flex-shrink-0">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-700/25 group-hover:scale-105 transition">
             <Sparkles className="w-6 h-6 fill-white" />
@@ -328,12 +328,12 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex flex-col">
             <div className="font-black text-2xl sm:text-3xl tracking-tight text-slate-900 flex items-center gap-2 leading-none">
               Shop<span className="text-emerald-700">X</span>
-              <span className="text-[11px] bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider shadow-sm">
-                MALL
+              <span className="text-[10px] bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider shadow-sm">
+                OFFICIAL
               </span>
             </div>
             <p className="text-xs text-slate-500 font-semibold tracking-normal mt-1">
-              {lang === 'bn' ? 'মাল্টি-ভেন্ডর সুপারমল ও SaaS হাব' : 'Supermall & SaaS Commerce Hub'}
+              {lang === 'bn' ? 'অফিসিয়াল প্রিমিয়াম সুপারমল ও স্মার্ট কমার্স' : 'Official Supermall & Smart Commerce'}
             </p>
           </div>
         </Link>

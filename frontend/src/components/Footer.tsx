@@ -98,11 +98,11 @@ export const Footer: React.FC = () => {
               <div className="font-extrabold text-2xl tracking-tight text-white flex items-center gap-2">
                 Shop<span className="text-emerald-400">X</span>
                 <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-black tracking-widest uppercase">
-                  MALL
+                  OFFICIAL
                 </span>
               </div>
               <p className="text-xs text-emerald-400 font-semibold mt-0.5">
-                {isBn ? 'মাল্টি-ভেন্ডর সুপারমল ও SaaS হাব' : 'Supermall & SaaS Commerce Hub'}
+                {isBn ? 'অফিসিয়াল প্রিমিয়াম সুপারমল ও স্মার্ট কমার্স' : 'Official Supermall & Smart Commerce Platform'}
               </p>
             </div>
           </Link>
