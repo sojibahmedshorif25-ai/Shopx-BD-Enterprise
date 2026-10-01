@@ -110,10 +110,10 @@ export const chatWithAI = async (req: Request, res: Response): Promise<void> => 
     else if (lower.includes('laptop') || lower.includes('computer') || lower.includes('macbook') || lower.includes('ল্যাপটপ')) categorySearchTerm = 'laptops';
     else if (lower.includes('headphone') || lower.includes('earbuds') || lower.includes('tws') || lower.includes('speaker') || lower.includes('হেডফোন')) categorySearchTerm = 'audio';
 
-    // Fetch context products
+    // Fetch context products from DB
     const dbProducts = await Product.find({ status: 'active' })
       .select('title banglaTitle price discountPrice isOrganic isFlashSale stock categorySlug brand')
-      .limit(10);
+      .limit(15);
 
     const productContext = dbProducts
       .map(
@@ -122,29 +122,38 @@ export const chatWithAI = async (req: Request, res: Response): Promise<void> => 
       )
       .join('\n');
 
-    const prompt = isExplicitBangla
-      ? `User Message: "${message}"
+    const systemInstruction = isExplicitBangla
+      ? `You are ShopX AI Copilot, the official 24/7 intelligent assistant for ShopX BD (Bangladesh).
+Company Info:
+- Head Office: Rowmari, Kurigram, Rangpur, Bangladesh (রৌমারী, কুড়িগ্রাম, রংপুর, বাংলাদেশ)
+- 24/7 Hotline: 01942791004 (০১৯৪২৭৯১০০৪) | Email: support@shopxbd.com
+- Founder & CEO: Sojib Ahmed Shorif (সজীব আহমেদ শরীফ)
+- Delivery: Inside Dhaka 24h (৳60), Nationwide outside Dhaka across all 64 districts (৳120) with Cash on Delivery (COD)
+- Active Vouchers: SHOPX100 (৳100 off on ৳1000+), EID50 (10% cashback), LUCKY250 (৳250 off)
 
-ShopX BD স্টোর প্রোডাক্ট ডাটাবেস:
-${productContext}
-
-নির্দেশনা:
-১. ব্যবহারকারীর প্রশ্নের সরাসরি ও প্রাসঙ্গিক উত্তর দিন বাংলায়।
-২. ক্যাটালগ থেকে সুনির্দিষ্ট পণ্যের নাম ও দাম (৳ BDT) উল্লেখ করুন।
-৩. ডেলিভারি তথ্য: ঢাকায় ২৪ ঘণ্টায় ৳৬০, সারাদেশে ৪৮-৭২ ঘণ্টায় ৳১২০ (ক্যাশ অন ডেলিভারি)। প্রধান কার্যালয়: রৌমারী, কুড়িগ্রাম, রংপুর। হটলাইন: 01942791004।
-৪. উত্তর সংক্ষিপ্ত ও স্পষ্ট রাখুন।`
-      : `User Message: "${message}"
-
-ShopX BD Live Store Database:
+Live Product Catalog:
 ${productContext}
 
 Instructions:
-1. Answer the user's specific query clearly and accurately in English.
-2. Recommend specific matching products with price in BDT (৳) from the catalog.
-3. Shipping: 24h inside Dhaka (৳60), 48-72h Nationwide (৳120), Cash on Delivery available across all 64 districts. Head Office: Rowmari, Kurigram, Rangpur, Bangladesh. 24/7 Helpline: 01942791004.
-4. Keep it friendly and concise.`;
+1. Always understand Bengali, Romanized Banglish (e.g., "head office koi", "kikoro", "ki koro", "kemon acho", "modhu koto taka"), and English.
+2. Answer the user's specific question directly, concisely, and accurately in polite Bengali (বাংলা).
+3. If they ask about products, recommend specific matching items with BDT prices from the live catalog.`
+      : `You are ShopX AI Copilot, the official 24/7 intelligent assistant for ShopX BD (Bangladesh).
+Company Info:
+- Head Office: Rowmari, Kurigram, Rangpur, Bangladesh
+- 24/7 Hotline: 01942791004 | Email: support@shopxbd.com
+- Founder & CEO: Sojib Ahmed Shorif
+- Delivery: Inside Dhaka 24h (৳60 BDT), Nationwide outside Dhaka (৳120 BDT) Cash on Delivery across all 64 districts
+- Active Vouchers: SHOPX100 (Flat ৳100 off on ৳1000+), EID50 (10% cashback)
 
-    const aiReply = await generateAIResponse(prompt, undefined, isExplicitBangla ? 'bn' : 'en');
+Live Product Catalog:
+${productContext}
+
+Instructions:
+1. Answer the user's question clearly, accurately, and politely in English.
+2. Recommend specific matching products with BDT (৳) prices from the catalog.`;
+
+    const aiReply = await generateAIResponse(message, systemInstruction, isExplicitBangla ? 'bn' : 'en');
 
     res.status(200).json({ success: true, reply: aiReply });
   } catch (error: any) {
