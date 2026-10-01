@@ -19,7 +19,7 @@ import { ImageSearchModal } from '../components/ImageSearchModal';
 import { Product } from '../types';
 import { api } from '../services/api';
 import { useLanguageStore } from '../store/useLanguageStore';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, SlidersHorizontal } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,6 +31,14 @@ export const HomePage: React.FC = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isLiveOpen, setIsLiveOpen] = useState(false);
   const [isImageSearchOpen, setIsImageSearchOpen] = useState(false);
+  const tabsContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollTabs = (direction: 'left' | 'right') => {
+    if (tabsContainerRef.current) {
+      const offset = direction === 'left' ? -250 : 250;
+      tabsContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -106,35 +114,75 @@ export const HomePage: React.FC = () => {
       <CoinsRewardHub />
 
       {/* 10. Popular Trending Products Catalog with Department Filter Tabs */}
-      <section className="max-w-7xl mx-auto px-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <section className="max-w-7xl mx-auto px-4 space-y-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-extrabold text-slate-900">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700">
+                Official Catalog Collection
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               {lang === 'bn' ? 'জনপ্রিয় ও শীর্ষ রেটেড পণ্যসমূহ' : 'Popular & Trending Products'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
               {lang === 'bn'
-                ? 'জেনুইন ব্র্যান্ড ওয়্যারেন্টি সহ শীর্ষ ক্যাটাগরির সেরা পণ্য'
-                : 'Top authenticated products across all departments with warranty'}
+                ? 'জেনুইন ব্র্যান্ড ওয়্যারেন্টি সহ সকল ক্যাটাগরির সেরা অফিশিয়াল পণ্য'
+                : 'Top authenticated products across all departments with official warranty'}
             </p>
           </div>
 
-          {/* Department Filter Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+          <Link
+            to="/products"
+            className="self-start md:self-auto inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-2xl border border-emerald-200 transition shadow-xs"
+          >
+            <span>{lang === 'bn' ? 'সকল পণ্য দেখুন (৪৯+)' : 'Explore All (49+)'}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Full-Width Smooth Scrollable Department Tabs Bar with Left/Right Click Navigators */}
+        <div className="relative group bg-white p-2 rounded-2xl border border-slate-200/90 shadow-sm flex items-center">
+          {/* Scroll Left Button */}
+          <button
+            type="button"
+            onClick={() => scrollTabs('left')}
+            className="p-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition flex-shrink-0 shadow-sm mr-2 z-10"
+            title="Scroll Left"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          {/* Scrollable Container */}
+          <div
+            ref={tabsContainerRef}
+            className="flex items-center gap-2 overflow-x-auto custom-scrollbar scroll-smooth flex-1 py-1 px-1"
+          >
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition whitespace-nowrap ${
+                className={`px-4 py-2 rounded-full text-xs font-bold transition whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 shadow-xs ${
                   activeTab === tab.id
-                    ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/25 ring-2 ring-emerald-600/30'
+                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
                 }`}
               >
                 {tab.label}
               </button>
             ))}
           </div>
+
+          {/* Scroll Right Button */}
+          <button
+            type="button"
+            onClick={() => scrollTabs('right')}
+            className="p-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition flex-shrink-0 shadow-sm ml-2 z-10"
+            title="Scroll Right"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Product Grid */}
