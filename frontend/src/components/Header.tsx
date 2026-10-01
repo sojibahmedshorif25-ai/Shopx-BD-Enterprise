@@ -191,16 +191,16 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const categoriesList = [
-    { name: 'Smartphones & Tablets', bn: 'স্মার্টফোন ও ট্যাবলেট', icon: '📱', slug: 'smartphones-tablets', count: '180+ Flagships', bnCount: '১৮০+ মডেল' },
-    { name: 'Laptops & Computers', bn: 'ল্যাপটপ ও পিসি', icon: '💻', slug: 'laptops-computers', count: '120+ Models', bnCount: '১২০+ মডেল' },
-    { name: 'Pure Organic Foods & Grocery', bn: 'খাঁটি ও অর্গানিক খাদ্য', icon: '🌿', slug: 'organic-foods', count: '250+ Items', bnCount: '২৫০+ আইটেম' },
-    { name: 'Smart Gadgets & Audio (TWS)', bn: 'স্মার্ট গ্যাজেটস ও অডিও', icon: '🎧', slug: 'electronics-gadgets', count: '300+ Gadgets', bnCount: '৩০০+ গ্যাজেট' },
-    { name: 'Fashion & Luxury Apparel', bn: 'ফ্যাশন ও প্রিমিয়াম পোশাক', icon: '👕', slug: 'fashion-lifestyle', count: '450+ Trends', bnCount: '৪৫০+ কালেকশন' },
-    { name: 'Home Appliances & Living', bn: 'হোম ও কিচেন অ্যাপ্লায়েন্স', icon: '🏠', slug: 'home-kitchen', count: '160+ Items', bnCount: '১৬০+ আইটেম' },
-    { name: 'Beauty & Royal Fragrances', bn: 'বিউটি ও রাজকীয় সুগন্ধি', icon: '💄', slug: 'beauty-care', count: '190+ Scents', bnCount: '১৯০+ পারফিউম' },
-    { name: 'Gaming, PS5 & Drones', bn: 'গেমিং, কনসোল ও ড্রোন', icon: '🎮', slug: 'gaming-consoles', count: '80+ Gears', bnCount: '৮০+ গেমিং গিয়ার' },
-    { name: 'Watches & Accessories', bn: 'ঘড়ি ও জুয়েলারি', icon: '⌚', slug: 'watches-accessories', count: '140+ Luxury', bnCount: '১৪০+ লাক্সারি' },
-    { name: 'B2B Wholesale & Bulk Supply', bn: 'B2B হোলসেল ও বাল্ক অর্ডার', icon: '🏢', slug: 'organic-foods', count: 'Bulk Tiers', bnCount: 'পাইকারি রেট' },
+    { name: 'Smartphones & Tablets', bn: '📱 স্মার্টফোন ও ট্যাব', icon: '📱', slug: 'smartphones-tablets', count: '180+ Flagships', bnCount: '১৮০+ মডেল' },
+    { name: 'Tech & Gadgets (TWS)', bn: '🎧 টেক ও স্মার্ট গ্যাজেটস', icon: '🎧', slug: 'electronics-gadgets', count: '300+ Gadgets', bnCount: '৩০০+ গ্যাজেট' },
+    { name: 'Pure Organic Foods', bn: '🌿 খাঁটি ও অর্গানিক খাদ্য', icon: '🌿', slug: 'organic-foods', count: '250+ Items', bnCount: '২৫০+ আইটেম' },
+    { name: 'Fashion & Lifestyle', bn: '👕 ফ্যাশন ও প্রিমিয়াম পোশাক', icon: '👕', slug: 'fashion-lifestyle', count: '450+ Trends', bnCount: '৪৫০+ কালেকশন' },
+    { name: 'Laptops & PC', bn: '💻 ল্যাপটপ ও কম্পিউটার', icon: '💻', slug: 'laptops-computers', count: '120+ Models', bnCount: '১২০+ মডেল' },
+    { name: 'Beauty & Fragrances', bn: '💄 বিউটি ও রাজকীয় আতর', icon: '💄', slug: 'beauty-care', count: '190+ Scents', bnCount: '১৯০+ পারফিউম' },
+    { name: 'Home & Kitchen', bn: '🏠 হোম ও কিচেন অ্যাপ্লায়েন্স', icon: '🏠', slug: 'home-kitchen', count: '160+ Items', bnCount: '১৬০+ আইটেম' },
+    { name: 'Gaming & Drones', bn: '🎮 গেমিং, কনসোল ও ড্রোন', icon: '🎮', slug: 'gaming-consoles', count: '80+ Gears', bnCount: '৮০+ গেমিং গিয়ার' },
+    { name: 'Watches & Accessories', bn: '⌚ ঘড়ি ও লাক্সারি টাইমপিস', icon: '⌚', slug: 'watches-accessories', count: '140+ Luxury', bnCount: '১৪০+ লাক্সারি' },
+    { name: 'B2B Wholesale & Bulk', bn: '🏢 B2B হোলসেল ও বাল্ক সাপ্লাই', icon: '🏢', slug: 'global-imports', count: 'Bulk Tiers', bnCount: 'পাইকারি রেট' },
   ];
 
   return (
