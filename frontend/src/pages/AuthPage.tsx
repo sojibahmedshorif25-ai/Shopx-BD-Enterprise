@@ -135,6 +135,14 @@ export const AuthPage: React.FC = () => {
   // Rider Portal State
   const [riderPhone, setRiderPhone] = useState('');
   const [riderPin, setRiderPin] = useState('');
+  const [isRiderApply, setIsRiderApply] = useState(false);
+  const [riderApplyName, setRiderApplyName] = useState('');
+  const [riderApplyPhone, setRiderApplyPhone] = useState('');
+  const [riderApplyEmail, setRiderApplyEmail] = useState('');
+  const [riderApplyVehicle, setRiderApplyVehicle] = useState('bike');
+  const [riderApplyHub, setRiderApplyHub] = useState('ঢাকা হাব (Dhaka Hub)');
+  const [riderApplyPin, setRiderApplyPin] = useState('');
+  const [isRiderApplying, setIsRiderApplying] = useState(false);
 
   // Forgot Password Modal State (Real 6-Digit Email OTP)
   const [showForgotModal, setShowForgotModal] = useState(false);
@@ -617,6 +625,38 @@ export const AuthPage: React.FC = () => {
     e.preventDefault();
     confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
     navigate('/rider-portal');
+  };
+
+  // 8. Delivery Rider Application Submit
+  const handleRiderApplySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMsg('');
+    setIsRiderApplying(true);
+
+    try {
+      const res = await api.post('/rider/apply', {
+        name: riderApplyName.trim(),
+        phone: riderApplyPhone.trim(),
+        email: riderApplyEmail.trim() || undefined,
+        vehicleType: riderApplyVehicle,
+        cityHub: riderApplyHub.trim(),
+        pin: riderApplyPin.trim(),
+      });
+
+      if (res.data.success) {
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+        setSuccessMsg(res.data.message || (isBn ? 'আপনার রাইডার আবেদন সফলভাবে জমা হয়েছে!' : 'Rider application submitted successfully!'));
+        setTimeout(() => {
+          setIsRiderApply(false);
+          setRiderPhone(riderApplyPhone.trim());
+        }, 2500);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || (isBn ? 'আবেদন জমা দেওয়া ব্যর্থ হয়েছে।' : 'Failed to submit rider application.'));
+    } finally {
+      setIsRiderApplying(false);
+    }
   };
 
   return (
@@ -1604,66 +1644,241 @@ export const AuthPage: React.FC = () => {
           {/* ======================================================== */}
           {selectedRole === 'rider' && (
             <div className="space-y-6">
+              {/* Dual Tab: Login vs Apply */}
+              <div className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl text-xs font-black">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRiderApply(false);
+                    setError('');
+                    setSuccessMsg('');
+                  }}
+                  className={`py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
+                    !isRiderApply
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  <Truck className="w-4 h-4" />
+                  <span>{isBn ? 'রাইডার লগইন' : 'Rider Login'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRiderApply(true);
+                    setError('');
+                    setSuccessMsg('');
+                  }}
+                  className={`py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
+                    isRiderApply
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  <span>{isBn ? 'রাইডার আবেদন' : 'Apply as Rider'}</span>
+                </button>
+              </div>
+
               <div className="text-center">
                 <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-xl mx-auto mb-2 shadow-lg shadow-blue-600/20">
                   <Truck className="w-6 h-6" />
                 </div>
                 <h2 className="text-xl font-black text-slate-900 dark:text-white">
-                  {isBn ? 'DEX ডেলিভারি হিরো লগইন' : 'DEX Delivery Hero Portal'}
+                  {isRiderApply
+                    ? (isBn ? 'ডেলিভারি রাইডার হিসেবে আবেদন করুন' : 'Apply as Delivery Hero')
+                    : (isBn ? 'DEX ডেলিভারি হিরো লগইন' : 'DEX Delivery Hero Portal')}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  {isBn ? 'পার্সেল ডেলিভারি, ম্যাপ রুট ও ক্যাশ কালেকশন' : 'Real-time parcel delivery route, POD signature & cash tally'}
+                  {isRiderApply
+                    ? (isBn ? 'আবেদন করার পর এডমিন (Super Admin) অ্যাপ্রুভ করলে ডেলিভারি শুরু করতে পারবেন।' : 'Admin will review and approve your application to start delivering.')
+                    : (isBn ? 'পার্সেল ডেলিভারি, লাইভ জিপিএস ম্যাপ রুট ও ক্যাশ কালেকশন।' : 'Real-time parcel delivery route, POD signature & cash tally.')}
                 </p>
               </div>
 
-              <form onSubmit={handleRiderLogin} className="space-y-4 text-xs">
-                <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    {isBn ? 'রাইডার মোবাইল নম্বর / DEX আইডি' : 'Rider Mobile Number / DEX ID'} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="01712-345678"
-                    value={riderPhone}
-                    onChange={(e) => setRiderPhone(e.target.value)}
-                    className="w-full py-3 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-mono dark:text-white"
-                  />
-                </div>
+              {!isRiderApply ? (
+                <form onSubmit={handleRiderLogin} className="space-y-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'রাইডার মোবাইল নম্বর / DEX আইডি' : 'Rider Mobile Number / DEX ID'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Smartphone className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="tel"
+                        required
+                        placeholder="01712-345678"
+                        value={riderPhone}
+                        onChange={(e) => setRiderPhone(e.target.value)}
+                        className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-mono dark:text-white"
+                      />
+                    </div>
+                  </div>
 
-                <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    {isBn ? 'সিকিউরিটি পিন (PIN)' : 'Security PIN'} <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
-                    <input
-                      type={showRiderPin ? 'text' : 'password'}
-                      required
-                      autoComplete="new-password"
-                      placeholder="••••"
-                      value={riderPin}
-                      onChange={(e) => setRiderPin(e.target.value)}
-                      className="w-full py-3 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-mono dark:text-white"
-                    />
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'সিকিউরিটি পিন (PIN)' : 'Security PIN'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type={showRiderPin ? 'text' : 'password'}
+                        required
+                        autoComplete="new-password"
+                        placeholder="••••"
+                        value={riderPin}
+                        onChange={(e) => setRiderPin(e.target.value)}
+                        className="w-full py-3 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-mono dark:text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowRiderPin(!showRiderPin)}
+                        className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                      >
+                        {showRiderPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-2xl shadow-xl shadow-blue-600/20 transition flex items-center justify-center gap-2 text-sm"
+                  >
+                    <span>{isBn ? 'রাইডার ড্যাশবোর্ডে প্রবেশ করুন' : 'Launch Rider Delivery App'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+
+                  <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800">
+                    {isBn ? 'নতুন রাইডার হতে চান?' : 'Want to join as a Rider?'}{' '}
                     <button
                       type="button"
-                      onClick={() => setShowRiderPin(!showRiderPin)}
-                      className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                      onClick={() => setIsRiderApply(true)}
+                      className="text-blue-600 font-extrabold hover:underline"
                     >
-                      {showRiderPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {isBn ? 'এখানে আবেদন করুন ↗' : 'Apply Here ↗'}
                     </button>
                   </div>
-                </div>
+                </form>
+              ) : (
+                <form onSubmit={handleRiderApplySubmit} className="space-y-3.5 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'আপনার পূর্ণ নাম' : 'Full Name'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <User className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="text"
+                        required
+                        placeholder={isBn ? 'যেমন: মোঃ কাউসার হোসেন' : 'e.g. Md. Kawsar Hossain'}
+                        value={riderApplyName}
+                        onChange={(e) => setRiderApplyName(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 dark:text-white"
+                      />
+                    </div>
+                  </div>
 
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-2xl shadow-xl shadow-blue-600/20 transition flex items-center justify-center gap-2 text-sm"
-                >
-                  <span>{isBn ? 'রাইডার ড্যাশবোর্ডে প্রবেশ করুন' : 'Launch Rider Delivery App'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'সক্রিয় মোবাইল নম্বর' : 'Active Mobile Phone'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Smartphone className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="tel"
+                        required
+                        placeholder="01712-345678"
+                        value={riderApplyPhone}
+                        onChange={(e) => setRiderApplyPhone(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 dark:text-white font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'জিমেইল এড্রেস' : 'Gmail / Email'}
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="email"
+                        placeholder="rider@gmail.com"
+                        value={riderApplyEmail}
+                        onChange={(e) => setRiderApplyEmail(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        {isBn ? 'বাহনের ধরন' : 'Vehicle'}
+                      </label>
+                      <select
+                        value={riderApplyVehicle}
+                        onChange={(e) => setRiderApplyVehicle(e.target.value)}
+                        className="w-full py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 dark:text-white"
+                      >
+                        <option value="bike">{isBn ? '🏍️ মোটরসাইকেল' : '🏍️ Bike'}</option>
+                        <option value="bicycle">{isBn ? '🚲 বাইসাইকেল' : '🚲 Bicycle'}</option>
+                        <option value="van">{isBn ? '🚐 ভ্যান / গাড়ি' : '🚐 Van'}</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        {isBn ? 'ডেলিভারি জোন/হাব' : 'Delivery Hub'}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={isBn ? 'যেমন: ধানমন্ডি / মিরপুর' : 'e.g. Dhanmondi'}
+                        value={riderApplyHub}
+                        onChange={(e) => setRiderApplyHub(e.target.value)}
+                        className="w-full py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'লগইন ৪-সংখ্যার পিন (PIN)' : '4-Digit Login PIN'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="password"
+                        required
+                        maxLength={4}
+                        placeholder="••••"
+                        value={riderApplyPin}
+                        onChange={(e) => setRiderApplyPin(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 dark:text-white font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isRiderApplying}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-2xl shadow-xl shadow-blue-600/20 transition flex items-center justify-center gap-2 text-sm"
+                  >
+                    {isRiderApplying ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>{isBn ? 'আবেদন জমা হচ্ছে...' : 'Submitting Application...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{isBn ? 'আবেদন জমা দিন (Submit Application)' : 'Submit Rider Application'}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
             </div>
           )}
         </div>
