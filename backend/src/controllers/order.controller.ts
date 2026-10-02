@@ -3,6 +3,7 @@ import { Order } from '../models/Order.js';
 import { Product } from '../models/Product.js';
 import { User } from '../models/User.js';
 import { Coupon } from '../models/Coupon.js';
+import { Rider } from '../models/Rider.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { sendEmail, generateOrderEmailTemplate } from '../config/mail.js';
 
@@ -255,6 +256,54 @@ export const updateOrderStatus = async (req: AuthRequest, res: Response): Promis
     }
 
     await order.save();
+
+    // Notify customer via email if available
+    const customerEmail = order.customerInfo?.email;
+    if (customerEmail && customerEmail.includes('@')) {
+      let riderInfoText = '';
+      if (order.rider) {
+        const assignedRider = await Rider.findById(order.rider);
+        if (assignedRider) {
+          riderInfoText = `<p style="margin: 6px 0; color: #38bdf8;">🛵 <strong>ডেলিভারি রাইডার:</strong> ${assignedRider.name} (ফোন: ${assignedRider.phone})</p>`;
+        }
+      }
+
+      const statusMap: Record<string, string> = {
+        placed: 'অর্ডার প্লেস করা হয়েছে',
+        confirmed: 'এডমিন কর্তৃক অর্ডার কনফার্ম করা হয়েছে',
+        processing: 'প্রোডাক্ট প্রসেসিং ও প্যাকিং চলছে',
+        shipped: 'ডেলিভারি হিরো (রাইডার)-এর কাছে পার্সেল বুঝিয়ে দেওয়া হয়েছে',
+        out_for_delivery: 'রাইডার ডেলিভারি নিয়ে আপনার ঠিকানায় রওয়ানা দিয়েছে',
+        delivered: 'সফলভাবে পণ্য ডেলিভারি সম্পন্ন হয়েছে',
+        cancelled: 'অর্ডার বাতিল করা হয়েছে',
+      };
+
+      const statusBengali = statusMap[order.orderStatus] || order.orderStatus;
+      const trackingUrl = `https://shopx-bd-enterprise-jpqg.vercel.app/track-order?orderId=${order.orderId}`;
+
+      const updateHtml = `
+        <div style="font-family: Arial, sans-serif; background-color: #0b1322; color: #ffffff; padding: 25px; border-radius: 20px; border: 1px solid #1e293b;">
+          <h2 style="color: #10b981; margin-top: 0;">📦 ShopX BD অর্ডার স্ট্যাটাস আপডেট</h2>
+          <p>আসসালামু আলাইকুম <strong>${order.customerInfo?.name || 'সম্মানিত গ্রাহক'}</strong>,</p>
+          <p>আপনার অর্ডার <strong>#${order.orderId}</strong>-এর সর্বশেষ অবস্থা:</p>
+          <div style="background: #1e293b; padding: 15px; border-radius: 12px; margin: 15px 0;">
+            <p style="margin: 0 0 6px 0; font-size: 16px; font-weight: bold; color: #34d399;">স্ট্যাটাস: ${statusBengali}</p>
+            ${message ? `<p style="margin: 0 0 6px 0; color: #cbd5e1;">বিবরণ: ${message}</p>` : ''}
+            ${riderInfoText}
+          </div>
+          <div style="text-align: center; margin: 25px 0;">
+            <a href="${trackingUrl}" style="background: #10b981; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; display: inline-block;">লাইভ ম্যাপে অর্ডার ট্র্যাক করুন ↗</a>
+          </div>
+          <p style="font-size: 11px; color: #64748b; margin-top: 20px;">ShopX BD Enterprise • Rowmari, Kurigram, Bangladesh</p>
+        </div>
+      `;
+
+      sendEmail({
+        to: customerEmail,
+        subject: `📦 [অর্ডার আপডেট] #${order.orderId} - ${statusBengali}`,
+        html: updateHtml,
+      }).catch((e) => console.warn('Failed to send order status email:', e.message));
+    }
 
     res.status(200).json({ success: true, message: 'Order status updated', data: order });
   } catch (error: any) {

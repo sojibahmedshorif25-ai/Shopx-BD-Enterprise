@@ -85,14 +85,9 @@ export const sendEmailOTP = async (req: Request, res: Response): Promise<void> =
 
     res.status(200).json({
       success: true,
-      message: sent
-        ? (lang === 'bn'
-            ? `আপনার ${cleanEmail} ইনবক্সে ৬-সংখ্যার OTP কোড পাঠানো হয়েছে। স্প্যাম বা প্রমোশন ফোল্ডারও চেক করুন।`
-            : `A 6-digit verification code has been sent to ${cleanEmail}. Please check your inbox or spam.`)
-        : (lang === 'bn'
-            ? `আপনার জিমেইলে ওটিপি পাঠানো হয়েছে। (টেস্টিং ওটিপি কোড: ${otp})`
-            : `Verification code generated: ${otp}`),
-      otp, // For convenience / fallback
+      message: lang === 'bn'
+        ? `আপনার ${cleanEmail} ইনবক্সে ৬-সংখ্যার OTP কোড পাঠানো হয়েছে। স্প্যাম বা প্রমোশন ফোল্ডারও চেক করুন।`
+        : `A 6-digit verification code has been sent to ${cleanEmail}. Please check your inbox or spam.`,
       emailSent: sent,
     });
   } catch (error: any) {
@@ -212,9 +207,8 @@ export const sendPhoneOTP = async (req: Request, res: Response): Promise<void> =
     res.status(200).json({
       success: true,
       message: lang === 'bn'
-        ? `আপনার ${cleanPhone} নম্বরে ৬-সংখ্যার OTP কোড পাঠানো হয়েছে। (SMS কোড: ${otp})`
-        : `A 6-digit verification code has been sent to ${cleanPhone}. (Code: ${otp})`,
-      otp, // Provided for instant testing
+        ? `আপনার ${cleanPhone} নম্বরে ৬-সংখ্যার OTP কোড পাঠানো হয়েছে।`
+        : `A 6-digit verification code has been sent to ${cleanPhone}.`,
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
@@ -731,14 +725,9 @@ export const adminLoginStep1 = async (req: Request, res: Response): Promise<void
       success: true,
       require2FA: true,
       maskedEmail,
-      message: sent
-        ? (lang === 'bn'
-            ? `আপনার ${cleanEmail} ইনবক্সে ৬-সংখ্যার সিকিউরিটি ওটিপি কোড পাঠানো হয়েছে।`
-            : `A 6-digit 2FA security code has been sent to ${cleanEmail}.`)
-        : (lang === 'bn'
-            ? `আপনার ইমেইলে ওটিপি কোড পাঠানো হয়েছে। (ওটিপি কোড: ${otp})`
-            : `2FA security code generated: ${otp}`),
-      otp, // For convenience & instant login
+      message: lang === 'bn'
+        ? `আপনার ${cleanEmail} ইনবক্সে ৬-সংখ্যার সিকিউরিটি ওটিপি কোড পাঠানো হয়েছে। স্প্যাম ফোল্ডারও চেক করুন।`
+        : `A 6-digit 2FA security code has been sent to ${cleanEmail}. Please check your inbox.`,
       emailSent: sent,
     });
   } catch (error: any) {
@@ -1051,14 +1040,9 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
 
     res.status(200).json({
       success: true,
-      message: sent
-        ? (lang === 'bn'
-            ? `আপনার ${cleanEmail} ইনবক্সে ৬-সংখ্যার পাসওয়ার্ড রিসেট কোড পাঠানো হয়েছে।`
-            : `A 6-digit password reset code has been sent to ${cleanEmail}.`)
-        : (lang === 'bn'
-            ? `পাসওয়ার্ড রিসেট কোড পাঠানো হয়েছে। (কোড: ${otp})`
-            : `Password reset code: ${otp}`),
-      otp,
+      message: lang === 'bn'
+        ? `আপনার ${cleanEmail} ইনবক্সে ৬-সংখ্যার পাসওয়ার্ড রিসেট কোড পাঠানো হয়েছে।`
+        : `A 6-digit password reset code has been sent to ${cleanEmail}.`,
       emailSent: sent,
     });
   } catch (error: any) {
