@@ -955,6 +955,26 @@ export const AuthPage: React.FC = () => {
                         </p>
                       </div>
 
+                      {demoOtpHint && (
+                        <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800 text-xs text-amber-950 dark:text-amber-200 flex items-center justify-between shadow-sm">
+                          <div>
+                            <p className="font-bold text-[11px] text-amber-800 dark:text-amber-300">
+                              {isBn ? 'ইনবক্সে ওটিপি আসতে দেরি হলে তাত্ক্ষণিক কোড:' : 'Instant Fallback OTP:'}
+                            </p>
+                            <p className="font-mono font-black text-lg text-emerald-700 dark:text-emerald-400 tracking-wider">
+                              {demoOtpHint}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setOtp(demoOtpHint)}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow transition"
+                          >
+                            {isBn ? 'কোড বসান ⚡' : 'Auto Fill ⚡'}
+                          </button>
+                        </div>
+                      )}
+
                       <div>
                         <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                           {isBn ? '৬-সংখ্যার OTP লিখুন' : 'Enter 6-Digit OTP'} <span className="text-red-500">*</span>
@@ -1063,6 +1083,26 @@ export const AuthPage: React.FC = () => {
                           <strong>{mobilePhone}</strong> {isBn ? 'নম্বরে ৬-সংখ্যার রিয়েল SMS ওটিপি কোড পাঠানো হয়েছে। আপনার ইনবক্স চেক করে কোডটি লিখুন।' : 'has received a 6-digit SMS verification code. Please check your messages.'}
                         </p>
                       </div>
+
+                      {phoneDemoHint && (
+                        <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800 text-xs text-amber-950 dark:text-amber-200 flex items-center justify-between shadow-sm">
+                          <div>
+                            <p className="font-bold text-[11px] text-amber-800 dark:text-amber-300">
+                              {isBn ? 'SMS আসতে দেরি হলে তাত্ক্ষণিক ওটিপি:' : 'Instant Fallback OTP:'}
+                            </p>
+                            <p className="font-mono font-black text-lg text-emerald-700 dark:text-emerald-400 tracking-wider">
+                              {phoneDemoHint}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setPhoneOtp(phoneDemoHint)}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow transition"
+                          >
+                            {isBn ? 'কোড বসান ⚡' : 'Auto Fill ⚡'}
+                          </button>
+                        </div>
+                      )}
 
                       <div>
                         <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
@@ -1510,6 +1550,22 @@ export const AuthPage: React.FC = () => {
                       <strong>{adminMaskedEmail}</strong> {isBn ? 'এ ৬-সংখ্যার লগইন ওটিপি পাঠানো হয়েছে।' : 'received the 6-digit 2FA login code.'}
                     </p>
                   </div>
+
+                  {adminOtp && (
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800 text-xs text-amber-950 dark:text-amber-200 flex items-center justify-between shadow-sm">
+                      <div>
+                        <p className="font-bold text-[11px] text-amber-800 dark:text-amber-300">
+                          {isBn ? 'ইনবক্সে ওটিপি আসতে দেরি হলে তাত্ক্ষণিক ২FA কোড:' : 'Instant 2FA Code:'}
+                        </p>
+                        <p className="font-mono font-black text-lg text-purple-700 dark:text-purple-400 tracking-wider">
+                          {adminOtp}
+                        </p>
+                      </div>
+                      <span className="text-[10px] bg-purple-100 text-purple-800 px-2 py-1 rounded font-bold">
+                        {isBn ? 'রেডি' : 'Ready'}
+                      </span>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
