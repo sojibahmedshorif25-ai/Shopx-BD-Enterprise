@@ -110,17 +110,16 @@ export const AuthPage: React.FC = () => {
   const [showRiderPin, setShowRiderPin] = useState(false);
   const [showForgotNewPass, setShowForgotNewPass] = useState(false);
 
-  // Facebook Real Login Modal State
-  const [showFbModal, setShowFbModal] = useState(false);
-  const [fbName, setFbName] = useState('');
-  const [fbEmail, setFbEmail] = useState('');
-  const [isFbLoading, setIsFbLoading] = useState(false);
-  const [fbErr, setFbErr] = useState('');
-
-  // Seller Portal Login State
+  // Seller Portal Login & Store Registration State
+  const [isSellerRegister, setIsSellerRegister] = useState(false);
   const [sellerEmail, setSellerEmail] = useState('');
   const [sellerPassword, setSellerPassword] = useState('');
   const [isSellerLoggingIn, setIsSellerLoggingIn] = useState(false);
+  const [sellerStoreName, setSellerStoreName] = useState('');
+  const [sellerOwnerName, setSellerOwnerName] = useState('');
+  const [sellerPhone, setSellerPhone] = useState('');
+  const [sellerAddress, setSellerAddress] = useState('');
+  const [isSellerRegistering, setIsSellerRegistering] = useState(false);
 
   // Super Admin 2FA State
   const [adminEmail, setAdminEmail] = useState('');
@@ -475,44 +474,39 @@ export const AuthPage: React.FC = () => {
     );
   };
 
-  // 6. Customer: Social Real Facebook Login Handler
-  const handleFacebookOneClick = () => {
+  // 6. Seller Registration & Store Profile Handler
+  const handleSellerRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError('');
     setSuccessMsg('');
-    setFbErr('');
-    if (gmail.trim()) setFbEmail(gmail.trim());
-    if (gmailName.trim()) setFbName(gmailName.trim());
-    setShowFbModal(true);
-  };
-
-  const handleFacebookSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFbErr('');
-    setIsFbLoading(true);
+    setIsSellerRegistering(true);
 
     try {
-      const emailToUse = fbEmail.trim() || `fb_${Date.now()}@facebook.com`;
-      const nameToUse = fbName.trim() || 'Facebook User';
-
-      const res = await api.post('/auth/facebook', {
-        email: emailToUse,
-        name: nameToUse,
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        facebookId: 'fb_' + Date.now(),
+      const res = await api.post('/auth/register', {
+        name: sellerOwnerName.trim() || sellerStoreName.trim(),
+        email: sellerEmail.trim(),
+        phone: sellerPhone.trim(),
+        password: sellerPassword,
+        role: 'vendor',
+        storeName: sellerStoreName.trim(),
+        address: sellerAddress.trim() || 'Dhaka, Bangladesh',
       });
 
       if (res.data.success) {
-        localStorage.setItem('shopx_token', res.data.token);
-        useAuthStore.setState({ user: res.data.user, token: res.data.token });
-        setShowFbModal(false);
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-        setSuccessMsg(isBn ? `স্বাগতম ${nameToUse}! ফেসবুক দিয়ে সফলভাবে লগইন হয়েছে!` : `Welcome ${nameToUse}! Facebook login successful!`);
-        setTimeout(() => navigate('/'), 600);
+        setSuccessMsg(
+          isBn
+            ? 'অভিনন্দন! আপনার সেলার ও শপ প্রোফাইল সফলভাবে তৈরি হয়েছে! এখন লগইন করে দোকান পরিচালনা করুন।'
+            : 'Congratulations! Your Seller store profile has been created successfully! Please sign in.'
+        );
+        setTimeout(() => {
+          setIsSellerRegister(false);
+        }, 2200);
       }
     } catch (err: any) {
-      setFbErr(err.response?.data?.message || (isBn ? 'ফেসবুক লগইন সম্পন্ন করা যায়নি।' : 'Facebook login failed.'));
+      setError(err.response?.data?.message || (isBn ? 'সেলার রেজিস্ট্রেশন ব্যর্থ হয়েছে।' : 'Seller registration failed.'));
     } finally {
-      setIsFbLoading(false);
+      setIsSellerRegistering(false);
     }
   };
 
@@ -1345,21 +1339,21 @@ export const AuthPage: React.FC = () => {
                 </form>
               )}
 
-              {/* 4. Social 1-Click Logins (Google & Facebook) */}
+              {/* 4. Social 1-Click Login (Official Google) */}
               <div className="pt-3 border-t border-gray-100 dark:border-slate-800 space-y-2.5">
                 <div className="relative flex items-center justify-center">
                   <div className="border-t border-gray-200 dark:border-slate-700 w-full"></div>
                   <span className="bg-white dark:bg-slate-900 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider absolute">
-                    {isBn ? 'অথবা সোশ্যাল লগইন' : 'Or 1-Click Social Sign In'}
+                    {isBn ? 'অথবা গুগল দিয়ে সরাসরি সাইন ইন' : 'Or 1-Click Google Sign In'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2.5 pt-2">
+                <div className="pt-2">
                   {/* Google Login Button */}
                   <button
                     type="button"
                     onClick={handleGoogleOneClick}
-                    className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 transition shadow-sm"
+                    className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-2xl border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 transition shadow-sm"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24">
                       <path
@@ -1379,19 +1373,7 @@ export const AuthPage: React.FC = () => {
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                       />
                     </svg>
-                    <span>Google</span>
-                  </button>
-
-                  {/* Facebook Login Button */}
-                  <button
-                    type="button"
-                    onClick={handleFacebookOneClick}
-                    className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-blue-600/30 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-100/50 text-xs font-bold text-blue-700 dark:text-blue-400 transition shadow-sm"
-                  >
-                    <svg className="w-4 h-4 fill-blue-600 dark:fill-blue-400" viewBox="0 0 24 24">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                    </svg>
-                    <span>Facebook</span>
+                    <span>{isBn ? 'Google দিয়ে ১-ক্লিকে সাইন ইন করুন' : 'Continue with Google Account'}</span>
                   </button>
                 </div>
               </div>
@@ -1409,97 +1391,259 @@ export const AuthPage: React.FC = () => {
                   <Store className="w-6 h-6" />
                 </div>
                 <h2 className="text-xl font-black text-slate-900 dark:text-white">
-                  {isBn ? 'ShopX সেলার সেন্টার লগইন' : 'Seller Center Portal'}
+                  {isBn ? 'ShopX সেলার সেন্টার পোর্টাল' : 'Seller Center Portal'}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  {isBn ? 'আপনার দোকান পরিচালনা ও পণ্য বিক্রি করুন' : 'Log in to manage your inventory, orders & payouts'}
+                  {isBn ? 'আপনার দোকান পরিচালনা, নতুন প্রোডাক্ট লিস্টিং ও আয় পর্যবেক্ষণ' : 'Manage your shop catalog, inventory & sales analytics'}
                 </p>
               </div>
 
-              <form onSubmit={handleSellerLoginSubmit} className="space-y-4 text-xs">
-                <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    {isBn ? 'সেলার ইমেইল এড্রেস' : 'Seller Registered Email'} <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
-                    <input
-                      type="email"
-                      required
-                      placeholder="seller@gmail.com"
-                      value={sellerEmail}
-                      onChange={(e) => setSellerEmail(e.target.value)}
-                      className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 text-sm font-semibold dark:text-white"
-                    />
-                  </div>
-                </div>
+              {/* Seller Mode Toggle (Login vs Register Store) */}
+              <div className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl text-xs font-bold gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSellerRegister(false);
+                    setError('');
+                    setSuccessMsg('');
+                  }}
+                  className={`py-2.5 rounded-xl transition ${
+                    !isSellerRegister
+                      ? 'bg-white dark:bg-slate-900 text-orange-600 dark:text-orange-400 shadow font-black'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
+                  }`}
+                >
+                  {isBn ? '১. সেলার লগইন' : '1. Seller Sign In'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSellerRegister(true);
+                    setError('');
+                    setSuccessMsg('');
+                  }}
+                  className={`py-2.5 rounded-xl transition ${
+                    isSellerRegister
+                      ? 'bg-white dark:bg-slate-900 text-orange-600 dark:text-orange-400 shadow font-black'
+                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
+                  }`}
+                >
+                  {isBn ? '২. নতুন দোকান নিবন্ধন' : '2. Register Store'}
+                </button>
+              </div>
 
-                <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    {isBn ? 'পাসওয়ার্ড' : 'Password'} <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
-                    <input
-                      type={showSellerPassword ? 'text' : 'password'}
-                      required
-                      autoComplete="new-password"
-                      placeholder="••••••••"
-                      value={sellerPassword}
-                      onChange={(e) => setSellerPassword(e.target.value)}
-                      className="w-full py-3 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 text-sm font-semibold dark:text-white"
-                    />
+              {!isSellerRegister ? (
+                <form onSubmit={handleSellerLoginSubmit} className="space-y-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'সেলার নিবন্ধিত ইমেইল' : 'Seller Registered Email'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="email"
+                        required
+                        placeholder="seller@gmail.com"
+                        value={sellerEmail}
+                        onChange={(e) => setSellerEmail(e.target.value)}
+                        className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 text-sm font-semibold dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'পাসওয়ার্ড' : 'Password'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type={showSellerPassword ? 'text' : 'password'}
+                        required
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        value={sellerPassword}
+                        onChange={(e) => setSellerPassword(e.target.value)}
+                        className="w-full py-3 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 text-sm font-semibold dark:text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSellerPassword(!showSellerPassword)}
+                        className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                      >
+                        {showSellerPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end">
                     <button
                       type="button"
-                      onClick={() => setShowSellerPassword(!showSellerPassword)}
-                      className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                      onClick={() => {
+                        setForgotEmail(sellerEmail);
+                        setForgotStep('email');
+                        setForgotErr('');
+                        setForgotMsg('');
+                        setShowForgotModal(true);
+                      }}
+                      className="text-[11px] font-bold text-orange-600 hover:underline"
                     >
-                      {showSellerPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {isBn ? 'পাসওয়ার্ড ভুলে গেছেন?' : 'Forgot Password?'}
                     </button>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-end">
                   <button
-                    type="button"
-                    onClick={() => {
-                      setForgotEmail(sellerEmail);
-                      setForgotStep('email');
-                      setForgotErr('');
-                      setForgotMsg('');
-                      setShowForgotModal(true);
-                    }}
-                    className="text-[11px] font-bold text-orange-600 hover:underline"
+                    type="submit"
+                    disabled={isSellerLoggingIn}
+                    className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-slate-950 font-black py-3.5 rounded-2xl shadow-xl shadow-orange-500/20 transition flex items-center justify-center gap-2 text-sm"
                   >
-                    {isBn ? 'পাসওয়ার্ড ভুলে গেছেন?' : 'Forgot Password?'}
+                    {isSellerLoggingIn ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>{isBn ? 'লগইন হচ্ছে...' : 'Signing in...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{isBn ? 'সেলার সেন্টারে প্রবেশ করুন' : 'Access Seller Center'}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
                   </button>
-                </div>
 
-                <button
-                  type="submit"
-                  disabled={isSellerLoggingIn}
-                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-slate-950 font-black py-3.5 rounded-2xl shadow-xl shadow-orange-500/20 transition flex items-center justify-center gap-2 text-sm"
-                >
-                  {isSellerLoggingIn ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>{isBn ? 'লগইন হচ্ছে...' : 'Signing in...'}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{isBn ? 'সেলার সেন্টারে প্রবেশ করুন' : 'Access Seller Center'}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
+                  <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800">
+                    {isBn ? 'নতুন দোকান খুলতে চান?' : 'Want to open a new store?'}{' '}
+                    <button
+                      type="button"
+                      onClick={() => setIsSellerRegister(true)}
+                      className="text-orange-600 font-extrabold hover:underline"
+                    >
+                      {isBn ? 'এখানে রেজিস্ট্রেশন করুন ↗' : 'Register Here ↗'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleSellerRegisterSubmit} className="space-y-3.5 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'দোকানের নাম (Shop Name)' : 'Store Name'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Building2 className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="text"
+                        required
+                        placeholder={isBn ? 'যেমন: ঢাকা ফ্যাশন ওয়্যার' : 'e.g. Dhaka Fashion Wear'}
+                        value={sellerStoreName}
+                        onChange={(e) => setSellerStoreName(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 dark:text-white"
+                      />
+                    </div>
+                  </div>
 
-                <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">
-                  {isBn ? 'নতুন দোকান খুলতে চান?' : 'Want to open a new store?'}{' '}
-                  <Link to="/vendor-register" className="text-orange-600 font-extrabold hover:underline">
-                    {isBn ? 'সেলার হিসেবে রেজিস্ট্রেশন করুন ↗' : 'Register New Store ↗'}
-                  </Link>
-                </div>
-              </form>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        {isBn ? 'মালিকের নাম' : 'Owner Name'} <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder={isBn ? 'আপনার নাম' : 'Your Name'}
+                        value={sellerOwnerName}
+                        onChange={(e) => setSellerOwnerName(e.target.value)}
+                        className="w-full py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        {isBn ? 'মোবাইল নম্বর' : 'Phone'} <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="01712-345678"
+                        value={sellerPhone}
+                        onChange={(e) => setSellerPhone(e.target.value)}
+                        className="w-full py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 dark:text-white font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'সেলার ইমেইল एड্রেস' : 'Seller Email'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type="email"
+                        required
+                        placeholder="store@gmail.com"
+                        value={sellerEmail}
+                        onChange={(e) => setSellerEmail(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'পাসওয়ার্ড' : 'Password'} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
+                      <input
+                        type={showSellerPassword ? 'text' : 'password'}
+                        required
+                        minLength={6}
+                        placeholder="••••••••"
+                        value={sellerPassword}
+                        onChange={(e) => setSellerPassword(e.target.value)}
+                        className="w-full py-2.5 pl-10 pr-10 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 dark:text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSellerPassword(!showSellerPassword)}
+                        className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition"
+                      >
+                        {showSellerPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {isBn ? 'দোকানের ঠিকানা / পিকআপ পয়েন্ট' : 'Shop Address / Pickup Point'}
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={isBn ? 'যেমন: দোকান নং ১২, নিউ মার্কেট, ঢাকা' : 'e.g. Shop 12, New Market, Dhaka'}
+                      value={sellerAddress}
+                      onChange={(e) => setSellerAddress(e.target.value)}
+                      className="w-full py-2.5 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-orange-500 dark:text-white"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSellerRegistering}
+                    className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-slate-950 font-black py-3.5 rounded-2xl shadow-xl shadow-orange-500/20 transition flex items-center justify-center gap-2 text-sm"
+                  >
+                    {isSellerRegistering ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>{isBn ? 'দোকান প্রোফাইল তৈরি হচ্ছে...' : 'Creating Store Profile...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{isBn ? 'দোকান প্রোফাইল সম্পূর্ণ করুন' : 'Create Seller Store'}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
             </div>
           )}
 
@@ -2027,121 +2171,6 @@ export const AuthPage: React.FC = () => {
                 </div>
               </form>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* ======================================================== */}
-      {/* 6. FACEBOOK OFFICIAL AUTH MODAL */}
-      {/* ======================================================== */}
-      {showFbModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-blue-200 dark:border-blue-900/40 space-y-5 animate-in fade-in">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
-                  <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-base font-black text-slate-900 dark:text-white">
-                    {isBn ? 'Facebook দিয়ে সাইন-ইন' : 'Sign in with Facebook'}
-                  </h3>
-                  <p className="text-[11px] text-slate-500">
-                    {isBn ? '১-ক্লিকে রিয়েল ফেসবুক প্রোফাইল লগইন' : 'Official Facebook Social Login'}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowFbModal(false)}
-                className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-800 dark:hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {fbErr && (
-              <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-700 dark:text-red-300 text-xs rounded-xl font-semibold">
-                {fbErr}
-              </div>
-            )}
-
-            <form onSubmit={handleFacebookSubmit} className="space-y-4 text-xs">
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {isBn ? 'আপনার ফেসবুক নাম' : 'Facebook Full Name'} <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <User className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
-                  <input
-                    type="text"
-                    required
-                    placeholder={isBn ? 'যেমন: সজীব আহমেদ শরিফ' : 'e.g. Sojib Ahmed Shorif'}
-                    value={fbName}
-                    onChange={(e) => setFbName(e.target.value)}
-                    className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-semibold dark:text-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {isBn ? 'ফেসবুক ইমেইল অথবা মোবাইল নম্বর' : 'Facebook Email or Mobile'} <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="user@gmail.com / 01942791004"
-                    value={fbEmail}
-                    onChange={(e) => setFbEmail(e.target.value)}
-                    className="w-full py-3 pl-10 pr-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 outline-none focus:border-blue-600 text-sm font-semibold dark:text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="p-3 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/30 text-[11px] text-blue-900 dark:text-blue-300 space-y-1">
-                <p className="flex items-center gap-1.5 font-bold">
-                  <ShieldCheck className="w-4 h-4 text-blue-600" />
-                  {isBn ? 'নিরাপদ ফেসবুক সংযোগ' : 'Official Facebook Data Protection'}
-                </p>
-                <p className="text-slate-500 dark:text-slate-400">
-                  {isBn ? 'আপনার তথ্য সম্পূর্ণ এনক্রিপ্টেড এবং নিরাপদে সংরক্ষিত হবে।' : 'Your Facebook profile is verified and securely connected.'}
-                </p>
-              </div>
-
-              <div className="flex gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setShowFbModal(false)}
-                  className="w-1/3 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold"
-                >
-                  {isBn ? 'বাতিল' : 'Cancel'}
-                </button>
-                <button
-                  type="submit"
-                  disabled={isFbLoading}
-                  className="w-2/3 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black shadow-lg shadow-blue-600/20 transition flex items-center justify-center gap-2"
-                >
-                  {isFbLoading ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>{isBn ? 'লগইন হচ্ছে...' : 'Logging in...'}</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                      </svg>
-                      <span>{isBn ? 'ফেসবুক দিয়ে লগইন করুন' : 'Log In with Facebook'}</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}

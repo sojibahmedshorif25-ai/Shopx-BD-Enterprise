@@ -26,7 +26,6 @@ export const AdminLoginPage: React.FC = () => {
     sendPhoneOTP,
     verifyPhoneOTP,
     googleLogin,
-    facebookLogin,
     isLoading,
   } = useAdminAuthStore();
   const { lang, toggleLang, t } = useAdminLanguageStore();
@@ -151,21 +150,6 @@ export const AdminLoginPage: React.FC = () => {
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Google 2FA login failed');
-    }
-  };
-
-  // Facebook 1-Click Admin Login
-  const handleFacebookAdminLogin = async () => {
-    setError('');
-    try {
-      await facebookLogin({
-        email: email || 'sojibahmedshorif25@gmail.com',
-        name: 'Sojib Ahmed Shorif',
-        facebookId: 'fb_' + Date.now(),
-      });
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'Facebook 2FA login failed');
     }
   };
 
@@ -414,11 +398,11 @@ export const AdminLoginPage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5 pt-2">
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={handleGoogleAdminLogin}
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-700 hover:bg-slate-800 text-xs font-bold text-slate-200 transition"
+                  className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-2xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 text-xs font-bold text-slate-100 transition shadow-lg"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path
@@ -438,18 +422,7 @@ export const AdminLoginPage: React.FC = () => {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                     />
                   </svg>
-                  <span>Google</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleFacebookAdminLogin}
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-blue-800 bg-blue-950/40 hover:bg-blue-900/60 text-xs font-bold text-blue-300 transition"
-                >
-                  <svg className="w-4 h-4 fill-current text-blue-400" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                  <span>Facebook</span>
+                  <span>{lang === 'en' ? 'Continue with Google 2FA' : 'গুগল দিয়ে ২FA লগইন'}</span>
                 </button>
               </div>
             </div>
