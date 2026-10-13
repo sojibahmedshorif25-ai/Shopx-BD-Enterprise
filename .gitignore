@@ -1,13 +1,16 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
 
 # Build
-/build
+build/
+dist/
 /dist
 /.next/
 /out/
+*.tsbuildinfo
+next-env.d.ts
 
 # Env
 .env
